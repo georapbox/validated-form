@@ -1,6 +1,6 @@
 import * as esbuild from 'esbuild';
 
-const PACKAGE_NAME = 'custom-element';
+const PACKAGE_NAME = 'validated-form';
 
 const ctx = await esbuild.context({
   entryPoints: [`src/${PACKAGE_NAME}.js`, `src/${PACKAGE_NAME}-defined.js`],

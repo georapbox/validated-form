@@ -1,7 +1,7 @@
 // https://custom-elements-manifest.open-wc.org/analyzer/config/
 export default {
   /** Globs to analyze */
-  globs: ['src/custom-element.js'],
+  globs: ['src/validated-form.js'],
   /** Globs to exclude */
   exclude: [],
   /** Directory to output CEM to */
@@ -29,7 +29,7 @@ export default {
       moduleLinkPhase({ moduleDoc }) {
         moduleDoc.exports?.forEach(ex => {
           if (ex.kind === 'custom-element-definition' && ex.name === 'elementName') {
-            ex.name = 'custom-element'; // Force the manifest to show the default tag name
+            ex.name = 'validated-form'; // Force the manifest to show the default tag name
           }
         });
       }

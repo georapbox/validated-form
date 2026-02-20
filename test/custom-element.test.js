@@ -1,17 +1,17 @@
 import { expect, fixture, fixtureCleanup, html } from '@open-wc/testing';
 // import sinon from 'sinon';
-import { CustomElement } from '../src/custom-element.js';
+import { ValidatedForm } from '../src/validated-form.js';
 
-CustomElement.defineCustomElement();
+ValidatedForm.defineCustomElement();
 
-describe('custom-element', () => {
+describe('validated-form', () => {
   afterEach(() => {
     fixtureCleanup();
   });
 
   describe('accessibility', () => {
     it('passes accessibility test when enabled without attributes', async () => {
-      const el = await fixture(html`<custom-element></custom-element>`);
+      const el = await fixture(html`<validated-form></validated-form>`);
       await expect(el).to.be.accessible();
     });
   });

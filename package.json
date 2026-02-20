@@ -1,12 +1,12 @@
 {
-  "name": "@georapbox/custom-element-element",
+  "name": "@georapbox/validated-form",
   "version": "1.0.0",
-  "description": "custom-element description goes here",
-  "main": "dist/custom-element.js",
-  "module": "dist/custom-element.js",
-  "unpkg": "dist/custom-element.js",
+  "description": "Web Component that adds automatic native form validation and error messages.",
+  "main": "dist/validated-form.js",
+  "module": "dist/validated-form.js",
+  "unpkg": "dist/validated-form.js",
   "type": "module",
-  "types": "dist/custom-element.d.ts",
+  "types": "dist/validated-form.d.ts",
   "customElements": "dist/custom-elements.json",
   "files": [
     "/src",
@@ -29,23 +29,20 @@
     "clean": "rimraf dist",
     "prepublishOnly": "npm-run-all clean lint test build types analyze"
   },
-  "keywords": [
-    "custom element",
-    "web component"
-  ],
+  "keywords": ["custom element", "web component", "form", "validation", "error messages", "Constraint Validation API"],
   "author": {
     "name": "George Raptis",
     "email": "georapbox@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/georapbox/custom-element-element.git"
+    "url": "git+https://github.com/georapbox/validated-form.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/georapbox/custom-element-element/issues"
+    "url": "https://github.com/georapbox/validated-form/issues"
   },
-  "homepage": "https://github.com/georapbox/custom-element-element#readme",
+  "homepage": "https://github.com/georapbox/validated-form#readme",
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "~0.11.0",
     "@eslint/js": "~9.39.2",

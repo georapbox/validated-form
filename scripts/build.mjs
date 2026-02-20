@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import * as esbuild from 'esbuild';
 
-const PACKAGE_NAME = 'custom-element';
+const PACKAGE_NAME = 'validated-form';
 
 const readPkg = async () => {
   return JSON.parse(await fs.readFile(new URL('../package.json', import.meta.url)));

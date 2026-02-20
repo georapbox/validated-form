@@ -1,20 +1,20 @@
-[![npm version](https://img.shields.io/npm/v/@georapbox/custom-element-element.svg)](https://www.npmjs.com/package/@georapbox/custom-element-element)
-[![npm license](https://img.shields.io/npm/l/@georapbox/custom-element-element.svg)](https://www.npmjs.com/package/@georapbox/custom-element-element)
+[![npm version](https://img.shields.io/npm/v/@georapbox/validated-form.svg)](https://www.npmjs.com/package/@georapbox/validated-form)
+[![npm license](https://img.shields.io/npm/l/@georapbox/validated-form.svg)](https://www.npmjs.com/package/@georapbox/validated-form)
 
-[demo]: https://georapbox.github.io/custom-element-element/
-[license]: https://github.com/georapbox/custom-element-repo-boilerplate/blob/main/LICENSE
-[changelog]: https://github.com/georapbox/custom-element-element/blob/main/CHANGELOG.md
+[demo]: https://georapbox.github.io/validated-form/
+[license]: https://github.com/georapbox/validated-form/blob/main/LICENSE
+[changelog]: https://github.com/georapbox/validated-form/blob/main/CHANGELOG.md
 
-# &lt;custom-element&gt;
+# &lt;validated-form&gt;
 
-custom-element description goes here.
+Web Component that enhances native HTML forms with automatic Constraint Validation, showing localized error messages and managing field validity state without custom schemas or frameworks.
 
 [API documentation](#api) &bull; [Demo][demo]
 
 ## Install
 
 ```sh
-npm install --save @georapbox/custom-element-element
+npm install --save @georapbox/validated-form
 ```
 
 ## Usage
@@ -22,22 +22,22 @@ npm install --save @georapbox/custom-element-element
 ### Script
 
 ```js
-import { CustomElement } from './node_modules/@georapbox/custom-element-element/dist/custom-element.js';
+import { ValidatedForm } from './node_modules/@georapbox/validated-form/dist/validated-form.js';
 
 // Manually define the element.
-CustomElement.defineCustomElement();
+ValidatedForm.defineCustomElement();
 ```
 
 Alternatively, you can import the automatically defined custom element.
 
 ```js
-import './node_modules/@georapbox/custom-element-element/dist/custom-element-defined.js';
+import './node_modules/@georapbox/validated-form/dist/validated-form.js';
 ```
 
 ### Markup
 
 ```html
-<custom-element></custom-element>
+<validated-form></validated-form>
 ```
 
 ### Style
@@ -69,9 +69,9 @@ By default, the component comes with basic styling. However, you can customise t
 
 | Name | Type | Description | Arguments |
 | ---- | ---- | ----------- | --------- |
-| `defineCustomElement` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | elementName='custom-element' |
+| `defineCustomElement` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | elementName='validated-form' |
 
-<sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use `whenDefined` method of the `CustomElementRegistry` interface, eg `customElements.whenDefined('custom-element').then(() => { /* call methods here */ });`
+<sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use `whenDefined` method of the `CustomElementRegistry` interface, eg `customElements.whenDefined('validated-form').then(() => { /* call methods here */ });`
 
 ### Events
 

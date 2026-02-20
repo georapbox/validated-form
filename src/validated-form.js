@@ -9,7 +9,7 @@
 
 const html = String.raw;
 const css = String.raw;
-const COMPONENT_NAME = 'custom-element';
+const COMPONENT_NAME = 'validated-form';
 
 const styles = css`
   :host {
@@ -40,10 +40,10 @@ template.innerHTML = html`
 `;
 
 /**
- * @summary custom-element description goes here
- * @documentation https://github.com/georapbox/custom-element-repo-boilerplate
+ * @summary validated-form description goes here
+ * @documentation https://github.com/georapbox/validated-form
  *
- * @tagname custom-element - This is the default tag name, unless overridden by the `defineCustomElement` method.
+ * @tagname validated-form - This is the default tag name, unless overridden by the `defineCustomElement` method.
  * @extends HTMLElement
  *
  * @property {string} someProperty - Description for someProperty goes here.
@@ -62,7 +62,7 @@ template.innerHTML = html`
  *
  * @event some-event - Description for some-event goes here.
  */
-class CustomElement extends HTMLElement {
+class ValidatedForm extends HTMLElement {
   constructor() {
     super();
 
@@ -120,13 +120,13 @@ class CustomElement extends HTMLElement {
    * Defines a custom element with the given name.
    * The name must contain a dash (-).
    *
-   * @param {string} [elementName='custom-element'] - The name of the custom element.
+   * @param {string} [elementName='validated-form'] - The name of the custom element.
    */
   static defineCustomElement(elementName = COMPONENT_NAME) {
     if (typeof window !== 'undefined' && !window.customElements.get(elementName)) {
-      window.customElements.define(elementName, CustomElement);
+      window.customElements.define(elementName, ValidatedForm);
     }
   }
 }
 
-export { CustomElement };
+export { ValidatedForm };
