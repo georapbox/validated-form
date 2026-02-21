@@ -14,3 +14,19 @@ document.querySelectorAll('h3[id^="example-"]').forEach((el, index) => {
 document.querySelectorAll('.card').forEach(el => {
   el.insertAdjacentHTML('afterend', `<div class="back-top"><a href="#">↑ Back to top</a></div>`);
 });
+
+const form = document.querySelector('form');
+
+form.addEventListener('submit', evt => {
+  evt.preventDefault();
+
+  if (!form.checkValidity()) {
+    return;
+  }
+
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+  console.log('Form data:', data);
+
+  alert('Form submitted successfully!');
+});

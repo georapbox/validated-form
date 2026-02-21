@@ -23,26 +23,109 @@
     </div>
   </noscript>
 
-  <h1>&lt;validated-form&gt;</h1>
-  <div class="component-description">
-    <p>Web Component that enhances native HTML forms with automatic Constraint Validation, showing localized error messages and managing field validity state without custom schemas or frameworks.</p>
-    <p><a href="https://github.com/georapbox/validated-form" target="_blank" rel="noreferrer noopener">Source code & documentation</a></p>
-  </div>
+  <main>
+    <h1>&lt;validated-form&gt;</h1>
+    <div class="component-description">
+      <p>Web Component that enhances native HTML forms with automatic Constraint Validation, showing localized error messages and managing field validity state without custom schemas or frameworks.</p>
+      <p><a href="https://github.com/georapbox/validated-form" target="_blank" rel="noreferrer noopener">Source code & documentation</a></p>
+    </div>
 
-  <h2>Examples</h2>
+    <h2>Demo</h2>
+    <p>This demo showcases the capabilities of the <code>&lt;validated-form&gt;</code> component, demonstrating various form fields and validation scenarios. Try submitting the form with different inputs to see how it handles validation and error messages.</p>
 
-  <ol class="table-of-contents">
-    <li><a href="#example-default-config">Default configuration</a></li>
-  </ol>
-
-  <h3 id="example-default-config">Default configuration</h3>
-  <p>
-    This is an example with the default configuration.
-  </p>
-
-  <div class="card">
     <browser-window url="https://github.com/georapbox/validated-form" icon>
-      <validated-form></validated-form>
+      <validated-form>
+        <form autocomplete="off">
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input class="form-control" id="email" name="email" type="email" required />
+            <div data-error-for="email"></div>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label for="password">Password</label>
+            <p class="help-text" id="password-hint">Must be at least 8 characters and include a letter, a number, and a symbol.</p>
+            <input class="form-control" id="password" name="password" type="text" required minlength="8" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$" aria-describedby="password-hint" />
+            <div data-error-for="password"></div>
+          </div>
+
+          <!-- Gender -->
+          <fieldset class="form-group" aria-describedby="gender-hint">
+            <legend>Gender</legend>
+            <p class="help-text" id="gender-hint">Select the option that best describes you.</p>
+            <label class="inline-option">
+              <input class="form-control" type="radio" name="gender" value="male" required /> Male
+            </label>
+            <label class="inline-option">
+              <input class="form-control" type="radio" name="gender" value="female" /> Female
+            </label>
+            <label class="inline-option">
+              <input class="form-control" type="radio" name="gender" value="other" /> Other
+            </label>
+            <div data-error-for="gender"></div>
+          </fieldset>
+
+          <!-- Pet -->
+          <div class="form-group">
+            <label for="pet">Favorite pet</label>
+            <p class="help-text" id="pet-hint">Choose one option from the list.</p>
+            <select id="pet" name="pet" required aria-describedby="pet-hint">
+              <option value="">Select an option</option>
+              <option value="dog">Dog</option>
+              <option value="cat">Cat</option>
+              <option value="fish">Fish</option>
+              <option value="bird">Bird</option>
+            </select>
+            <div data-error-for="pet"></div>
+          </div>
+
+          <!-- Interests -->
+          <div class="form-group">
+            <label for="interests">Your interests</label>
+            <p class="help-text" id="interests-hint">Select at least one interest.</p>
+            <select id="interests" name="interests" multiple required aria-describedby="interests-hint">
+              <option value="technology">Technology</option>
+              <option value="sports">Sports</option>
+              <option value="music">Music</option>
+              <option value="travel">Travel</option>
+            </select>
+            <div data-error-for="interests"></div>
+          </div>
+
+          <!-- Document -->
+          <div class="form-group">
+            <label for="document">Upload document</label>
+            <p class="help-text" id="document-hint">Accepted formats: PDF, JPG, PNG.</p>
+            <input type="file" id="document" name="document" required accept=".pdf,.jpg,.jpeg,.png" aria-describedby="document-hint" />
+            <div data-error-for="document"></div>
+          </div>
+
+          <!-- Notes -->
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <p class="help-text" id="notes-hint">Add any notes (20–300 characters)</p>
+            <textarea id="notes" name="notes" rows="4" minlength="20" maxlength="300" aria-describedby="notes-hint"></textarea>
+            <div data-error-for="notes"></div>
+          </div>
+
+          <!-- Terms -->
+          <div class="form-group">
+            <legend>Terms and Conditions</legend>
+            <p class="help-text" id="terms-hint">You must agree before continuing.</p>
+            <label class="inline-option">
+              <input type="checkbox" name="terms" value="terms" required aria-describedby="terms-hint" />
+              I agree to the Terms & Conditions
+            </label>
+            <div data-error-for="terms"></div>
+          </div>
+
+          <input type="hidden" name="form-id" value="demo-form" />
+
+          <button type="submit">Submit</button>
+        </form>
+      </validated-form>
     </browser-window>
 
     <details>
@@ -50,9 +133,9 @@
 
 <pre><code>&lt;validated-form&gt;&lt;/validated-form&gt;</code></pre>
     </details>
-  </div>
 
-  <h2>License</h2>
-  <p>Licensed under the <a href="https://github.com/georapbox/validated-form/blob/main/LICENSE" target="_blank" rel="noreferrer noopener">The MIT License (MIT)</a></p>
+    <h2>License</h2>
+    <p>Licensed under the <a href="https://github.com/georapbox/validated-form/blob/main/LICENSE" target="_blank" rel="noreferrer noopener">The MIT License (MIT)</a></p>
+  </main>
 </body>
 </html>

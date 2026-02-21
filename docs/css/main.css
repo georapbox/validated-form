@@ -5,8 +5,16 @@
 }
 
 :root {
+  --body-max-width: 60rem;
   --card-bg-color: #ffffff;
+  --error-color: #dc3545;
   scroll-behavior: smooth;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --error-color: #ff6b6b;
+  }
 }
 
 .noscript-banner {
@@ -65,4 +73,59 @@ browser-window {
 
 browser-window::part(base) {
   border-color: var(--border);
+}
+
+form {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg-color)
+}
+
+form > fieldset {
+  padding: 1rem;
+  border-color: var(--border);
+  background-color: var(--background-input);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+.form-group > label {
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.form-control {
+  margin-inline: 0;
+}
+
+.help-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-block: 0 0.4rem;
+}
+
+.inline-option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+button[type="submit"] {
+  width: 100%;
+  margin: 0;
+}
+
+.field-error,
+[data-error-for] {
+  font-size: 0.875rem;
+  color: var(--error-color);
+  word-wrap: break-word;
 }
