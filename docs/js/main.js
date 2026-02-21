@@ -7,14 +7,6 @@ const componentUrl = isLocalhost ? '../../dist/validated-form.js' : '../lib/vali
 const { ValidatedForm } = await import(componentUrl);
 ValidatedForm.defineCustomElement();
 
-document.querySelectorAll('h3[id^="example-"]').forEach((el, index) => {
-  el.insertAdjacentHTML('afterbegin', `<a href="#${el.getAttribute('id')}">#</a> Example ${index + 1} - `);
-});
-
-document.querySelectorAll('.card').forEach(el => {
-  el.insertAdjacentHTML('afterend', `<div class="back-top"><a href="#">↑ Back to top</a></div>`);
-});
-
 const form = document.querySelector('form');
 
 form.addEventListener('submit', evt => {

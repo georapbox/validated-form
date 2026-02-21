@@ -39,7 +39,7 @@
           <!-- Email -->
           <div class="form-group">
             <label for="email">Email</label>
-            <input class="form-control" id="email" name="email" type="email" required />
+            <input class="form-control" type="email" id="email" name="email" required>
             <div data-error-for="email"></div>
           </div>
 
@@ -47,7 +47,7 @@
           <div class="form-group">
             <label for="password">Password</label>
             <p class="help-text" id="password-hint">Must be at least 8 characters and include a letter, a number, and a symbol.</p>
-            <input class="form-control" id="password" name="password" type="text" required minlength="8" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$" aria-describedby="password-hint" />
+            <input class="form-control" id="password" name="password" type="text" required minlength="8" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$" aria-describedby="password-hint">
             <div data-error-for="password"></div>
           </div>
 
@@ -56,13 +56,13 @@
             <legend>Gender</legend>
             <p class="help-text" id="gender-hint">Select the option that best describes you.</p>
             <label class="inline-option">
-              <input class="form-control" type="radio" name="gender" value="male" required /> Male
+              <input class="form-control" type="radio" name="gender" value="male" required> Male
             </label>
             <label class="inline-option">
-              <input class="form-control" type="radio" name="gender" value="female" /> Female
+              <input class="form-control" type="radio" name="gender" value="female"> Female
             </label>
             <label class="inline-option">
-              <input class="form-control" type="radio" name="gender" value="other" /> Other
+              <input class="form-control" type="radio" name="gender" value="other"> Other
             </label>
             <div data-error-for="gender"></div>
           </fieldset>
@@ -98,7 +98,7 @@
           <div class="form-group">
             <label for="document">Upload document</label>
             <p class="help-text" id="document-hint">Accepted formats: PDF, JPG, PNG.</p>
-            <input type="file" id="document" name="document" required accept=".pdf,.jpg,.jpeg,.png" aria-describedby="document-hint" />
+            <input type="file" id="document" name="document" required accept=".pdf,.jpg,.jpeg,.png" aria-describedby="document-hint">
             <div data-error-for="document"></div>
           </div>
 
@@ -115,13 +115,13 @@
             <legend>Terms and Conditions</legend>
             <p class="help-text" id="terms-hint">You must agree before continuing.</p>
             <label class="inline-option">
-              <input type="checkbox" name="terms" value="terms" required aria-describedby="terms-hint" />
+              <input type="checkbox" name="terms" value="terms" required aria-describedby="terms-hint">
               I agree to the Terms & Conditions
             </label>
             <div data-error-for="terms"></div>
           </div>
 
-          <input type="hidden" name="form-id" value="demo-form" />
+          <input type="hidden" name="form-id" value="demo-form">
 
           <button type="submit">Submit</button>
         </form>

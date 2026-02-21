@@ -81,8 +81,6 @@ class ValidatedForm extends HTMLElement {
     this.#form.addEventListener('invalid', this.#handleInvalidCapture, true);
     this.#form.addEventListener('input', this.#handleInputOrChange, true);
     this.#form.addEventListener('change', this.#handleInputOrChange, true);
-
-    // TODO: consider handling cases where form controls are added/removed dynamically after initial load (e.g. via MutationObserver)
   }
 
   /**
@@ -169,8 +167,8 @@ class ValidatedForm extends HTMLElement {
    * @returns {string} - The generated error ID.
    */
   #errorIdFor(el) {
-    const base = el.id || el.name || `field-${Math.random().toString(16).slice(2)}`;
-    return `${base}--error`;
+    const base = el.id || el.name;
+    return `vf-error-${base}`;
   }
 
   /**
@@ -182,19 +180,20 @@ class ValidatedForm extends HTMLElement {
    * @returns {Nullable<HTMLElement>} - The error node associated with the form control element, or null if not found.
    */
   #getErrorNode(el) {
-    const key = el.id || el.name;
-
-    if (!key) {
+    if (!this.#form || !el.name) {
       return null;
     }
 
-    const node = this.#form?.querySelector(`[data-error-for="${CSS.escape(key)}"]`);
+    const node = this.#form.querySelector(`[data-error-for="${CSS.escape(el.name)}"]`);
     if (!node || !(node instanceof HTMLElement)) {
       return null;
     }
 
     const errorId = node.id || this.#errorIdFor(el);
-    node.id = errorId;
+
+    if (!node.id) {
+      node.id = errorId;
+    }
 
     const describedBy = (el.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
     if (!describedBy.includes(errorId)) {
@@ -203,6 +202,8 @@ class ValidatedForm extends HTMLElement {
     }
 
     node.classList.add('field-error');
+    // TODO: Decide if these attributes should be set by default
+    // or left to the user to add in their markup/CSS.
     node.setAttribute('aria-live', 'polite');
     node.setAttribute('role', 'status');
     node.setAttribute('hidden', '');
@@ -275,7 +276,7 @@ class ValidatedForm extends HTMLElement {
     }
 
     if (firstInvalid) {
-      firstInvalid.focus({ preventScroll: false });
+      firstInvalid.focus();
     }
 
     return !firstInvalid;
