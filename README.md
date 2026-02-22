@@ -12,6 +12,7 @@ It does not implement validation rules or schemas — it reads the browser's val
 
 This component follows a progressive-enhancement approach: the browser remains responsible for validation, while JavaScript improves how errors are presented and announced. If JavaScript fails to load, the form still works using native browser validation UI.
 
+> [!IMPORTANT]
 > This is not a validation library. It never defines rules or overrides messages (no `setCustomValidity()` is used).
 
 [API documentation](#api) &bull; [Demo][demo]
