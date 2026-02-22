@@ -50,7 +50,6 @@
   font-weight: 500;
 }
 
-
 .back-top {
   text-align: right;
   font-size: 0.875rem;
@@ -69,25 +68,35 @@
 browser-window {
   --bw-background: var(--background-alt);
   display: block;
+  padding: 0.5rem;
 }
 
 browser-window::part(base) {
   border-color: var(--border);
 }
 
-form {
+#demo-form {
   max-width: 34rem;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--card-bg-color)
 }
 
-form > fieldset {
+#demo-form h3 {
+  margin-block: 0;
+}
+
+#demo-form fieldset {
   padding: 1rem;
   border-color: var(--border);
   background-color: var(--background-input);
+}
+
+#demo-form button[type="submit"] {
+  width: 100%;
+  margin: 0;
 }
 
 .form-group {
@@ -118,14 +127,27 @@ form > fieldset {
   margin-bottom: 0.4rem;
 }
 
-button[type="submit"] {
-  width: 100%;
-  margin: 0;
-}
-
 .field-error,
 [data-error-for] {
   font-size: 0.875rem;
   color: var(--error-color);
   word-wrap: break-word;
+}
+
+#success-dialog {
+  width: 30rem;
+  padding: 1rem;
+}
+
+#success-dialog h3 {
+  margin-block: 0;
+}
+
+#success-dialog form {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#success-dialog button {
+  margin: 0;
 }

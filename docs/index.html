@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
   <title>&lt;validated-form&gt;</title>
-  <meta name="description" content="Web Component that enhances native HTML forms with automatic Constraint Validation, showing localized error messages and managing field validity state without custom schemas or frameworks.">
+  <meta name="description" content="Web Component that adds automatic native form validation and error messages.">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="stylesheet" href="lib/highlight/highlight-github.css">
   <link rel="stylesheet" href="css/water.css">
@@ -26,7 +26,7 @@
   <main>
     <h1>&lt;validated-form&gt;</h1>
     <div class="component-description">
-      <p>Web Component that enhances native HTML forms with automatic Constraint Validation, showing localized error messages and managing field validity state without custom schemas or frameworks.</p>
+      <p>A Web Component that brings automatic browser form validation to your markup, displaying accessible error messages with zero configuration or frameworks.</p>
       <p><a href="https://github.com/georapbox/validated-form" target="_blank" rel="noreferrer noopener">Source code & documentation</a></p>
     </div>
 
@@ -35,93 +35,115 @@
 
     <browser-window url="https://github.com/georapbox/validated-form" icon>
       <validated-form>
-        <form autocomplete="off">
-          <!-- Email -->
+        <form id="demo-form" autocomplete="off">
+          <h3>Form Controls Validation Demo</h3>
+          <p>This form demonstrates validation behavior across different HTML input types.</p>
+
+          <!-- Text / Email -->
           <div class="form-group">
-            <label for="email">Email</label>
-            <input class="form-control" type="email" id="email" name="email" required>
-            <div data-error-for="email"></div>
+            <label for="text-input">Text input (email type)</label>
+            <p class="help-text" id="text-input-hint">Requires a valid email format.</p>
+            <input class="form-control" type="email" id="text-input" name="text-input" required aria-describedby="text-input-hint">
+            <div data-error-for="text-input"></div>
           </div>
 
-          <!-- Password -->
+          <!-- Pattern -->
           <div class="form-group">
-            <label for="password">Password</label>
-            <p class="help-text" id="password-hint">Must be at least 8 characters and include a letter, a number, and a symbol.</p>
-            <input class="form-control" id="password" name="password" type="text" required minlength="8" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$" aria-describedby="password-hint">
-            <div data-error-for="password"></div>
+            <label for="pattern-input">Pattern-validated input</label>
+            <p class="help-text" id="pattern-input-hint">
+              Minimum 8 characters including letter, number, and symbol.
+            </p>
+            <input
+              class="form-control"
+              id="pattern-input"
+              name="pattern-input"
+              type="text"
+              minlength="8"
+              pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$"
+              required
+              aria-describedby="pattern-input-hint">
+            <div data-error-for="pattern-input"></div>
           </div>
 
-          <!-- Gender -->
-          <fieldset class="form-group" aria-describedby="gender-hint">
-            <legend>Gender</legend>
-            <p class="help-text" id="gender-hint">Select the option that best describes you.</p>
+          <!-- Radio -->
+          <fieldset class="form-group" aria-describedby="radio-hint">
+            <legend>Single choice group (radio buttons)</legend>
+            <p class="help-text" id="radio-hint">Exactly one option must be selected.</p>
+
             <label class="inline-option">
-              <input class="form-control" type="radio" name="gender" value="male" required> Male
+              <input type="radio" name="radio-group" value="option-a" required> Option A
             </label>
             <label class="inline-option">
-              <input class="form-control" type="radio" name="gender" value="female"> Female
+              <input type="radio" name="radio-group" value="option-b"> Option B
             </label>
             <label class="inline-option">
-              <input class="form-control" type="radio" name="gender" value="other"> Other
+              <input type="radio" name="radio-group" value="option-c"> Option C
             </label>
-            <div data-error-for="gender"></div>
+
+            <div data-error-for="radio-group"></div>
           </fieldset>
 
-          <!-- Pet -->
+          <!-- Select -->
           <div class="form-group">
-            <label for="pet">Favorite pet</label>
-            <p class="help-text" id="pet-hint">Choose one option from the list.</p>
-            <select id="pet" name="pet" required aria-describedby="pet-hint">
+            <label for="select-single">Single select</label>
+            <p class="help-text" id="select-single-hint">Choose one value.</p>
+            <select id="select-single" name="select-single" required aria-describedby="select-single-hint">
               <option value="">Select an option</option>
-              <option value="dog">Dog</option>
-              <option value="cat">Cat</option>
-              <option value="fish">Fish</option>
-              <option value="bird">Bird</option>
+              <option value="a">Option A</option>
+              <option value="b">Option B</option>
+              <option value="c">Option C</option>
             </select>
-            <div data-error-for="pet"></div>
+            <div data-error-for="select-single"></div>
           </div>
 
-          <!-- Interests -->
+          <!-- Multi Select -->
           <div class="form-group">
-            <label for="interests">Your interests</label>
-            <p class="help-text" id="interests-hint">Select at least one interest.</p>
-            <select id="interests" name="interests" multiple required aria-describedby="interests-hint">
-              <option value="technology">Technology</option>
-              <option value="sports">Sports</option>
-              <option value="music">Music</option>
-              <option value="travel">Travel</option>
+            <label for="select-multiple">Multiple select</label>
+            <p class="help-text" id="select-multiple-hint">Select at least one value.</p>
+            <select id="select-multiple" name="select-multiple" multiple required aria-describedby="select-multiple-hint">
+              <option value="a">Option A</option>
+              <option value="b">Option B</option>
+              <option value="c">Option C</option>
+              <option value="d">Option D</option>
             </select>
-            <div data-error-for="interests"></div>
+            <div data-error-for="select-multiple"></div>
           </div>
 
-          <!-- Document -->
+          <!-- File -->
           <div class="form-group">
-            <label for="document">Upload document</label>
-            <p class="help-text" id="document-hint">Accepted formats: PDF, JPG, PNG.</p>
-            <input type="file" id="document" name="document" required accept=".pdf,.jpg,.jpeg,.png" aria-describedby="document-hint">
-            <div data-error-for="document"></div>
+            <label for="file-input">File upload</label>
+            <p class="help-text" id="file-input-hint">Accepted formats: PDF, JPG, PNG.</p>
+            <input type="file" id="file-input" name="file-input" required accept=".pdf,.jpg,.jpeg,.png" aria-describedby="file-input-hint">
+            <div data-error-for="file-input"></div>
           </div>
 
-          <!-- Notes -->
+          <!-- Textarea -->
           <div class="form-group">
-            <label for="notes">Notes</label>
-            <p class="help-text" id="notes-hint">Add any notes (20–300 characters)</p>
-            <textarea id="notes" name="notes" rows="4" minlength="20" maxlength="300" aria-describedby="notes-hint"></textarea>
-            <div data-error-for="notes"></div>
+            <label for="textarea-input">Textarea</label>
+            <p class="help-text" id="textarea-hint">Not required, but must be between 20 and 300 characters if filled.</p>
+            <textarea id="textarea-input" name="textarea-input" rows="4" minlength="20" maxlength="300" aria-describedby="textarea-hint"></textarea>
+            <div data-error-for="textarea-input"></div>
           </div>
 
-          <!-- Terms -->
-          <div class="form-group">
-            <legend>Terms and Conditions</legend>
-            <p class="help-text" id="terms-hint">You must agree before continuing.</p>
+          <!-- Checkbox -->
+          <fieldset class="form-group" aria-describedby="checkbox-hint">
+            <legend>Required checkbox</legend>
+            <p class="help-text" id="checkbox-hint">Must be checked to proceed.</p>
             <label class="inline-option">
-              <input type="checkbox" name="terms" value="terms" required aria-describedby="terms-hint">
-              I agree to the Terms & Conditions
+              <input type="checkbox" name="checkbox-input" required>Confirmation checkbox
             </label>
-            <div data-error-for="terms"></div>
+            <div data-error-for="checkbox-input"></div>
+          </fieldset>
+
+          <!-- Disabled -->
+          <div class="form-group">
+            <label for="disabled-input">Disabled control</label>
+            <p class="help-text" id="disabled-input-hint">This field is disabled. Although it is required, it will not trigger validation errors since it's not interactive.</p>
+            <input id="disabled-input" name="disabled-input" type="text" disabled required aria-describedby="disabled-input-hint">
+            <div data-error-for="disabled-input"></div>
           </div>
 
-          <input type="hidden" name="form-id" value="demo-form">
+          <input type="hidden" name="hidden-input" value="hidden-value">
 
           <button type="submit">Submit</button>
         </form>
@@ -133,6 +155,12 @@
 
 <pre><code>&lt;validated-form&gt;&lt;/validated-form&gt;</code></pre>
     </details>
+
+    <dialog id="success-dialog" closedby="any">
+      <h3>Form submitted successfully!</h3>
+      <p>The form has passed validation and was submitted without errors. Open browser's console to see the submitted form data as a FormData object.</p>
+      <form method="dialog"><button type="submit">Close</button></form>
+    </dialog>
 
     <h2>License</h2>
     <p>Licensed under the <a href="https://github.com/georapbox/validated-form/blob/main/LICENSE" target="_blank" rel="noreferrer noopener">The MIT License (MIT)</a></p>

@@ -7,18 +7,18 @@ const componentUrl = isLocalhost ? '../../dist/validated-form.js' : '../lib/vali
 const { ValidatedForm } = await import(componentUrl);
 ValidatedForm.defineCustomElement();
 
-const form = document.querySelector('form');
+const demoForm = document.getElementById('demo-form');
+const successDialog = document.getElementById('success-dialog');
 
-form.addEventListener('submit', evt => {
+demoForm.addEventListener('submit', evt => {
   evt.preventDefault();
 
-  if (!form.checkValidity()) {
+  if (!demoForm.checkValidity()) {
     return;
   }
 
-  const formData = new FormData(form);
+  const formData = new FormData(demoForm);
   const data = Object.fromEntries(formData.entries());
   console.log('Form data:', data);
-
-  alert('Form submitted successfully!');
+  successDialog.showModal();
 });

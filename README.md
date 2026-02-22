@@ -7,9 +7,36 @@
 
 # &lt;validated-form&gt;
 
-Web Component that enhances native HTML forms with automatic Constraint Validation, showing localized error messages and managing field validity state without custom schemas or frameworks.
+A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors.
+It does not implement validation rules or schemas — it reads the browser's validation state through the [Constraint Validation API](https://developer.mozilla.org/docs/Web/API/Constraint_validation) and displays the existing `validationMessage` without modifying it.
+
+This component follows a progressive-enhancement approach: the browser remains responsible for validation, while JavaScript improves how errors are presented and announced. If JavaScript fails to load, the form still works using native browser validation UI.
+
+> This is not a validation library. It never defines rules or overrides messages (no `setCustomValidity()` is used).
 
 [API documentation](#api) &bull; [Demo][demo]
+
+## Why?
+
+Modern browsers already provide native form validation using attributes like `required`, `pattern`, `minlength`, `maxlength`, `type="email"`, and others.
+
+In many cases, that is enough.
+
+However, native validation UI has practical limitations:
+
+- Error messages appear in browser popups that cannot be styled
+- Messages are not reliably associated with fields for assistive technologies
+- Error bubbles may disappear before users can read them
+- Accessibility behavior differs across browsers
+
+This component builds on native validation rather than replacing it.
+
+Using the **Constraint Validation API**, it:
+
+- Reads the browser's validation state
+- Reuses localized validation messages
+- Renders persistent inline errors
+- Associates errors with fields using proper ARIA attributes
 
 ## Install
 

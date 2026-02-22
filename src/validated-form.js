@@ -14,7 +14,7 @@
 const COMPONENT_NAME = 'validated-form';
 
 /**
- * @summary validated-form description goes here
+ * @summary Web Component that adds automatic native form validation and error messages.
  * @documentation https://github.com/georapbox/validated-form
  *
  * @tagname validated-form - This is the default tag name, unless overridden by the `defineCustomElement` method.
@@ -60,7 +60,7 @@ class ValidatedForm extends HTMLElement {
    * @param {string} oldValue - The old value of the attribute.
    * @param {string} newValue - The new value of the attribute.
    */
-  attributeChangedCallback(name, oldValue, newValue) {} // eslint-disable-line no-unused-vars
+  attributeChangedCallback(name, oldValue, newValue) {}
 
   /**
    * Lifecycle method that is called when the element is added to the DOM.
