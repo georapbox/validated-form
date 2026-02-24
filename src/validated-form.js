@@ -21,8 +21,10 @@ const COMPONENT_NAME = 'validated-form';
  * @extends HTMLElement
  *
  * @property {boolean} noFocus - Indicates whether the component should focus the first invalid control when validation fails.
+ * @property {string} report - Determines which validation messages to show when the form is validated. The value can be 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message.
  *
  * @attribute {boolean} no-focus - Indicates whether the component should focus the first invalid control when validation fails.
+ * @attribute {string} report - Determines which validation messages to show when the form is validated. The value can be 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message.
  *
  * @method defineCustomElement - Static method. Defines a custom element with the given name.
  * @method validate - Instance method. Validates the form and shows error messages for any invalid controls.
@@ -59,10 +61,32 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
+   * Determines which validation messages to show when the form is validated.
+   * The value can be 'all' to show messages for all invalid controls,
+   * or 'first' to show only the first invalid control's message.
+   *
+   * @type {'all' | 'first'}
+   * @attribute report
+   * @default 'all'
+   */
+  get report() {
+    const value = this.getAttribute('report');
+    if (value !== 'all' && value !== 'first') {
+      return 'all';
+    }
+    return value;
+  }
+
+  set report(value) {
+    this.setAttribute('report', value);
+  }
+
+  /**
    * Lifecycle method that is called when the element is added to the DOM.
    */
   connectedCallback() {
     this.#upgradeProperty('noFocus');
+    this.#upgradeProperty('report');
 
     this.#form = this.querySelector('form');
 
@@ -99,7 +123,7 @@ class ValidatedForm extends HTMLElement {
    */
   validate() {
     this.#submittedOnce = true;
-    return this.#validateAndShowAll();
+    return this.#validateAndShowErrors();
   }
 
   /**
@@ -248,21 +272,40 @@ class ValidatedForm extends HTMLElement {
    *
    * @returns {boolean} - Returns true if all controls are valid, false otherwise.
    */
-  #validateAndShowAll() {
+  #validateAndShowErrors() {
+    const controls = this.#validatableControls();
+    const reportFirst = this.report === 'first';
+
+    if (reportFirst) {
+      this.#clearAllErrors();
+    }
+
+    /** @type {FormControl | null} */
     let firstInvalid = null;
 
-    for (const el of this.#validatableControls()) {
+    for (const el of controls) {
       const ok = el.validity.valid;
-      this.#setError(el, ok ? '' : el.validationMessage);
+
       if (!ok && !firstInvalid) {
         firstInvalid = el;
+        this.#setError(el, el.validationMessage);
+
+        if (reportFirst) {
+          break;
+        }
+      }
+
+      if (!reportFirst) {
+        this.#setError(el, ok ? '' : el.validationMessage);
       }
     }
 
     const valid = !firstInvalid;
+
     if (!valid && firstInvalid && !this.noFocus) {
       firstInvalid.focus();
     }
+
     return valid;
   }
 
@@ -274,7 +317,7 @@ class ValidatedForm extends HTMLElement {
   #handleSubmit = evt => {
     this.#submittedOnce = true;
 
-    const ok = this.#validateAndShowAll();
+    const ok = this.#validateAndShowErrors();
     if (!ok) {
       evt.preventDefault();
     } else {
@@ -330,7 +373,7 @@ class ValidatedForm extends HTMLElement {
    *
    * https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
    *
-   * @param {'noFocus'} prop - The property name to upgrade.
+   * @param {'noFocus' | 'report'} prop - The property name to upgrade.
    */
   #upgradeProperty(prop) {
     /** @type {any} */

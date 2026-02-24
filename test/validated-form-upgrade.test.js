@@ -7,6 +7,7 @@ describe('validated-form upgrading', () => {
 
     // Update properties before upgrading
     el.noFocus = true;
+    el.report = 'first';
 
     // Upgrade custom element
     ValidatedForm.defineCustomElement();
@@ -14,6 +15,7 @@ describe('validated-form upgrading', () => {
     await elementUpdated(el);
 
     expect(el.getAttribute('no-focus')).to.equal('');
+    expect(el.getAttribute('report')).to.equal('first');
   });
 
   afterEach(() => {

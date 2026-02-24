@@ -119,7 +119,8 @@ Radio buttons with the same `name` represent a single logical field and must sha
 ### Properties
 | Name | Reflects | Type | Required | Default | Description |
 | ---- | -------- | ---- | -------- | ------- | ----------- |
-| `noFocus` | ✓ | Boolean | - | `false` | Indicates whether the component should avoid focusing the first invalid control when validation fails. When `false` (default), the component will focus the first invalid control to guide users directly to the issue, otherwise it will only show error messages without changing focus. |
+| `noFocus`<br>*`no-focus`* | ✓ | `boolean` | - | `false` | Indicates whether the component should avoid focusing the first invalid control when validation fails. When `false` (default), the component will focus the first invalid control to guide users directly to the issue, otherwise it will only show error messages without changing focus. |
+| `report` | ✓ | `'all' \| 'first'` | - | `'all'` | Determines which validation messages to show when the form is validated. The value can be 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message. |
 
 ### Methods
 
