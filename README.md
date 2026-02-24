@@ -66,7 +66,7 @@ import './node_modules/@georapbox/validated-form/dist/validated-form.js';
 
 For the component to function correctly, the markup must follow a few conventions.
 
-#### 1. The element must wrap a <form>
+#### 1. The element must wrap a `<form>`
 
 `<validated-form>` enhances an existing form — it does not create one.
 
@@ -78,7 +78,7 @@ For the component to function correctly, the markup must follow a few convention
 </validated-form>
 ```
 
-#### 2. Each validated control must have a `name`
+#### 2. Each validated control must have a `name` attribute
 
 The component identifies fields using their `name` attribute (the same identifier used during form submission).
 
