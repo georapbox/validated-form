@@ -191,14 +191,11 @@ class ValidatedForm extends HTMLElement {
    * @returns {string} - Returns the generated error ID.
    */
   #errorIdFor(el) {
-    const base = el.id || el.name;
-    return `vf-error-${base}`;
+    return `vf-error-${el.name}`;
   }
 
   /**
    * Retrieves the error node associated with a given form control element.
-   * If the error node does not exist, it creates one and associates it
-   * with the form control element.
    *
    * @param {FormControl} el - The form control element for which to retrieve the error node.
    * @returns {Nullable<HTMLElement>} - Returns the error node associated with the form control element, or null if not found.
@@ -232,6 +229,7 @@ class ValidatedForm extends HTMLElement {
       node.setAttribute('aria-live', 'polite');
     }
 
+    // TODO: check if needed
     node.setAttribute('hidden', '');
 
     return node;
