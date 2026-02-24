@@ -185,16 +185,6 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Generates a unique error ID for a given form control element.
-   *
-   * @param {FormControl} el - The form control element for which to generate an error ID.
-   * @returns {string} - Returns the generated error ID.
-   */
-  #errorIdFor(el) {
-    return `vf-error-${el.name}`;
-  }
-
-  /**
    * Retrieves the error node associated with a given form control element.
    *
    * @param {FormControl} el - The form control element for which to retrieve the error node.
@@ -210,7 +200,7 @@ class ValidatedForm extends HTMLElement {
       return null;
     }
 
-    const errorId = node.id || this.#errorIdFor(el);
+    const errorId = node.id || `vf-error-${el.name}`;
 
     if (!node.id) {
       node.id = errorId;
