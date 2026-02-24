@@ -62,49 +62,75 @@ Alternatively, you can import the automatically defined custom element.
 import './node_modules/@georapbox/validated-form/dist/validated-form.js';
 ```
 
-### Markup
+### Requirements
+
+For the component to function correctly, the markup must follow a few conventions.
+
+#### 1. The element must wrap a <form>
+
+`<validated-form>` enhances an existing form — it does not create one.
 
 ```html
-<validated-form></validated-form>
+<validated-form>
+  <form>
+    ...
+  </form>
+</validated-form>
 ```
 
-### Style
+#### 2. Each validated control must have a `name`
 
-By default, the component comes with basic styling. However, you can customise the styles of the various elements of the component using either [CSS Parts](#css-parts) or [CSS Custom Properties](#css-custom-properties).
+The component identifies fields using their `name` attribute (the same identifier used during form submission).
+
+```html
+<input type="email" name="email" required>
+```
+
+Controls without a `name` cannot be associated with an error message.
+
+#### 3. Each control needs an associated error element
+
+Every field you want to validate must have an element with a `data-error-for` attribute whose value matches the control's `name` attribute.
+
+```html
+<input type="email" name="email" required>
+<div data-error-for="email"></div>
+```
+
+#### 4. Radio groups share one error element
+
+Radio buttons with the same `name` represent a single logical field and must share one error container.
+
+```html
+<label><input type="radio" name="gender" value="m" required> Male</label>
+<label><input type="radio" name="gender" value="f"> Female</label>
+<div data-error-for="gender"></div>
+```
+
+#### Notes
+
+- The error element can be any element (`div`, `span`, `p`, etc.)
+- The component will automatically set the necessary ARIA attributes
+- If JavaScript is unavailable, native browser validation still works
+- The component does not apply any styles — you can style the error elements as needed
 
 ## API
 
 ### Properties
 | Name | Reflects | Type | Required | Default | Description |
 | ---- | -------- | ---- | -------- | ------- | ----------- |
-
-### Slots
-
-| Name | Description |
-| ---- | ----------- |
-
-### CSS Parts
-
-| Name | Description |
-| ---- | ----------- |
-
-### CSS Custom Properties
-
-| Name | Description | Default |
-| ---- | ----------- | ------- |
+| `noFocus` | ✓ | Boolean | - | `false` | Indicates whether the component should avoid focusing the first invalid control when validation fails. When `false` (default), the component will focus the first invalid control to guide users directly to the issue, otherwise it will only show error messages without changing focus. |
 
 ### Methods
 
 | Name | Type | Description | Arguments |
 | ---- | ---- | ----------- | --------- |
 | `defineCustomElement` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | elementName='validated-form' |
+| `validate` | Instance | Validates and returns the validity of the form, showing error messages for any invalid controls. | - |
+| `resetValidation` | Instance | Resets the validation state of the form, clearing all error messages and validation states. This does not reset the form fields themselves, but only the validation feedback. | - |
+| `isValid` | Instance | A read-only property that returns a boolean indicating whether the form is currently valid according to the browser's validation rules. It reflects the validity state of the form, allowing you to check if all fields are valid without triggering validation messages. | - |
 
 <sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use `whenDefined` method of the `CustomElementRegistry` interface, eg `customElements.whenDefined('validated-form').then(() => { /* call methods here */ });`
-
-### Events
-
-| Name | Description | Event Detail |
-| ---- | ----------- | ------------ |
 
 ## Changelog
 

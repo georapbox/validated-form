@@ -20,21 +20,14 @@ const COMPONENT_NAME = 'validated-form';
  * @tagname validated-form - This is the default tag name, unless overridden by the `defineCustomElement` method.
  * @extends HTMLElement
  *
- * @property {string} someProperty - Description for someProperty goes here.
+ * @property {boolean} noFocus - Indicates whether the component should focus the first invalid control when validation fails.
  *
- * @attribute {string} some-attribute - Description for some-attribute goes here.
- *
- * @slot - Default slot description goes here.
- * @slot named-slot - Named slot description goes here.
- *
- * @csspart part-name - Description for part-name goes here.
- *
- * @cssproperty --css-variable-name - Description for --css-variable-name goes here.
+ * @attribute {boolean} no-focus - Indicates whether the component should focus the first invalid control when validation fails.
  *
  * @method defineCustomElement - Static method. Defines a custom element with the given name.
- * @method someMethod - Instance method. Description for someMethod goes here.
- *
- * @event some-event - Description for some-event goes here.
+ * @method validate - Instance method. Validates the form and shows error messages for any invalid controls.
+ * @method resetValidation - Instance method. Resets the validation state of the form, clearing all error messages and validation states.
+ * @method isValid - Instance method. Checks whether all form controls are currently valid according to the Constraint Validation API.
  */
 class ValidatedForm extends HTMLElement {
   static formAssociated = false;
@@ -49,48 +42,86 @@ class ValidatedForm extends HTMLElement {
     super();
   }
 
-  static get observedAttributes() {
-    return [''];
+  /**
+   * Indicates whether the component should focus the first
+   * invalid control when validation fails.
+   *
+   * @type {boolean}
+   * @attribute no-focus
+   * @default false
+   */
+  get noFocus() {
+    return this.hasAttribute('no-focus');
   }
 
-  /**
-   * Lifecycle method that is called when attributes are changed, added, removed, or replaced.
-   *
-   * @param {string} name - The name of the attribute.
-   * @param {string} oldValue - The old value of the attribute.
-   * @param {string} newValue - The new value of the attribute.
-   */
-  attributeChangedCallback(name, oldValue, newValue) {}
+  set noFocus(value) {
+    this.toggleAttribute('no-focus', !!value);
+  }
 
   /**
    * Lifecycle method that is called when the element is added to the DOM.
    */
   connectedCallback() {
+    this.#upgradeProperty('noFocus');
+
     this.#form = this.querySelector('form');
 
     if (!this.#form) {
-      console.warn('<validated-form> requires a <form> as a child.');
       return;
     }
 
     this.#form.noValidate = true;
 
-    this.#ensureAllErrorNodes();
-
     this.#form.addEventListener('submit', this.#handleSubmit);
     this.#form.addEventListener('invalid', this.#handleInvalidCapture, true);
-    this.#form.addEventListener('input', this.#handleInputOrChange, true);
-    this.#form.addEventListener('change', this.#handleInputOrChange, true);
+    this.#form.addEventListener('input', this.#handleInputOrChange);
+    this.#form.addEventListener('change', this.#handleInputOrChange);
   }
 
   /**
    * Lifecycle method that is called when the element is removed from the DOM.
    */
   disconnectedCallback() {
-    this.#form?.removeEventListener('submit', this.#handleSubmit);
-    this.#form?.removeEventListener('invalid', this.#handleInvalidCapture, true);
-    this.#form?.removeEventListener('input', this.#handleInputOrChange, true);
-    this.#form?.removeEventListener('change', this.#handleInputOrChange, true);
+    if (!this.#form) {
+      return;
+    }
+
+    this.#form.removeEventListener('submit', this.#handleSubmit);
+    this.#form.removeEventListener('invalid', this.#handleInvalidCapture, true);
+    this.#form.removeEventListener('input', this.#handleInputOrChange);
+    this.#form.removeEventListener('change', this.#handleInputOrChange);
+  }
+
+  /**
+   * Validates the form and shows error messages for any invalid controls.
+   *
+   * @returns {boolean} - Returns true if the form is valid, false otherwise.
+   */
+  validate() {
+    this.#submittedOnce = true;
+    return this.#validateAndShowAll();
+  }
+
+  /**
+   * Resets the validation state of the form, clearing all error
+   * messages and validation states. This does not reset the form
+   * fields themselves, but only the validation feedback.
+   */
+  resetValidation() {
+    this.#submittedOnce = false;
+    this.#clearAllErrors();
+  }
+
+  /**
+   * Checks whether all form controls are currently valid according to the
+   * Constraint Validation API. It reflects the validity state of the form,
+   * allowing you to check if all fields are valid without triggering
+   * validation messages.
+   *
+   * @returns {boolean} - Returns true if all controls are valid, false otherwise.
+   */
+  isValid() {
+    return this.#validatableControls().every(el => el.validity.valid);
   }
 
   /**
@@ -105,42 +136,11 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Type guard that checks whether a value is an <input type="radio"> element.
-   *
-   * @param {unknown} node
-   * @returns {node is HTMLInputElement}
-   */
-  #isRadioInput(node) {
-    return node instanceof HTMLInputElement && node.type === 'radio';
-  }
-
-  /**
-   * Retrieves all radio buttons that belong to the same group as the given radio button element.
-   *
-   * @param {HTMLInputElement} el - The radio button element for which to retrieve the group.
-   * @returns {HTMLInputElement[]} - An array of radio button elements that belong to the same group as the given element.
-   */
-  #radioGroup(el) {
-    if (el.type !== 'radio' || !el.name) {
-      return [];
-    }
-
-    const group = this.#form?.elements.namedItem(el.name);
-
-    if (!group) {
-      return [];
-    }
-
-    const items = group instanceof RadioNodeList ? Array.from(group) : [group];
-    return items.filter(n => this.#isRadioInput(n));
-  }
-
-  /**
    * Retrieves all constraint-validation capable controls inside the form,
    * filtering out disabled controls, hidden inputs, and controls that
    * don't participate in validation.
    *
-   * @returns {FormControl[]} An array of form control elements that are subject to validation.
+   * @returns {FormControl[]} - Returns an array of form control elements that are subject to validation.
    */
   #validatableControls() {
     if (!this.#form) {
@@ -164,7 +164,7 @@ class ValidatedForm extends HTMLElement {
    * Generates a unique error ID for a given form control element.
    *
    * @param {FormControl} el - The form control element for which to generate an error ID.
-   * @returns {string} - The generated error ID.
+   * @returns {string} - Returns the generated error ID.
    */
   #errorIdFor(el) {
     const base = el.id || el.name;
@@ -177,7 +177,7 @@ class ValidatedForm extends HTMLElement {
    * with the form control element.
    *
    * @param {FormControl} el - The form control element for which to retrieve the error node.
-   * @returns {Nullable<HTMLElement>} - The error node associated with the form control element, or null if not found.
+   * @returns {Nullable<HTMLElement>} - Returns the error node associated with the form control element, or null if not found.
    */
   #getErrorNode(el) {
     if (!this.#form || !el.name) {
@@ -201,36 +201,21 @@ class ValidatedForm extends HTMLElement {
       el.setAttribute('aria-describedby', describedBy.join(' '));
     }
 
-    node.classList.add('field-error');
-    // TODO: Decide if these attributes should be set by default
-    // or left to the user to add in their markup/CSS.
-    node.setAttribute('aria-live', 'polite');
-    node.setAttribute('role', 'status');
+    if (!node.hasAttribute('role')) {
+      node.setAttribute('role', 'status');
+    }
+    if (!node.hasAttribute('aria-live')) {
+      node.setAttribute('aria-live', 'polite');
+    }
+
     node.setAttribute('hidden', '');
 
     return node;
   }
 
   /**
-   * Ensures that every form control element has an associated error node for displaying validation messages.
-   * If an error node is missing for any control, it logs a warning to the console with instructions on how to add one.
-   */
-  #ensureAllErrorNodes() {
-    for (const el of this.#validatableControls()) {
-      const node = this.#getErrorNode(el);
-
-      if (!node) {
-        const key = el.id || el.name;
-        console.warn(
-          `<validated-form> couldn't find an error node for control with name/id "${key}". ` +
-            `Please add an element with data-error-for="${key}" to show validation messages for this control.`
-        );
-      }
-    }
-  }
-
-  /**
-   * Sets the error message for a given form control element and updates its validation state.
+   * Sets the error message for a given form control element
+   * and updates its validation state.
    *
    * @param {FormControl} el - The form control element for which to set the error message.
    * @param {string} message - The error message to display. If empty, the error state will be cleared.
@@ -257,8 +242,9 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Validates all form controls and updates their error messages and validation states accordingly.
-   * If any control is invalid, it focuses the first invalid control.
+   * Validates all form controls and updates their error messages
+   * and validation states accordingly. If any control is invalid,
+   * it focuses the first invalid control.
    *
    * @returns {boolean} - Returns true if all controls are valid, false otherwise.
    */
@@ -266,20 +252,18 @@ class ValidatedForm extends HTMLElement {
     let firstInvalid = null;
 
     for (const el of this.#validatableControls()) {
-      const ok = el.checkValidity();
-
+      const ok = el.validity.valid;
+      this.#setError(el, ok ? '' : el.validationMessage);
       if (!ok && !firstInvalid) {
         firstInvalid = el;
       }
-
-      this.#setError(el, ok ? '' : el.validationMessage);
     }
 
-    if (firstInvalid) {
+    const valid = !firstInvalid;
+    if (!valid && firstInvalid && !this.noFocus) {
       firstInvalid.focus();
     }
-
-    return !firstInvalid;
+    return valid;
   }
 
   /**
@@ -290,36 +274,30 @@ class ValidatedForm extends HTMLElement {
   #handleSubmit = evt => {
     this.#submittedOnce = true;
 
-    const ok = this.#form?.checkValidity();
-
+    const ok = this.#validateAndShowAll();
     if (!ok) {
       evt.preventDefault();
-      this.#validateAndShowAll();
     } else {
       this.#clearAllErrors();
     }
   };
 
   /**
-   * Handles the invalid event during the capture phase to show validation messages for invalid controls.
-   * This is necessary to catch invalid events from controls that may not be
-   * validated during form submission (e.g. due to novalidate or other factors).
+   * Handles the invalid event during the capture phase to show validation
+   * messages for invalid controls. This is necessary to catch invalid
+   * events from controls that may not be validated during form
+   * submission (e.g. due to novalidate or other factors).
    *
    * @param {Event} evt - The invalid event object.
    */
   #handleInvalidCapture = evt => {
-    if (!this.#submittedOnce) {
-      return;
-    }
-
     const el = evt.target;
-
     if (!this.#isFormControl(el) || !el.willValidate) {
       return;
     }
 
+    this.#submittedOnce = true;
     evt.preventDefault();
-
     this.#setError(el, el.validationMessage);
   };
 
@@ -335,49 +313,24 @@ class ValidatedForm extends HTMLElement {
     }
 
     const el = evt.target;
-
     if (!this.#isFormControl(el) || !el.willValidate) {
       return;
     }
 
-    if (this.#isRadioInput(el)) {
-      const group = this.#radioGroup(el);
-
-      if (!group.length) {
-        return;
-      }
-
-      const anchor = group[0];
-
-      if (!this.#isFormControl(anchor)) {
-        return;
-      }
-
-      const ok = anchor.validity.valid;
-
-      this.#setError(anchor, ok ? '' : anchor.validationMessage);
-
-      anchor.toggleAttribute('data-invalid', !ok);
-
-      for (let i = 1; i < group.length; i++) {
-        group[i].removeAttribute('data-invalid');
-      }
-
-      return;
-    }
-
-    const ok = el.checkValidity();
+    const ok = el.validity.valid;
     this.#setError(el, ok ? '' : el.validationMessage);
   };
 
   /**
-   * This is to safe guard against cases where, for instance, a framework may have added the element to the page and set a
-   * value on one of its properties, but lazy loaded its definition. Without this guard, the upgraded element would miss that
-   * property and the instance property would prevent the class property setter from ever being called.
+   * This is to safe guard against cases where, for instance, a framework may
+   * have added the element to the page and set a value on one of its properties,
+   * but lazy loaded its definition. Without this guard, the upgraded element
+   * would miss that property and the instance property would prevent the class
+   * property setter from ever being called.
    *
    * https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
    *
-   * @param {string} prop - The property name to upgrade.
+   * @param {'noFocus'} prop - The property name to upgrade.
    */
   #upgradeProperty(prop) {
     /** @type {any} */
