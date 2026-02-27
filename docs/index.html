@@ -36,40 +36,26 @@
     <browser-window url="https://github.com/georapbox/validated-form" icon>
       <validated-form>
         <form id="demo-form" autocomplete="off">
-          <h3>Form Controls Validation Demo</h3>
-          <p>This form demonstrates validation behavior across different HTML input types.</p>
-
           <!-- Text / Email -->
           <div class="form-group">
             <label for="text-input">Text input (email type)</label>
             <p class="help-text" id="text-input-hint">Requires a valid email format.</p>
             <input class="form-control" type="email" id="text-input" name="text-input" required aria-describedby="text-input-hint">
-            <div data-error-for="text-input"></div>
+            <div data-error-for="text-input" hidden></div>
           </div>
 
           <!-- Pattern -->
           <div class="form-group">
             <label for="pattern-input">Pattern-validated input</label>
-            <p class="help-text" id="pattern-input-hint">
-              Minimum 8 characters including letter, number, and symbol.
-            </p>
-            <input
-              class="form-control"
-              id="pattern-input"
-              name="pattern-input"
-              type="text"
-              minlength="8"
-              pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$"
-              required
-              aria-describedby="pattern-input-hint">
-            <div data-error-for="pattern-input"></div>
+            <p class="help-text" id="pattern-input-hint">Minimum 8 characters including letter, number, and symbol.</p>
+            <input class="form-control" type="text" id="pattern-input" name="pattern-input" minlength="8" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$" required aria-describedby="pattern-input-hint">
+            <div data-error-for="pattern-input" hidden></div>
           </div>
 
           <!-- Radio -->
           <fieldset class="form-group" aria-describedby="radio-hint">
             <legend>Single choice group (radio buttons)</legend>
             <p class="help-text" id="radio-hint">Exactly one option must be selected.</p>
-
             <label class="inline-option">
               <input type="radio" name="radio-group" value="option-a" required> Option A
             </label>
@@ -79,8 +65,7 @@
             <label class="inline-option">
               <input type="radio" name="radio-group" value="option-c"> Option C
             </label>
-
-            <div data-error-for="radio-group"></div>
+            <div data-error-for="radio-group" hidden></div>
           </fieldset>
 
           <!-- Select -->
@@ -93,7 +78,7 @@
               <option value="b">Option B</option>
               <option value="c">Option C</option>
             </select>
-            <div data-error-for="select-single"></div>
+            <div data-error-for="select-single" hidden></div>
           </div>
 
           <!-- Multi Select -->
@@ -106,7 +91,7 @@
               <option value="c">Option C</option>
               <option value="d">Option D</option>
             </select>
-            <div data-error-for="select-multiple"></div>
+            <div data-error-for="select-multiple" hidden></div>
           </div>
 
           <!-- File -->
@@ -114,7 +99,7 @@
             <label for="file-input">File upload</label>
             <p class="help-text" id="file-input-hint">Accepted formats: PDF, JPG, PNG.</p>
             <input type="file" id="file-input" name="file-input" required accept=".pdf,.jpg,.jpeg,.png" aria-describedby="file-input-hint">
-            <div data-error-for="file-input"></div>
+            <div data-error-for="file-input" hidden></div>
           </div>
 
           <!-- Textarea -->
@@ -122,7 +107,15 @@
             <label for="textarea-input">Textarea</label>
             <p class="help-text" id="textarea-hint">Not required, but must be between 20 and 300 characters if filled.</p>
             <textarea id="textarea-input" name="textarea-input" rows="4" minlength="20" maxlength="300" aria-describedby="textarea-hint"></textarea>
-            <div data-error-for="textarea-input"></div>
+            <div data-error-for="textarea-input" hidden></div>
+          </div>
+
+          <!-- Number -->
+          <div class="form-group">
+            <label for="number-input">Number input</label>
+            <p class="help-text" id="number-input-hint">Enter a number between 5 and 10.</p>
+            <input class="form-control" type="number" id="number-input" name="number-input" required min="5" max="10" aria-describedby="number-input-hint">
+            <div data-error-for="number-input" hidden></div>
           </div>
 
           <!-- Checkbox -->
@@ -132,7 +125,7 @@
             <label class="inline-option">
               <input type="checkbox" name="checkbox-input" required>Confirmation checkbox
             </label>
-            <div data-error-for="checkbox-input"></div>
+            <div data-error-for="checkbox-input" hidden></div>
           </fieldset>
 
           <!-- Disabled -->
@@ -140,7 +133,15 @@
             <label for="disabled-input">Disabled control</label>
             <p class="help-text" id="disabled-input-hint">This field is disabled. Although it is required, it will not trigger validation errors since it's not interactive.</p>
             <input id="disabled-input" name="disabled-input" type="text" disabled required aria-describedby="disabled-input-hint">
-            <div data-error-for="disabled-input"></div>
+            <div data-error-for="disabled-input" hidden></div>
+          </div>
+
+          <!-- Readonly -->
+          <div class="form-group">
+            <label for="readonly-input">Readonly control</label>
+            <p class="help-text" id="readonly-input-hint">This field is readonly. Although it is required, it will not trigger validation errors since it's not editable.</p>
+            <input id="readonly-input" name="readonly-input" type="text" readonly required aria-describedby="readonly-input-hint">
+            <div data-error-for="readonly-input" hidden></div>
           </div>
 
           <input type="hidden" name="hidden-input" value="hidden-value">
@@ -153,7 +154,146 @@
     <details>
       <summary>Source code</summary>
 
-<pre><code>&lt;validated-form&gt;&lt;/validated-form&gt;</code></pre>
+      <h3>HTML</h3>
+
+<pre><code>&lt;validated-form&gt;
+  &lt;form id="demo-form" autocomplete="off"&gt;
+    &lt;!-- Text / Email --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="text-input"&gt;Text input (email type)&lt;/label&gt;
+      &lt;p class="help-text" id="text-input-hint"&gt;Requires a valid email format.&lt;/p&gt;
+      &lt;input class="form-control" type="email" id="text-input" name="text-input" required aria-describedby="text-input-hint"&gt;
+      &lt;div data-error-for="text-input" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Pattern --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="pattern-input"&gt;Pattern-validated input&lt;/label&gt;
+      &lt;p class="help-text" id="pattern-input-hint"&gt;Minimum 8 characters including letter, number, and symbol.&lt;/p&gt;
+      &lt;input class="form-control" type="text" id="pattern-input" name="pattern-input" minlength="8" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$" required aria-describedby="pattern-input-hint"&gt;
+      &lt;div data-error-for="pattern-input" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Radio --&gt;
+    &lt;fieldset class="form-group" aria-describedby="radio-hint"&gt;
+      &lt;legend&gt;Single choice group (radio buttons)&lt;/legend&gt;
+      &lt;p class="help-text" id="radio-hint"&gt;Exactly one option must be selected.&lt;/p&gt;
+      &lt;label class="inline-option"&gt;
+        &lt;input type="radio" name="radio-group" value="option-a" required&gt; Option A
+      &lt;/label&gt;
+      &lt;label class="inline-option"&gt;
+        &lt;input type="radio" name="radio-group" value="option-b" required&gt; Option B
+      &lt;/label&gt;
+      &lt;label class="inline-option"&gt;
+        &lt;input type="radio" name="radio-group" value="option-c" required&gt; Option C
+      &lt;/label&gt;
+      &lt;div data-error-for="radio-group" hidden&gt;&lt;/div&gt;
+    &lt;/fieldset&gt;
+
+    &lt;!-- Select --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="select-single"&gt;Single select&lt;/label&gt;
+      &lt;p class="help-text" id="select-single-hint"&gt;Choose one value.&lt;/p&gt;
+      &lt;select id="select-single" name="select-single" required aria-describedby="select-single-hint"&gt;
+        &lt;option value=""&gt;Select an option&lt;/option&gt;
+        &lt;option value="a"&gt;Option A&lt;/option&gt;
+        &lt;option value="b"&gt;Option B&lt;/option&gt;
+        &lt;option value="c"&gt;Option C&lt;/option&gt;
+      &lt;/select&gt;
+      &lt;div data-error-for="select-single" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Multi Select --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="select-multiple"&gt;Multiple select&lt;/label&gt;
+      &lt;p class="help-text" id="select-multiple-hint"&gt;Select at least one value.&lt;/p&gt;
+      &lt;select id="select-multiple" name="select-multiple" multiple required aria-describedby="select-multiple-hint"&gt;
+        &lt;option value="a"&gt;Option A&lt;/option&gt;
+        &lt;option value="b"&gt;Option B&lt;/option&gt;
+        &lt;option value="c"&gt;Option C&lt;/option&gt;
+        &lt;option value="d"&gt;Option D&lt;/option&gt;
+      &lt;/select&gt;
+      &lt;div data-error-for="select-multiple" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- File --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="file-input"&gt;File upload&lt;/label&gt;
+      &lt;p class="help-text" id="file-input-hint"&gt;Accepted formats: PDF, JPG, PNG.&lt;/p&gt;
+      &lt;input type="file" id="file-input" name="file-input" required accept=".pdf,.jpg,.jpeg,.png" aria-describedby="file-input-hint"&gt;
+      &lt;div data-error-for="file-input" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Textarea --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="textarea-input"&gt;Textarea&lt;/label&gt;
+      &lt;p class="help-text" id="textarea-hint"&gt;Not required, but must be between 20 and 300 characters if filled.&lt;/p&gt;
+      &lt;textarea id="textarea-input" name="textarea-input" rows="4" minlength="20" maxlength="300" aria-describedby="textarea-hint"&gt;&lt;/textarea&gt;
+      &lt;div data-error-for="textarea-input" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Number --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="number-input"&gt;Number input&lt;/label&gt;
+      &lt;p class="help-text" id="number-input-hint"&gt;Enter a number between 5 and 10.&lt;/p&gt;
+      &lt;input class="form-control" type="number" id="number-input" name="number-input" required min="5" max="10" aria-describedby="number-input-hint"&gt;
+      &lt;div data-error-for="number-input" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Checkbox --&gt;
+    &lt;fieldset class="form-group" aria-describedby="checkbox-hint"&gt;
+      &lt;legend&gt;Required checkbox&lt;/legend&gt;
+      &lt;p class="help-text" id="checkbox-hint"&gt;Must be checked to proceed.&lt;/p&gt;
+      &lt;label class="inline-option"&gt;
+        &lt;input type="checkbox" name="checkbox-input" required&gt;Confirmation checkbox
+      &lt;/label&gt;
+      &lt;div data-error-for="checkbox-input" hidden&gt;&lt;/div&gt;
+    &lt;/fieldset&gt;
+
+    &lt;!-- Disabled --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="disabled-input"&gt;Disabled control&lt;/label&gt;
+      &lt;p class="help-text" id="disabled-input-hint"&gt;This field is disabled. Although it is required, it will not trigger validation errors since it's not interactive.&lt;/p&gt;
+      &lt;input id="disabled-input" name="disabled-input" type="text" disabled required aria-describedby="disabled-input-hint"&gt;
+      &lt;div data-error-for="disabled-input" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Readonly --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="readonly-input"&gt;Readonly control&lt;/label&gt;
+      &lt;p class="help-text" id="readonly-input-hint"&gt;This field is readonly. Although it is required, it will not trigger validation errors since it's not editable.&lt;/p&gt;
+      &lt;input id="readonly-input" name="readonly-input" type="text" readonly required aria-describedby="readonly-input-hint"&gt;
+      &lt;div data-error-for="readonly-input" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;input type="hidden" name="hidden-input" value="hidden-value"&gt;
+
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/validated-form&gt;</code></pre>
+
+      <h3>CSS</h3>
+<pre><code>[data-error-for] {
+  color: light-dark(#ae1a28, #ff7d89);
+  font-size: 0.875rem;
+  word-wrap: break-word;
+}</code></pre>
+
+      <h3>JavaScript</h3>
+<pre><code>const validatedForm = document.querySelector('validated-form');
+const form = document.querySelector('form');
+
+form.addEventListener('submit', evt => {
+  evt.preventDefault();
+
+  if (!validatedForm.isValid()) {
+    return;
+  }
+
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+  console.log('Form data:', data);
+});</code></pre>
     </details>
 
     <dialog id="success-dialog" closedby="any">

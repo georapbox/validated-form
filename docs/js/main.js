@@ -7,13 +7,14 @@ const componentUrl = isLocalhost ? '../../dist/validated-form.js' : '../lib/vali
 const { ValidatedForm } = await import(componentUrl);
 ValidatedForm.defineCustomElement();
 
+const validatedForm = document.querySelector('validated-form');
 const demoForm = document.getElementById('demo-form');
 const successDialog = document.getElementById('success-dialog');
 
 demoForm.addEventListener('submit', evt => {
   evt.preventDefault();
 
-  if (!demoForm.checkValidity()) {
+  if (!validatedForm.isValid()) {
     return;
   }
 

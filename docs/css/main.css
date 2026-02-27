@@ -6,14 +6,14 @@
 
 :root {
   --body-max-width: 60rem;
-  --card-bg-color: #ffffff;
-  --error-color: #dc3545;
-  scroll-behavior: smooth;
+  --card-bg-color: var(--background-alt);
+  --error-color: #ae1a28;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --error-color: #ff6b6b;
+    --card-bg-color: #283647;
+    --error-color: #ff7d89;
   }
 }
 
@@ -34,41 +34,9 @@
   margin-bottom: 0;
 }
 
-.card {
-  background-color: var(--card-bg-color);
-  padding: 1rem;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  margin-bottom: 0.5rem;
-}
-
-.card > details {
-  margin-bottom: 0;
-}
-
-.card details summary {
-  font-weight: 500;
-}
-
-.back-top {
-  text-align: right;
-  font-size: 0.875rem;
-}
-
-.table-of-contents {
-  columns: 300px 2;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --card-bg-color: #283647;
-  }
-}
-
 browser-window {
-  --bw-background: var(--background-alt);
+  --bw-background: var(--card-bg-color);
   display: block;
-  padding: 0.5rem;
 }
 
 browser-window::part(base) {
@@ -76,12 +44,15 @@ browser-window::part(base) {
 }
 
 #demo-form {
-  max-width: 34rem;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--card-bg-color);
+}
+
+browser-window:not(:defined) #demo-form {
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--card-bg-color)
+  padding: 1rem;
 }
 
 #demo-form h3 {
@@ -94,8 +65,11 @@ browser-window::part(base) {
   background-color: var(--background-input);
 }
 
+#demo-form textarea {
+  resize: none;
+}
+
 #demo-form button[type="submit"] {
-  width: 100%;
   margin: 0;
 }
 
@@ -106,6 +80,7 @@ browser-window::part(base) {
 }
 
 .form-group > label {
+  align-self: flex-start;
   margin-bottom: 0.25rem;
   font-weight: 500;
 }
@@ -127,7 +102,6 @@ browser-window::part(base) {
   margin-bottom: 0.4rem;
 }
 
-.field-error,
 [data-error-for] {
   font-size: 0.875rem;
   color: var(--error-color);
