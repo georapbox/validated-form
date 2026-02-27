@@ -90,21 +90,27 @@ Controls without a `name` cannot be associated with an error message.
 
 #### 3. Each control needs an associated error element
 
-Every field you want to validate must have an element with a `data-error-for` attribute whose value matches the control's `name` attribute.
+Every field you want to validate must have an element with a `data-error-for` attribute whose value matches the control's `name` attribute. If an error element is missing, the component will try to create one right after the control, but it's best to include it in the markup for better control over structure and styling.
+
+The component manages the visibility of the error element by toggling the `hidden` attribute based on the validation state.
 
 ```html
 <input type="email" name="email" required>
-<div data-error-for="email"></div>
+<div data-error-for="email" hidden></div>
 ```
 
 #### 4. Radio groups share one error element
 
-Radio buttons with the same `name` represent a single logical field and must share one error container.
+Radio buttons with the same `name` represent a single logical field and must share one error container. Provide a single element with `data-error-for="<name>"` that matches the group's name attribute.
+
+The component treats the group as one field. When validation fails, all radios in the group are marked as invalid, and the error element is linked (via `aria-describedby`) to the first radio button in the group, which also serves as the focus target.
+
+For better semantics and layout control, place the error element after the last radio button in the group.
 
 ```html
 <label><input type="radio" name="gender" value="m" required> Male</label>
 <label><input type="radio" name="gender" value="f"> Female</label>
-<div data-error-for="gender"></div>
+<div data-error-for="gender" hidden></div>
 ```
 
 #### Notes
@@ -113,6 +119,37 @@ Radio buttons with the same `name` represent a single logical field and must sha
 - The component will automatically set the necessary ARIA attributes
 - If JavaScript is unavailable, native browser validation still works
 - The component does not apply any styles — you can style the error elements as needed
+
+Below is a simple example of a form using the component. For a more comprehensive example, check the [demo][demo].
+
+```html
+<validated-form>
+  <form>
+    <div>
+      <label for="user_email">Email:</label>
+      <input type="email" id="user_email" name="email" required>
+      <div data-error-for="email" hidden></div>
+    </div>
+    
+    <div>
+      <label for="user_password">Password:</label>
+      <input type="password" id="user_password" name="password" required minlength="8" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$">
+      <div data-error-for="password" hidden></div>
+    </div>
+    
+    <fieldset>
+      <legend>Terms and Conditions</legend>
+      <label>
+        <input type="checkbox" id="terms_and_conditions" name="terms" required>
+        I agree to the terms and conditions
+      </label>
+      <div data-error-for="terms" hidden></div>
+    </fieldset>
+    
+    <button type="submit">Register</button>
+  </form>
+</validated-form>
+```
 
 ## API
 
