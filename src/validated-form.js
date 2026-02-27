@@ -8,7 +8,15 @@
 
 /**
  * Elements that support the Constraint Validation API inside a form.
- * @typedef {HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement} FormControl
+ * Includes native controls and form-associated custom elements.
+ * @typedef {HTMLElement & {
+ *   name?: string;
+ *   willValidate: boolean;
+ *   validity: ValidityState;
+ *   validationMessage: string;
+ *   checkValidity: () => boolean;
+ *   reportValidity: () => boolean;
+ * }} FormControl
  */
 
 const COMPONENT_NAME = 'validated-form';
@@ -153,16 +161,39 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
+   * Returns true if an element has a usable name property
+   * that can be used for associating error messages.
+   *
+   * @param {HTMLElement & { name?: unknown }} el - The element to check.
+   * @returns {el is HTMLElement & { name: string }}
+   */
+  #hasUsableName(el) {
+    return 'name' in el && typeof el.name === 'string' && el.name.trim() !== '';
+  }
+
+  /**
    * Type guard that checks whether a value is a form control element
    * (input, select, or textarea).
    *
-   * @param {unknown} value - The value to check.
-   * @returns {value is FormControl} True if the value is a form control element, false otherwise.
+   * @param {unknown} el - The element to check.
+   * @returns {el is FormControl} True if the value is a form control element, false otherwise.
    */
-  #isFormControl(value) {
-    return (
-      value instanceof HTMLInputElement || value instanceof HTMLSelectElement || value instanceof HTMLTextAreaElement
-    );
+  #isFormControl(el) {
+    if (!(el instanceof HTMLElement)) {
+      return false;
+    }
+
+    // Form-owned element (native or form-associated custom element)
+    if (!('form' in el)) {
+      return false;
+    }
+
+    // Check for presence of Constraint Validation API properties/methods
+    if (!('willValidate' in el) || !('validity' in el) || !('validationMessage' in el)) {
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -224,6 +255,10 @@ class ValidatedForm extends HTMLElement {
    * @returns {HTMLElement} The wired-up error element.
    */
   #wireErrorElement(control, errorElement) {
+    if (!this.#hasUsableName(control)) {
+      return errorElement;
+    }
+
     const safeName = control.name.replace(/[^a-zA-Z0-9\-_:.]/g, '-');
     const errorId = errorElement.id || `vf-error-${safeName}-${this.#instanceId}`;
 
@@ -247,13 +282,12 @@ class ValidatedForm extends HTMLElement {
    * @returns {Nullable<HTMLElement>} The error element associated with the form control element, or null if not found.
    */
   #getErrorElement(control, { create = false } = {}) {
-    if (!this.#form || !control.name) {
+    if (!this.#form || !this.#hasUsableName(control)) {
       return null;
     }
 
-    const selector = `[data-error-for="${CSS.escape(control.name)}"]`;
     /** @type {Nullable<HTMLElement>} */
-    const existingErrorElement = this.#form.querySelector(selector);
+    const existingErrorElement = this.querySelector(`[data-error-for="${CSS.escape(control.name)}"]`);
 
     if (!existingErrorElement) {
       if (!create) {
@@ -334,7 +368,7 @@ class ValidatedForm extends HTMLElement {
 
     const valid = !firstInvalid;
 
-    if (!valid && firstInvalid && !this.noFocus) {
+    if (!valid && firstInvalid && !this.noFocus && typeof firstInvalid.focus === 'function') {
       firstInvalid.focus();
     }
 
