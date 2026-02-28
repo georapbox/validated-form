@@ -34,14 +34,14 @@
     <p>This demo showcases the capabilities of the <code>&lt;validated-form&gt;</code> component, demonstrating various form fields and validation scenarios. Try submitting the form with different inputs to see how it handles validation and error messages.</p>
 
     <browser-window url="https://github.com/georapbox/validated-form" icon>
-      <validated-form>
+      <validated-form report="first">
         <form id="demo-form" autocomplete="off">
           <!-- Text / Email -->
           <div class="form-group">
             <label for="text-input">Text input (email type)</label>
             <p class="help-text" id="text-input-hint">Requires a valid email format.</p>
             <input class="form-control" type="email" id="text-input" name="text-input" required aria-describedby="text-input-hint">
-            <div data-error-for="text-input" hidden></div>
+            <!--<div data-error-for="text-input" hidden></div>-->
           </div>
 
           <!-- Pattern -->
@@ -49,7 +49,7 @@
             <label for="pattern-input">Pattern-validated input</label>
             <p class="help-text" id="pattern-input-hint">Minimum 8 characters including letter, number, and symbol.</p>
             <input class="form-control" type="text" id="pattern-input" name="pattern-input" minlength="8" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$" required aria-describedby="pattern-input-hint">
-            <div data-error-for="pattern-input" hidden></div>
+            <!--<div data-error-for="pattern-input" hidden></div>-->
           </div>
 
           <!-- Radio -->
@@ -144,6 +144,7 @@
             <div data-error-for="readonly-input" hidden></div>
           </div>
 
+          <!-- Hidden -->
           <input type="hidden" name="hidden-input" value="hidden-value">
 
           <button type="submit">Submit</button>
@@ -266,6 +267,7 @@
       &lt;div data-error-for="readonly-input" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
+    &lt;!-- Hidden --&gt;
     &lt;input type="hidden" name="hidden-input" value="hidden-value"&gt;
 
     &lt;button type="submit"&gt;Submit&lt;/button&gt;
