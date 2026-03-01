@@ -58,6 +58,7 @@ function dispatchSubmitWithoutNavigation(form) {
 describe('validated-form', () => {
   afterEach(() => {
     fixtureCleanup();
+    sinon.restore();
   });
 
   describe('properties - attribures', () => {
@@ -250,7 +251,7 @@ describe('validated-form', () => {
       const spy = sinon.spy(a, 'focus');
 
       el.validate();
-      expect(spy.calledOnce).to.be.true;
+      sinon.assert.calledOnce(spy);
     });
 
     it('does not focus when no-focus is set', async () => {
@@ -269,14 +270,14 @@ describe('validated-form', () => {
       const spy = sinon.spy(a, 'focus');
 
       el.validate();
-      expect(spy.called).to.be.false;
+      sinon.assert.notCalled(spy);
     });
   });
 
   describe('which elements participate in validation', () => {
     it('ignores non-validatable form elements (e.g. <button>)', async () => {
       const el = await fixture(html`
-        <validated-form report="all" no-focus>
+        <validated-form no-focus>
           <form>
             <button type="button">Click</button>
             <input name="a" />
@@ -297,7 +298,7 @@ describe('validated-form', () => {
 
     it('ignores disabled controls', async () => {
       const el = await fixture(html`
-        <validated-form report="all" no-focus>
+        <validated-form no-focus>
           <form>
             <input name="a" disabled />
             <input name="b" />
@@ -320,7 +321,7 @@ describe('validated-form', () => {
 
     it('ignores hidden controls', async () => {
       const el = await fixture(html`
-        <validated-form report="all" no-focus>
+        <validated-form no-focus>
           <form>
             <input name="a" type="hidden" />
             <input name="b" />
@@ -339,6 +340,31 @@ describe('validated-form', () => {
       // Only the non-hidden input should get an error
       expect(errorEl(el, 'a')).to.not.exist;
       expect(errorEl(el, 'b')?.textContent).to.equal('B is invalid');
+    });
+
+    it('validates a control outside the form when associated via the form attribute', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <form id="f">
+            <button type="submit">Submit</button>
+          </form>
+
+          <!-- Outside the form, but associated via form="f" -->
+          <input name="a" form="f" />
+        </validated-form>
+      `);
+
+      const input = el.querySelector('input[name="a"]');
+
+      setInvalid(input, 'A is invalid');
+      el.validate();
+
+      const err = errorEl(el, 'a');
+      expect(err).to.exist;
+      expect(err.textContent).to.equal('A is invalid');
+      expect(err.hasAttribute('hidden')).to.be.false;
+
+      expect(input.hasAttribute('data-invalid')).to.be.true;
     });
   });
 
