@@ -7,13 +7,9 @@
 
 # &lt;validated-form&gt;
 
-A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors.
-It does not implement validation rules or schemas — it reads the browser's validation state through the [Constraint Validation API](https://developer.mozilla.org/docs/Web/API/Constraint_validation) and displays the existing `validationMessage` without modifying it.
+A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors. It does not implement validation rules or schemas — it reads the validation state through the [Constraint Validation API](https://developer.mozilla.org/docs/Web/API/Constraint_validation) and displays the control's `validationMessage`, optionally allowing per-field message overrides via `data-msg-*` attributes.
 
 This component follows a progressive-enhancement approach: the browser remains responsible for validation, while JavaScript improves how errors are presented and announced. If JavaScript fails to load, the form still works using native browser validation UI.
-
-> [!IMPORTANT]
-> This is not a validation library. It never defines rules or overrides messages (no `setCustomValidity()` is used).
 
 [API documentation](#api) &bull; [Demo][demo]
 
@@ -47,19 +43,26 @@ npm install --save @georapbox/validated-form
 
 ## Usage
 
-### Script
+### Importing the component
+
+By default, the package exports the element class without registering it.
+This lets the application decide when the custom element is defined.
+
+#### Manual definition
 
 ```js
-import { ValidatedForm } from './node_modules/@georapbox/validated-form/dist/validated-form.js';
+import { ValidatedForm } from '@georapbox/validated-form';
 
-// Manually define the element.
-ValidatedForm.defineCustomElement();
+// Define using the default tag name
+ValidatedForm.define();
 ```
 
-Alternatively, you can import the automatically defined custom element.
+#### Auto-defined (convenience)
+
+If you don't need control over registration, you can import the pre-defined build which immediately registers `<validated-form>`.
 
 ```js
-import './node_modules/@georapbox/validated-form/dist/validated-form.js';
+import '@georapbox/validated-form/define';
 ```
 
 ### Requirements
@@ -90,7 +93,7 @@ Controls without a `name` cannot be associated with an error message.
 
 #### 3. Each control needs an associated error element
 
-Every field you want to validate must have an element with a `data-error-for` attribute whose value matches the control's `name` attribute. If an error element is missing, the component will try to create one right after the control, but it's best to include it in the markup for better control over structure and styling.
+Every field you want to validate must have an element with a `data-error-for` attribute whose value matches the control's `name` attribute. If an error element is not provided, the component will create one automatically after the control that triggered validation. For certain controls, such as checkboxes or radio groups, this may place the message between options, so providing the error element in the markup is recommended.
 
 The component manages the visibility of the error element by toggling the `hidden` attribute based on the validation state.
 
@@ -99,19 +102,23 @@ The component manages the visibility of the error element by toggling the `hidde
 <div data-error-for="email" hidden></div>
 ```
 
-#### 4. Radio groups share one error element
+#### 4. Radio groups should share one error element
 
-Radio buttons with the same `name` represent a single logical field and must share one error container. Provide a single element with `data-error-for="<name>"` that matches the group's name attribute.
+Radio buttons with the same name represent a single logical field and must share one error container. Provide a single element with `data-error-for="<name>"` that matches the group's `name` attribute.
 
-The component treats the group as one field. When validation fails, all radios in the group are marked as invalid, and the error element is linked (via `aria-describedby`) to the first radio button in the group, which also serves as the focus target.
+The component treats the group as a single logical field and uses one shared error container. When validation fails, the error message is associated with the radio that triggered validation. During form submission, the first invalid radio in the group becomes the focus target.
 
-For better semantics and layout control, place the error element after the last radio button in the group.
+By default (`report="all"`), the error element is linked to all radios in the group. When using `report="first"`, only the first invalid radio is linked and focused.
+
+For consistent layout and semantics, place the error element after the last radio button in the group.
 
 ```html
 <label><input type="radio" name="gender" value="m" required> Male</label>
 <label><input type="radio" name="gender" value="f"> Female</label>
 <div data-error-for="gender" hidden></div>
 ```
+
+If an error element is not provided, the component will create one automatically after the radio that triggered validation. For grouped controls this may place the message between options, so providing the element in the markup is recommended.
 
 #### Notes
 
@@ -120,36 +127,105 @@ For better semantics and layout control, place the error element after the last 
 - If JavaScript is unavailable, native browser validation still works
 - The component does not apply any styles — you can style the error elements as needed
 
-Below is a simple example of a form using the component. For a more comprehensive example, check the [demo][demo].
+## Custom Validation Messages
+
+The component supports custom validation messages per input without using `setCustomValidity()` internally.
+
+Custom messages affect only what `<validated-form>` displays. They do not change the browser's validation rules, the control's validity state, or native validation UI.
+
+You can provide custom messages using `data-*` attributes on individual form controls. When a control fails validation, the component:
+
+1. Detects which validation rule failed (via the Constraint Validation API)
+2. Looks for a matching custom message attribute
+3. Falls back to the browser's localized `validationMessage` if no custom message is provided
+
+This preserves native validation behavior while allowing message customization.
+
+### Supported Attributes
+
+The following attributes can be added to form controls:
+
+| Validation Rule | Attribute |
+| --------------- | --------- |
+| `valueMissing` | `data-msg-required` |
+| `typeMismatch` | `data-msg-type` |
+| `patternMismatch` | `data-msg-pattern` |
+| `tooShort` | `data-msg-too-short` |
+| `tooLong` | `data-msg-too-long` |
+| `rangeUnderflow` | `data-msg-min` |
+| `rangeOverflow` | `data-msg-max` |
+| `stepMismatch` | `data-msg-step` |
+| `badInput` | `data-msg-bad-input` |
+
+If a rule fails and the corresponding attribute exists, its value will be used as the error message.
+
+If the attribute is not present, the browser's default localized message is used.
+
+> [!NOTE]
+> For radio groups with a shared error element, apply `data-msg-*` attributes consistently across the group. With `report="all"`, the message is resolved per radio and the last processed radio determines the final text in the shared error container.
+
+### Example
 
 ```html
 <validated-form>
   <form>
     <div>
-      <label for="user_email">Email:</label>
-      <input type="email" id="user_email" name="email" required>
+      <label for="email">Email</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        required
+        data-msg-required="Email is required."
+        data-msg-type="Please enter a valid email address."
+      >
       <div data-error-for="email" hidden></div>
     </div>
-    
+
     <div>
-      <label for="user_password">Password:</label>
-      <input type="password" id="user_password" name="password" required minlength="8" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$">
+      <label for="password">Password</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        required
+        minlength="8"
+        data-msg-required="Password is required."
+        data-msg-too-short="Password must be at least 8 characters."
+      >
       <div data-error-for="password" hidden></div>
     </div>
-    
-    <fieldset>
-      <legend>Terms and Conditions</legend>
-      <label>
-        <input type="checkbox" id="terms_and_conditions" name="terms" required>
-        I agree to the terms and conditions
-      </label>
-      <div data-error-for="terms" hidden></div>
-    </fieldset>
-    
-    <button type="submit">Register</button>
+
+    <button type="submit">Submit</button>
   </form>
 </validated-form>
 ```
+
+### How Message Resolution Works
+
+When a control is invalid:
+- The component checks validation flags in priority order.
+- If a matching data-msg-* attribute exists, that message is displayed.
+- Otherwise, it falls back to control.validationMessage.
+
+This ensures:
+- Native validation semantics remain intact.
+- Browser localization is preserved by default.
+- You can override only the rules you care about.
+
+### Interaction with `setCustomValidity()`
+
+Although the component does not use `setCustomValidity()` internally, consumers can still use it.
+
+If a consumer sets a custom validity message:
+
+```js
+input.setCustomValidity('This value is not allowed.');
+```
+
+That message becomes the control's `validationMessage` and will be displayed when no `data-msg-*` override applies.
+
+Per-rule `data-msg-*` attributes still take precedence for the specific rule they match.
 
 ## API
 
@@ -163,10 +239,10 @@ Below is a simple example of a form using the component. For a more comprehensiv
 
 | Name | Type | Description | Arguments |
 | ---- | ---- | ----------- | --------- |
-| `defineCustomElement` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | elementName='validated-form' |
+| `define` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | elementName='validated-form' |
 | `validate` | Instance | Validates and returns the validity of the form, showing error messages for any invalid controls. | - |
 | `resetValidation` | Instance | Resets the validation state of the form, clearing all error messages and validation states. This does not reset the form fields themselves, but only the validation feedback. | - |
-| `isValid` | Instance | A read-only property that returns a boolean indicating whether the form is currently valid according to the browser's validation rules. It reflects the validity state of the form, allowing you to check if all fields are valid without triggering validation messages. | - |
+| `isValid` | Instance | Returns a boolean indicating whether the form is currently valid according to the browser's validation rules. It reflects the validity state of the form, allowing you to check if all fields are valid without triggering validation messages. | - |
 
 <sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use `whenDefined` method of the `CustomElementRegistry` interface, eg `customElements.whenDefined('validated-form').then(() => { /* call methods here */ });`
 

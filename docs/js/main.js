@@ -5,7 +5,7 @@ const isLocalhost = url.includes('127.0.0.1') || url.includes('localhost');
 const componentUrl = isLocalhost ? '../../dist/validated-form.js' : '../lib/validated-form.js';
 
 const { ValidatedForm } = await import(componentUrl);
-ValidatedForm.defineCustomElement();
+ValidatedForm.define();
 
 const validatedForm = document.querySelector('validated-form');
 const demoForm = document.getElementById('demo-form');

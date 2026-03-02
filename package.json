@@ -1,13 +1,23 @@
 {
   "name": "@georapbox/validated-form",
   "version": "1.0.0",
-  "description": "Web Component that adds automatic native form validation and error messages.",
-  "main": "dist/validated-form.js",
-  "module": "dist/validated-form.js",
-  "unpkg": "dist/validated-form.js",
+  "description": "A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors.",
   "type": "module",
+  "main": "dist/validated-form.js",
+  "unpkg": "dist/validated-form.js",
   "types": "dist/validated-form.d.ts",
   "customElements": "dist/custom-elements.json",
+  "exports": {
+    ".": {
+      "types": "./dist/validated-form.d.ts",
+      "import": "./dist/validated-form.js"
+    },
+    "./define": {
+      "types": "./dist/validated-form.d.ts",
+      "import": "./dist/validated-form-defined.js"
+    },
+    "./custom-elements.json": "./dist/custom-elements.json"
+  },
   "files": [
     "/src",
     "/dist"

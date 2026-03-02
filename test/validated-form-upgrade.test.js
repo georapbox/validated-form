@@ -10,7 +10,7 @@ describe('validated-form upgrading', () => {
     el.report = 'first';
 
     // Upgrade custom element
-    ValidatedForm.defineCustomElement();
+    ValidatedForm.define();
 
     await elementUpdated(el);
 

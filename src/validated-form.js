@@ -22,10 +22,10 @@
 const COMPONENT_NAME = 'validated-form';
 
 /**
- * @summary Web Component that adds automatic native form validation and error messages.
+ * @summary A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors.
  * @documentation https://github.com/georapbox/validated-form
  *
- * @tagname validated-form - This is the default tag name, unless overridden by the `defineCustomElement` method.
+ * @tagname validated-form - This is the default tag name, unless overridden by the `define` method.
  * @extends HTMLElement
  *
  * @property {boolean} noFocus - Indicates whether the component should focus the first invalid control when validation fails.
@@ -34,12 +34,25 @@ const COMPONENT_NAME = 'validated-form';
  * @attribute {boolean} no-focus - Indicates whether the component should focus the first invalid control when validation fails.
  * @attribute {string} report - Determines which validation messages to show when the form is validated. The value can be 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message.
  *
- * @method defineCustomElement - Static method. Defines a custom element with the given name.
+ * @method define - Static method. Defines the custom element with the given name.
  * @method validate - Instance method. Validates the form and shows error messages for any invalid controls.
  * @method resetValidation - Instance method. Resets the validation state of the form, clearing all error messages and validation states.
  * @method isValid - Instance method. Checks whether all form controls are currently valid according to the Constraint Validation API.
  */
 class ValidatedForm extends HTMLElement {
+  /** @type {ReadonlyArray<readonly [keyof ValidityState, string]>} */
+  static #MESSAGE_ATTRS = [
+    ['valueMissing', 'data-msg-required'],
+    ['typeMismatch', 'data-msg-type'],
+    ['patternMismatch', 'data-msg-pattern'],
+    ['tooShort', 'data-msg-too-short'],
+    ['tooLong', 'data-msg-too-long'],
+    ['rangeUnderflow', 'data-msg-min'],
+    ['rangeOverflow', 'data-msg-max'],
+    ['stepMismatch', 'data-msg-step'],
+    ['badInput', 'data-msg-bad-input']
+  ];
+
   /** @type {string} */
   #instanceId = Math.random().toString(36).slice(2, 8);
 
@@ -165,10 +178,30 @@ class ValidatedForm extends HTMLElement {
    * that can be used for associating error messages.
    *
    * @param {HTMLElement & { name?: unknown }} el - The element to check.
-   * @returns {el is HTMLElement & { name: string }}
+   * @returns {el is HTMLElement & { name: string }} True if the element has a usable name property, false otherwise.
    */
   #hasUsableName(el) {
     return 'name' in el && typeof el.name === 'string' && el.name.trim() !== '';
+  }
+
+  /**
+   * Returns the validation message for a control.
+   * Prefers custom per-rule messages and falls back to the browser message.
+   *
+   * @param {FormControl} control - The form control element for which to get the validation message.
+   * @returns {string} The validation message to display for the control.
+   */
+  #getMessage(control) {
+    const validity = control.validity;
+
+    for (const [flag, attr] of ValidatedForm.#MESSAGE_ATTRS) {
+      if (validity[flag]) {
+        const custom = control.getAttribute(attr);
+        return custom || control.validationMessage;
+      }
+    }
+
+    return control.validationMessage;
   }
 
   /**
@@ -354,7 +387,7 @@ class ValidatedForm extends HTMLElement {
 
       if (!ok && !firstInvalid) {
         firstInvalid = el;
-        this.#setError(el, el.validationMessage);
+        this.#setError(el, this.#getMessage(el));
 
         if (reportFirst) {
           break;
@@ -362,7 +395,7 @@ class ValidatedForm extends HTMLElement {
       }
 
       if (!reportFirst) {
-        this.#setError(el, ok ? '' : el.validationMessage);
+        this.#setError(el, ok ? '' : this.#getMessage(el));
       }
     }
 
@@ -407,7 +440,7 @@ class ValidatedForm extends HTMLElement {
 
     this.#submittedOnce = true;
     evt.preventDefault();
-    this.#setError(control, control.validationMessage);
+    this.#setError(control, this.#getMessage(control));
   };
 
   /**
@@ -427,7 +460,7 @@ class ValidatedForm extends HTMLElement {
     }
 
     const ok = control.validity.valid;
-    this.#setError(control, ok ? '' : control.validationMessage);
+    this.#setError(control, ok ? '' : this.#getMessage(control));
   };
 
   /**
@@ -458,7 +491,7 @@ class ValidatedForm extends HTMLElement {
    *
    * @param {string} [elementName='validated-form'] - The name of the custom element.
    */
-  static defineCustomElement(elementName = COMPONENT_NAME) {
+  static define(elementName = COMPONENT_NAME) {
     if (typeof window !== 'undefined' && !window.customElements.get(elementName)) {
       window.customElements.define(elementName, ValidatedForm);
     }

@@ -19,7 +19,7 @@ import { expect, fixture, fixtureCleanup, html } from '@open-wc/testing';
 import sinon from 'sinon';
 import { ValidatedForm } from '../src/validated-form.js';
 
-ValidatedForm.defineCustomElement();
+ValidatedForm.define();
 
 function setInvalid(control, message = 'Required') {
   control.setCustomValidity(message);

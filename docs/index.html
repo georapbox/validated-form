@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
   <title>&lt;validated-form&gt;</title>
-  <meta name="description" content="Web Component that adds automatic native form validation and error messages.">
+  <meta name="description" content="A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors.">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="stylesheet" href="lib/highlight/highlight-github.css">
   <link rel="stylesheet" href="css/water.css">
@@ -34,14 +34,14 @@
     <p>This demo showcases the capabilities of the <code>&lt;validated-form&gt;</code> component, demonstrating various form fields and validation scenarios. Try submitting the form with different inputs to see how it handles validation and error messages.</p>
 
     <browser-window url="https://github.com/georapbox/validated-form" icon>
-      <validated-form report="first">
+      <validated-form>
         <form id="demo-form" autocomplete="off">
           <!-- Text / Email -->
           <div class="form-group">
             <label for="text-input">Text input (email type)</label>
             <p class="help-text" id="text-input-hint">Requires a valid email format.</p>
             <input class="form-control" type="email" id="text-input" name="text-input" required aria-describedby="text-input-hint">
-            <!--<div data-error-for="text-input" hidden></div>-->
+            <div data-error-for="text-input" hidden></div>
           </div>
 
           <!-- Pattern -->
@@ -49,7 +49,7 @@
             <label for="pattern-input">Pattern-validated input</label>
             <p class="help-text" id="pattern-input-hint">Minimum 8 characters including letter, number, and symbol.</p>
             <input class="form-control" type="text" id="pattern-input" name="pattern-input" minlength="8" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$" required aria-describedby="pattern-input-hint">
-            <!--<div data-error-for="pattern-input" hidden></div>-->
+            <div data-error-for="pattern-input" hidden></div>
           </div>
 
           <!-- Radio -->
@@ -114,7 +114,7 @@
           <div class="form-group">
             <label for="number-input">Number input</label>
             <p class="help-text" id="number-input-hint">Enter a number between 5 and 10.</p>
-            <input class="form-control" type="number" id="number-input" name="number-input" required min="5" max="10" aria-describedby="number-input-hint">
+            <input class="form-control" type="number" id="number-input" name="number-input" required min="5" max="10" step="100" aria-describedby="number-input-hint">
             <div data-error-for="number-input" hidden></div>
           </div>
 

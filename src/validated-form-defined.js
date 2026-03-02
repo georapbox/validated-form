@@ -1,5 +1,5 @@
 import { ValidatedForm } from './validated-form.js';
 
-ValidatedForm.defineCustomElement();
+ValidatedForm.define();
 
 export { ValidatedForm };
