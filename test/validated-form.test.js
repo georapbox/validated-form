@@ -636,4 +636,66 @@ describe('validated-form', () => {
       expect(errorEl(el, 'a')).to.not.exist;
     });
   });
+
+  describe('custom error messages (data-msg-*)', () => {
+    it('uses data-msg-required when valueMissing is true', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <form>
+            <input name="a" data-msg-required="Field A is required" />
+          </form>
+        </validated-form>
+      `);
+
+      const input = el.querySelector('input');
+
+      // Trigger valueMissing using native constraint
+      input.required = true;
+
+      el.validate();
+
+      const err = errorEl(el, 'a');
+      expect(err).to.exist;
+      expect(err.textContent).to.equal('Field A is required');
+    });
+
+    it('uses data-msg-type when typeMismatch is true', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <form>
+            <input name="email" type="email" value="not-an-email" data-msg-type="Invalid email address" />
+          </form>
+        </validated-form>
+      `);
+
+      el.validate();
+
+      const err = errorEl(el, 'email');
+      expect(err).to.exist;
+      expect(err.textContent).to.equal('Invalid email address');
+    });
+
+    it('prefers the first matching validity flag in MESSAGE_ATTRS order', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <form>
+            <input
+              name="a"
+              required
+              minlength="5"
+              data-msg-required="Field A is required"
+              data-msg-too-short="Field A is too short"
+            />
+          </form>
+        </validated-form>
+      `);
+
+      // Empty value triggers valueMissing first
+      el.validate();
+
+      const err = errorEl(el, 'a');
+      expect(err).to.exist;
+      expect(err.textContent).to.equal('Field A is required');
+    });
+  });
 });
