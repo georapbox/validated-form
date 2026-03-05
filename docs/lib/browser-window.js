@@ -152,7 +152,7 @@ class BrowserWindow extends HTMLElement {
       }
       ${
         url
-          ? /* html */ `<a href="${url}" target="_blank" rel="noopener noreferrer" class="title"><slot name="icon">${iconHtml}</slot><span class="title-text">${displayUrl}</span></a>`
+          ? /* html */ `<a href="${url}" target="_blank" rel="noopener noreferrer" class="title" part="title"><slot name="icon">${iconHtml}</slot><span class="title-text">${displayUrl}</span></a>`
           : ''
       }
     </div>

@@ -38,19 +38,24 @@ browser-window {
 
 browser-window:not(:defined) {
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius);
   background-color: var(--background);
 }
 
 browser-window::part(base) {
   border-color: transparent;
+  border-radius: var(--border-radius);
+}
+
+browser-window::part(title) {
+  border-radius: var(--border-radius);
 }
 
 #demo-form {
   max-width: 38rem;
   margin: 0 auto;
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius);
   border: 1px solid var(--border);
   background: var(--background-card);
 }

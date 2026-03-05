@@ -28,7 +28,7 @@
   --highlight: #fff000;
 
   /* Shape */
-  --border-radius: 0.375rem; /* 6px */
+  --border-radius: 6px;
 
   /* Misc */
   --animation-duration: 0.1s;
