@@ -67,78 +67,6 @@
             <div data-error-for="pattern-input" hidden></div>
           </div>
 
-          <!-- Radio -->
-          <fieldset class="form-group" aria-describedby="radio-hint">
-            <legend>Single choice group (radio buttons)</legend>
-            <p class="help-text" id="radio-hint">Exactly one option must be selected.</p>
-            <label class="inline-option">
-              <input type="radio" name="radio-group" value="option-a" required> Option A
-            </label>
-            <label class="inline-option">
-              <input type="radio" name="radio-group" value="option-b"> Option B
-            </label>
-            <label class="inline-option">
-              <input type="radio" name="radio-group" value="option-c"> Option C
-            </label>
-            <div data-error-for="radio-group" hidden></div>
-          </fieldset>
-
-          <!-- Select -->
-          <div class="form-group">
-            <label for="select-single">Single select</label>
-            <p class="help-text" id="select-single-hint">Choose one value.</p>
-            <select id="select-single" name="select-single" required aria-describedby="select-single-hint">
-              <option value="">Select an option</option>
-              <option value="a">Option A</option>
-              <option value="b">Option B</option>
-              <option value="c">Option C</option>
-            </select>
-            <div data-error-for="select-single" hidden></div>
-          </div>
-
-          <!-- Multi Select -->
-          <div class="form-group">
-            <label for="select-multiple">Multiple select</label>
-            <p class="help-text" id="select-multiple-hint">Select at least one value.</p>
-            <select id="select-multiple" name="select-multiple" multiple required aria-describedby="select-multiple-hint">
-              <option value="a">Option A</option>
-              <option value="b">Option B</option>
-              <option value="c">Option C</option>
-              <option value="d">Option D</option>
-            </select>
-            <div data-error-for="select-multiple" hidden></div>
-          </div>
-
-          <!-- File -->
-          <div class="form-group">
-            <label for="file-input">File upload</label>
-            <p class="help-text" id="file-input-hint">Accepted formats: PDF, JPG, PNG.</p>
-            <input
-              type="file"
-              id="file-input"
-              name="file-input"
-              required
-              accept=".pdf,.jpg,.jpeg,.png"
-              aria-describedby="file-input-hint"
-            >
-            <div data-error-for="file-input" hidden></div>
-          </div>
-
-          <!-- Textarea -->
-          <div class="form-group">
-            <label for="textarea-input">Textarea</label>
-            <p class="help-text" id="textarea-hint">Not required, but must be between 20 and 300 characters if filled.</p>
-            <textarea
-              id="textarea-input"
-              name="textarea-input"
-              rows="4"
-              minlength="20"
-              maxlength="300"
-              aria-describedby="textarea-hint"
-            ></textarea>
-            <div data-error-for="textarea-input" hidden></div>
-          </div>
-
           <!-- Number -->
           <div class="form-group">
             <label for="number-input">Number input</label>
@@ -156,6 +84,48 @@
             <div data-error-for="number-input" hidden></div>
           </div>
 
+          <!-- Select -->
+          <div class="form-group">
+            <label for="select-single">Single select</label>
+            <p class="help-text" id="select-single-hint">Choose one value.</p>
+            <select class="form-control" id="select-single" name="select-single" required aria-describedby="select-single-hint">
+              <option value="">Select an option</option>
+              <option value="a">Option A</option>
+              <option value="b">Option B</option>
+              <option value="c">Option C</option>
+            </select>
+            <div data-error-for="select-single" hidden></div>
+          </div>
+
+          <!-- Multi Select -->
+          <div class="form-group">
+            <label for="select-multiple">Multiple select</label>
+            <p class="help-text" id="select-multiple-hint">Select at least one value.</p>
+            <select class="form-control" id="select-multiple" name="select-multiple" multiple required aria-describedby="select-multiple-hint">
+              <option value="a">Option A</option>
+              <option value="b">Option B</option>
+              <option value="c">Option C</option>
+              <option value="d">Option D</option>
+            </select>
+            <div data-error-for="select-multiple" hidden></div>
+          </div>
+
+          <!-- Radio -->
+          <fieldset class="form-group" aria-describedby="radio-hint">
+            <legend>Single choice group (radio buttons)</legend>
+            <p class="help-text" id="radio-hint">Exactly one option must be selected.</p>
+            <label class="inline-option">
+              <input type="radio" name="radio-group" value="option-a" required> Option A
+            </label>
+            <label class="inline-option">
+              <input type="radio" name="radio-group" value="option-b"> Option B
+            </label>
+            <label class="inline-option">
+              <input type="radio" name="radio-group" value="option-c"> Option C
+            </label>
+            <div data-error-for="radio-group" hidden></div>
+          </fieldset>
+
           <!-- Checkbox -->
           <fieldset class="form-group" aria-describedby="checkbox-hint">
             <legend>Required checkbox</legend>
@@ -165,6 +135,38 @@
             </label>
             <div data-error-for="checkbox-input" hidden></div>
           </fieldset>
+
+          <!-- File -->
+          <div class="form-group">
+            <label for="file-input">File upload</label>
+            <p class="help-text" id="file-input-hint">Accepted formats: PDF, JPG, PNG.</p>
+            <input
+              class="form-control"
+              type="file"
+              id="file-input"
+              name="file-input"
+              required
+              accept=".pdf,.jpg,.jpeg,.png"
+              aria-describedby="file-input-hint"
+            >
+            <div data-error-for="file-input" hidden></div>
+          </div>
+
+          <!-- Textarea -->
+          <div class="form-group">
+            <label for="textarea-input">Textarea</label>
+            <p class="help-text" id="textarea-hint">Not required, but must be between 20 and 300 characters if filled.</p>
+            <textarea
+              class="form-control"
+              id="textarea-input"
+              name="textarea-input"
+              rows="4"
+              minlength="20"
+              maxlength="300"
+              aria-describedby="textarea-hint"
+            ></textarea>
+            <div data-error-for="textarea-input" hidden></div>
+          </div>
 
           <!-- Custom validation errors -->
           <div class="form-group">
@@ -177,6 +179,7 @@
               name="custom-errors-input"
               required
               minlength="8"
+              autocomplete="off"
               aria-describedby="custom-errors-input-hint"
               data-msg-required="Password is required."
               data-msg-too-short="Password must be at least 8 characters."
@@ -267,21 +270,21 @@
       &lt;div data-error-for="pattern-input" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
-    &lt;!-- Radio --&gt;
-    &lt;fieldset aria-describedby="radio-hint"&gt;
-      &lt;legend&gt;Single choice group (radio buttons)&lt;/legend&gt;
-      &lt;p id="radio-hint"&gt;Exactly one option must be selected.&lt;/p&gt;
-      &lt;label class="inline-option"&gt;
-        &lt;input type="radio" name="radio-group" value="option-a" required&gt; Option A
-      &lt;/label&gt;
-      &lt;label class="inline-option"&gt;
-        &lt;input type="radio" name="radio-group" value="option-b"&gt; Option B
-      &lt;/label&gt;
-      &lt;label class="inline-option"&gt;
-        &lt;input type="radio" name="radio-group" value="option-c"&gt; Option C
-      &lt;/label&gt;
-      &lt;div data-error-for="radio-group" hidden&gt;&lt;/div&gt;
-    &lt;/fieldset&gt;
+    &lt;!-- Number --&gt;
+    &lt;div&gt;
+      &lt;label for="number-input"&gt;Number input&lt;/label&gt;
+      &lt;p id="number-input-hint"&gt;Enter a number between 5 and 10.&lt;/p&gt;
+      &lt;input
+        type="number"
+        id="number-input"
+        name="number-input"
+        required
+        min="5"
+        max="10"
+        aria-describedby="number-input-hint"
+      &gt;
+      &lt;div data-error-for="number-input" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
 
     &lt;!-- Select --&gt;
     &lt;div&gt;
@@ -320,6 +323,32 @@
       &lt;div data-error-for="select-multiple" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
+    &lt;!-- Radio --&gt;
+    &lt;fieldset aria-describedby="radio-hint"&gt;
+      &lt;legend&gt;Single choice group (radio buttons)&lt;/legend&gt;
+      &lt;p id="radio-hint"&gt;Exactly one option must be selected.&lt;/p&gt;
+      &lt;label class="inline-option"&gt;
+        &lt;input type="radio" name="radio-group" value="option-a" required&gt; Option A
+      &lt;/label&gt;
+      &lt;label class="inline-option"&gt;
+        &lt;input type="radio" name="radio-group" value="option-b"&gt; Option B
+      &lt;/label&gt;
+      &lt;label class="inline-option"&gt;
+        &lt;input type="radio" name="radio-group" value="option-c"&gt; Option C
+      &lt;/label&gt;
+      &lt;div data-error-for="radio-group" hidden&gt;&lt;/div&gt;
+    &lt;/fieldset&gt;
+
+    &lt;!-- Checkbox --&gt;
+    &lt;fieldset aria-describedby="checkbox-hint"&gt;
+      &lt;legend&gt;Required checkbox&lt;/legend&gt;
+      &lt;p id="checkbox-hint"&gt;Must be checked to proceed.&lt;/p&gt;
+      &lt;label class="inline-option"&gt;
+        &lt;input type="checkbox" name="checkbox-input" required&gt;Confirmation checkbox
+      &lt;/label&gt;
+      &lt;div data-error-for="checkbox-input" hidden&gt;&lt;/div&gt;
+    &lt;/fieldset&gt;
+
     &lt;!-- File --&gt;
     &lt;div&gt;
       &lt;label for="file-input"&gt;File upload&lt;/label&gt;
@@ -350,32 +379,6 @@
       &lt;div data-error-for="textarea-input" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
-    &lt;!-- Number --&gt;
-    &lt;div&gt;
-      &lt;label for="number-input"&gt;Number input&lt;/label&gt;
-      &lt;p id="number-input-hint"&gt;Enter a number between 5 and 10.&lt;/p&gt;
-      &lt;input
-        type="number"
-        id="number-input"
-        name="number-input"
-        required
-        min="5"
-        max="10"
-        aria-describedby="number-input-hint"
-      &gt;
-      &lt;div data-error-for="number-input" hidden&gt;&lt;/div&gt;
-    &lt;/div&gt;
-
-    &lt;!-- Checkbox --&gt;
-    &lt;fieldset aria-describedby="checkbox-hint"&gt;
-      &lt;legend&gt;Required checkbox&lt;/legend&gt;
-      &lt;p id="checkbox-hint"&gt;Must be checked to proceed.&lt;/p&gt;
-      &lt;label class="inline-option"&gt;
-        &lt;input type="checkbox" name="checkbox-input" required&gt;Confirmation checkbox
-      &lt;/label&gt;
-      &lt;div data-error-for="checkbox-input" hidden&gt;&lt;/div&gt;
-    &lt;/fieldset&gt;
-
     &lt;!-- Custom validation errors --&gt;
     &lt;div&gt;
       &lt;label for="custom-errors-input"&gt;Input with custom error messages&lt;/label&gt;
@@ -386,6 +389,7 @@
         name="custom-errors-input"
         required
         minlength="8"
+        autocomplete="off"
         aria-describedby="custom-errors-input-hint"
         data-msg-required="Password is required."
         data-msg-too-short="Password must be at least 8 characters."

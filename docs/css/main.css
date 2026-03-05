@@ -5,14 +5,11 @@
 }
 
 :root {
-  --body-max-width: 60rem;
-  --card-bg-color: var(--background-alt);
   --error-color: #ae1a28;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --card-bg-color: #283647;
     --error-color: #ff7d89;
   }
 }
@@ -35,24 +32,27 @@
 }
 
 browser-window {
-  --bw-background: var(--card-bg-color);
+  --bw-background: var(--background);
   display: block;
 }
 
+browser-window:not(:defined) {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--background);
+}
+
 browser-window::part(base) {
-  border-color: var(--border);
+  border-color: transparent;
 }
 
 #demo-form {
+  max-width: 38rem;
   margin: 0 auto;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  background: var(--card-bg-color);
-}
-
-browser-window:not(:defined) #demo-form {
-  border: 1px solid var(--border);
   padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--background-card);
 }
 
 #demo-form h3 {
