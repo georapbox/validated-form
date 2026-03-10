@@ -23,3 +23,20 @@ demoForm.addEventListener('submit', evt => {
   console.log('Form data:', data);
   successDialog.showModal();
 });
+
+const optionsform = document.getElementById('options-form');
+
+optionsform.querySelectorAll('[disabled]').forEach(input => (input.disabled = false));
+
+optionsform.addEventListener('change', evt => {
+  const target = evt.target;
+
+  switch (target.name) {
+    case 'report':
+      validatedForm.setAttribute('report', target.value);
+      break;
+    case 'no-focus':
+      validatedForm.toggleAttribute('no-focus', evt.target.checked);
+      break;
+  }
+});

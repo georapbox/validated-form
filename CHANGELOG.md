@@ -1,5 +1,5 @@
 # CHANGELOG
 
-## v1.0.0 (2025-XX-XX)
+## v1.0.0 (YYYY-MM-DD)
 
 - Initial release

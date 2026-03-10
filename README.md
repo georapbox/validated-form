@@ -35,6 +35,8 @@ Using the **Constraint Validation API**, it:
 - Renders persistent inline errors
 - Associates errors with fields using proper ARIA attributes
 
+This progressive-enhancement approach was informed by writing from [Adrian Roselli](https://adrianroselli.com/2019/02/avoid-default-field-validation.html) and [HTMHell](https://www.htmhell.dev/adventcalendar/2025/28/) on the accessibility limitations of default browser validation UI and the benefits of layering accessible feedback on top of native validation.
+
 ## Install
 
 ```sh

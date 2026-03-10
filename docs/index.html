@@ -17,10 +17,7 @@
 </head>
 <body>
   <noscript>
-    <div class="noscript-banner">
-      This page requires JavaScript to work properly.
-      Please enable JavaScript in your browser settings.
-    </div>
+    <div class="noscript-banner">This demo requires JavaScript to work.</div>
   </noscript>
 
   <main>
@@ -36,9 +33,11 @@
     <browser-window url="https://github.com/georapbox/validated-form" icon>
       <validated-form>
         <form id="demo-form" autocomplete="off">
+          <p class="help-text" style="margin-block-end: 1.5rem;">Fields marked with <span class="required-hint">*</span> are required.</p>
+
           <!-- Text / Email -->
           <div class="form-group">
-            <label for="text-input">Text input (email type)</label>
+            <label for="text-input">Text input (email type) <span class="required-hint" aria-hidden="true">*</span></label>
             <p class="help-text" id="text-input-hint">Requires a valid email format.</p>
             <input
               class="form-control"
@@ -53,7 +52,7 @@
 
           <!-- Pattern -->
           <div class="form-group">
-            <label for="pattern-input">Pattern-validated input</label>
+            <label for="pattern-input">Pattern-validated input <span class="required-hint" aria-hidden="true">*</span></label>
             <p class="help-text" id="pattern-input-hint">Minimum 8 characters including letter, number, and symbol.</p>
             <input
               class="form-control"
@@ -69,7 +68,7 @@
 
           <!-- Number -->
           <div class="form-group">
-            <label for="number-input">Number input</label>
+            <label for="number-input">Number input <span class="required-hint" aria-hidden="true">*</span></label>
             <p class="help-text" id="number-input-hint">Enter a number between 5 and 10.</p>
             <input
               class="form-control"
@@ -78,7 +77,6 @@
               name="number-input"
               required min="5"
               max="10"
-              step="100"
               aria-describedby="number-input-hint"
             >
             <div data-error-for="number-input" hidden></div>
@@ -86,7 +84,7 @@
 
           <!-- Select -->
           <div class="form-group">
-            <label for="select-single">Single select</label>
+            <label for="select-single">Single select <span class="required-hint" aria-hidden="true">*</span></label>
             <p class="help-text" id="select-single-hint">Choose one value.</p>
             <select class="form-control" id="select-single" name="select-single" required aria-describedby="select-single-hint">
               <option value="">Select an option</option>
@@ -99,7 +97,7 @@
 
           <!-- Multi Select -->
           <div class="form-group">
-            <label for="select-multiple">Multiple select</label>
+            <label for="select-multiple">Multiple select <span class="required-hint" aria-hidden="true">*</span></label>
             <p class="help-text" id="select-multiple-hint">Select at least one value.</p>
             <select class="form-control" id="select-multiple" name="select-multiple" multiple required aria-describedby="select-multiple-hint">
               <option value="a">Option A</option>
@@ -112,7 +110,7 @@
 
           <!-- Radio -->
           <fieldset class="form-group" aria-describedby="radio-hint">
-            <legend>Single choice group (radio buttons)</legend>
+            <legend>Single choice group (radio buttons) <span class="required-hint" aria-hidden="true">*</span></legend>
             <p class="help-text" id="radio-hint">Exactly one option must be selected.</p>
             <label class="inline-option">
               <input type="radio" name="radio-group" value="option-a" required> Option A
@@ -127,18 +125,24 @@
           </fieldset>
 
           <!-- Checkbox -->
-          <fieldset class="form-group" aria-describedby="checkbox-hint">
-            <legend>Required checkbox</legend>
-            <p class="help-text" id="checkbox-hint">Must be checked to proceed.</p>
+          <fieldset class="form-group">
+            <legend>Checkbox group</legend>
+            <p class="help-text" id="checkbox-hint">Option A is required to proceed</p>
             <label class="inline-option">
-              <input type="checkbox" name="checkbox-input" required>Confirmation checkbox
+              <input type="checkbox" name="checkbox-input-required" required aria-describedby="checkbox-hint">
+              Option A
+              <span class="required-hint" aria-hidden="true">*</span>
             </label>
-            <div data-error-for="checkbox-input" hidden></div>
+            <div data-error-for="checkbox-input-required" hidden></div>
+            <label class="inline-option">
+              <input type="checkbox" name="checkbox-input-optional">
+              Option B
+            </label>
           </fieldset>
 
           <!-- File -->
           <div class="form-group">
-            <label for="file-input">File upload</label>
+            <label for="file-input">File upload <span class="required-hint" aria-hidden="true">*</span></label>
             <p class="help-text" id="file-input-hint">Accepted formats: PDF, JPG, PNG.</p>
             <input
               class="form-control"
@@ -170,7 +174,7 @@
 
           <!-- Custom validation errors -->
           <div class="form-group">
-            <label for="custom-errors-input">Input with custom error messages</label>
+            <label for="custom-errors-input">Input with custom error messages <span class="required-hint" aria-hidden="true">*</span></label>
             <p class="help-text" id="custom-errors-input-hint">Password field with custom validation messages for required and too-short errors.</p>
             <input
               class="form-control"
@@ -227,6 +231,32 @@
       </validated-form>
     </browser-window>
 
+    <h2 id="demo-options-title">Options</h2>
+    <p id="demo-options-hint">Use these controls to change how the <code>&lt;validated-form&gt;</code> demo behaves.</p>
+
+    <form id="options-form" aria-labelledby="demo-options-title" aria-describedby="demo-options-hint" autocomplete="off">
+      <fieldset disabled>
+        <legend>Focus behavior</legend>
+        <label>
+          <input type="checkbox" name="no-focus">
+          Do not move focus to the first invalid field after submit (<code>no-focus</code>)
+        </label>
+      </fieldset>
+
+      <fieldset disabled>
+        <legend>Error reporting</legend>
+        <label>
+          <input type="radio" name="report" value="all" checked>
+          Show error messages for all invalid fields (<code>report="all"</code>)
+        </label>
+        <br>
+        <label>
+          <input type="radio" name="report" value="first">
+          Show error message only for the first invalid field (<code>report="first"</code>)
+        </label>
+      </fieldset>
+    </form>
+
     <details>
       <summary>Source code</summary>
 
@@ -241,9 +271,11 @@
 
 <pre><code>&lt;validated-form&gt;
   &lt;form id="demo-form" autocomplete="off"&gt;
+    &lt;p&gt;Fields marked with * are required.&lt;/p&gt;
+
     &lt;!-- Text / Email --&gt;
     &lt;div&gt;
-      &lt;label for="text-input"&gt;Text input (email type)&lt;/label&gt;
+      &lt;label for="text-input"&gt;Text input (email type) &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
       &lt;p id="text-input-hint"&gt;Requires a valid email format.&lt;/p&gt;
       &lt;input
         type="email"
@@ -257,7 +289,7 @@
 
     &lt;!-- Pattern --&gt;
     &lt;div&gt;
-      &lt;label for="pattern-input"&gt;Pattern-validated input&lt;/label&gt;
+      &lt;label for="pattern-input"&gt;Pattern-validated input &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
       &lt;p id="pattern-input-hint"&gt;Minimum 8 characters including letter, number, and symbol.&lt;/p&gt;
       &lt;input
         type="text"
@@ -272,7 +304,7 @@
 
     &lt;!-- Number --&gt;
     &lt;div&gt;
-      &lt;label for="number-input"&gt;Number input&lt;/label&gt;
+      &lt;label for="number-input"&gt;Number input &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
       &lt;p id="number-input-hint"&gt;Enter a number between 5 and 10.&lt;/p&gt;
       &lt;input
         type="number"
@@ -288,7 +320,7 @@
 
     &lt;!-- Select --&gt;
     &lt;div&gt;
-      &lt;label for="select-single"&gt;Single select&lt;/label&gt;
+      &lt;label for="select-single"&gt;Single select &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
       &lt;p id="select-single-hint"&gt;Choose one value.&lt;/p&gt;
       &lt;select
         id="select-single"
@@ -306,7 +338,7 @@
 
     &lt;!-- Multi Select --&gt;
     &lt;div&gt;
-      &lt;label for="select-multiple"&gt;Multiple select&lt;/label&gt;
+      &lt;label for="select-multiple"&gt;Multiple select &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
       &lt;p id="select-multiple-hint"&gt;Select at least one value.&lt;/p&gt;
       &lt;select
         id="select-multiple"
@@ -325,7 +357,7 @@
 
     &lt;!-- Radio --&gt;
     &lt;fieldset aria-describedby="radio-hint"&gt;
-      &lt;legend&gt;Single choice group (radio buttons)&lt;/legend&gt;
+      &lt;legend&gt;Single choice group (radio buttons) &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/legend&gt;
       &lt;p id="radio-hint"&gt;Exactly one option must be selected.&lt;/p&gt;
       &lt;label class="inline-option"&gt;
         &lt;input type="radio" name="radio-group" value="option-a" required&gt; Option A
@@ -340,18 +372,24 @@
     &lt;/fieldset&gt;
 
     &lt;!-- Checkbox --&gt;
-    &lt;fieldset aria-describedby="checkbox-hint"&gt;
-      &lt;legend&gt;Required checkbox&lt;/legend&gt;
-      &lt;p id="checkbox-hint"&gt;Must be checked to proceed.&lt;/p&gt;
-      &lt;label class="inline-option"&gt;
-        &lt;input type="checkbox" name="checkbox-input" required&gt;Confirmation checkbox
+    &lt;fieldset&gt;
+      &lt;legend&gt;Checkbox group&lt;/legend&gt;
+      &lt;p id=&quot;checkbox-hint&quot;&gt;Option A is required to proceed&lt;/p&gt;
+      &lt;label&gt;
+        &lt;input type=&quot;checkbox&quot; name=&quot;checkbox-input-required&quot; required aria-describedby=&quot;checkbox-hint&quot;&gt;
+        Option A
+        &lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;
       &lt;/label&gt;
-      &lt;div data-error-for="checkbox-input" hidden&gt;&lt;/div&gt;
+      &lt;div data-error-for=&quot;checkbox-input-required&quot; hidden&gt;&lt;/div&gt;
+      &lt;label&gt;
+        &lt;input type=&quot;checkbox&quot; name=&quot;checkbox-input-optional&quot;&gt;
+        Option B
+      &lt;/label&gt;
     &lt;/fieldset&gt;
 
     &lt;!-- File --&gt;
     &lt;div&gt;
-      &lt;label for="file-input"&gt;File upload&lt;/label&gt;
+      &lt;label for="file-input"&gt;File upload &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
       &lt;p id="file-input-hint"&gt;Accepted formats: PDF, JPG, PNG.&lt;/p&gt;
       &lt;input
         type="file"
@@ -381,7 +419,7 @@
 
     &lt;!-- Custom validation errors --&gt;
     &lt;div&gt;
-      &lt;label for="custom-errors-input"&gt;Input with custom error messages&lt;/label&gt;
+      &lt;label for="custom-errors-input"&gt;Input with custom error messages &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
       &lt;p id="custom-errors-input-hint"&gt;Password field with custom validation messages for required and too-short errors.&lt;/p&gt;
       &lt;input
         type="password"
@@ -474,8 +512,11 @@ form.addEventListener('submit', evt => {
 
     <dialog id="success-dialog" closedby="any">
       <h3>Form submitted successfully!</h3>
-      <p>The form has passed validation and was submitted without errors. Open browser's console to see the submitted form data as a FormData object.</p>
-      <form method="dialog"><button type="submit">Close</button></form>
+      <p>The form has passed validation and was submitted without errors.</p>
+      <p class="help-text">Open browser's console to see the submitted form data.</p>
+      <form method="dialog">
+        <button type="submit">Close</button>
+      </form>
     </dialog>
 
     <h2>License</h2>
