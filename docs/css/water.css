@@ -70,7 +70,7 @@ body {
   line-height: 1.4;
   max-width: var(--body-max-width);
   margin: 1.25rem auto; /* 20px */
-  padding: 0 0.625rem; /* 0 10px */
+  padding: 0 0.75rem; /* 0 12px */
   overflow-x: hidden;
   color: var(--text-main);
   background: var(--background-body);
@@ -81,11 +81,13 @@ p {
   text-wrap: pretty;
 }
 
-button,
-input,
-textarea,
-select {
-  transition: background-color var(--animation-duration) linear, border-color var(--animation-duration) linear, color var(--animation-duration) linear, box-shadow var(--animation-duration) linear, transform var(--animation-duration) ease;
+@media (prefers-reduced-motion: no-preference) {
+  button,
+  input,
+  textarea,
+  select {
+    transition: background-color var(--animation-duration) linear, border-color var(--animation-duration) linear, color var(--animation-duration) linear, box-shadow var(--animation-duration) linear, transform var(--animation-duration) ease;
+  }
 }
 
 h1 {
@@ -278,7 +280,6 @@ input[type='range'],
 select,
 button,
 textarea {
-  -webkit-appearance: none;
   appearance: none;
 }
 
@@ -369,7 +370,6 @@ input[type='range']:focus {
 input[type='range']::-webkit-slider-runnable-track {
   width: 100%;
   height: 9.5px;
-  transition: 0.2s;
   background: var(--background);
   border-radius: calc(var(--border-radius) / 2);
 }
@@ -380,7 +380,6 @@ input[type='range']::-webkit-slider-thumb {
   width: 20px;
   border-radius: 50%;
   background: var(--border);
-  -webkit-appearance: none;
   appearance: none;
   margin-top: -7px;
 }
@@ -392,8 +391,6 @@ input[type='range']:focus::-webkit-slider-runnable-track {
 input[type='range']::-moz-range-track {
   width: 100%;
   height: 9.5px;
-  -moz-transition: 0.2s;
-  transition: 0.2s;
   background: var(--background);
   border-radius: calc(var(--border-radius) / 2);
 }
@@ -557,7 +554,7 @@ tbody tr:nth-child(even) button:hover {
 
 details {
   background-color: var(--background-alt);
-  padding: 0.625rem 0.625rem 0;
+  padding: 0.625rem 0.625rem 0 0.625rem;
   margin: 1rem 0;
   border-radius: var(--border-radius);
   overflow: hidden;
@@ -571,8 +568,10 @@ details > :last-child {
   margin-bottom: 0;
 }
 
-details > summary {
-  transition: margin var(--animation-duration) ease-out;
+@media (prefers-reduced-motion: no-preference) {
+  details > summary {
+    transition: margin var(--animation-duration) ease-out;
+  }
 }
 
 details[open] > summary {
@@ -592,7 +591,7 @@ details > :not(summary) {
   margin-top: 0;
 }
 
-summary::-webkit-details-marker {
+summary::marker {
   color: var(--text-main);
 }
 
@@ -617,16 +616,48 @@ dialog > header:first-child {
   text-align: center;
 }
 
-dialog::-webkit-backdrop {
-  background: #0000009c;
-  -webkit-backdrop-filter: blur(0.25rem); /* 4px */
-  backdrop-filter: blur(0.25rem);
-}
-
 dialog::backdrop {
   background: #0000009c;
-  -webkit-backdrop-filter: blur(0.25rem); /* 4px */
-  backdrop-filter: blur(0.25rem);
+  backdrop-filter: blur(0.25rem); /* 4px */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  dialog::backdrop {
+    opacity: 0;
+  }
+
+  dialog[open]::backdrop {
+    opacity: 1;
+  }
+
+  dialog,
+  dialog::backdrop {
+    transition: transform 0.3s, opacity 0.3s, display 0.3s allow-discrete, overlay 0.3s allow-discrete;
+  }
+
+  /* 1. IS-OPEN STATE */
+  dialog[open] {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  /* 2. EXIT STATE */
+  dialog {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  /* 0. BEFORE-OPEN STATE */
+  @starting-style {
+    dialog[open] {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+
+    dialog[open]::backdrop {
+      opacity: 0;
+    }
+  }
 }
 
 footer {
@@ -678,10 +709,6 @@ body > footer {
   }
 
   summary::marker {
-    color: #000000;
-  }
-
-  summary::-webkit-details-marker {
     color: #000000;
   }
 
