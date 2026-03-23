@@ -157,17 +157,17 @@ The following attributes can be added to form controls:
 [stepMismatch]: https://developer.mozilla.org/docs/Web/API/ValidityState/stepMismatch
 [badInput]: https://developer.mozilla.org/docs/Web/API/ValidityState/badInput
 
-| Validation Rule | Attribute | Description |
-| --------------- | --------- | ----------- |
-| [`valueMissing`][valueMissing] | `data-msg-required` | The control is required, but no value has been provided. |
-| [`typeMismatch`][typeMismatch] | `data-msg-type` | The value does not match the expected input type, such as `email` or `url`. |
-| [`patternMismatch`][patternMismatch] | `data-msg-pattern` | The value does not match the pattern defined by the `pattern` attribute. |
-| [`tooShort`][tooShort] | `data-msg-too-short` | The value is shorter than the length required by the `minlength` attribute. |
-| [`tooLong`][tooLong] | `data-msg-too-long` | The value is longer than the length allowed by the `maxlength` attribute. |
-| [`rangeUnderflow`][rangeUnderflow] | `data-msg-min` | The value is less than the minimum allowed by the `min` attribute. |
-| [`rangeOverflow`][rangeOverflow] | `data-msg-max` | The value is greater than the maximum allowed by the `max` attribute. |
-| [`stepMismatch`][stepMismatch] | `data-msg-step` | The value does not conform to the interval defined by the `step` attribute. |
-| [`badInput`][badInput] | `data-msg-bad-input` | The browser could not convert the entered value into a valid value for that control type. |
+| Attribute | ValidityState flag | Description |
+| --------- | --------------- | ----------- |
+| `data-msg-required` | [`valueMissing`][valueMissing] | The control is required, but no value has been provided. |
+| `data-msg-type` | [`typeMismatch`][typeMismatch] | The value does not match the expected input type, such as `email` or `url`. |
+| `data-msg-pattern` | [`patternMismatch`][patternMismatch] | The value does not match the pattern defined by the `pattern` attribute. |
+| `data-msg-too-short` | [`tooShort`][tooShort] | The value is shorter than the length required by the `minlength` attribute. |
+| `data-msg-too-long` | [`tooLong`][tooLong] | The value is longer than the length allowed by the `maxlength` attribute. |
+| `data-msg-min` | [`rangeUnderflow`][rangeUnderflow] | The value is less than the minimum allowed by the `min` attribute. |
+| `data-msg-max` | [`rangeOverflow`][rangeOverflow] | The value is greater than the maximum allowed by the `max` attribute. |
+| `data-msg-step` | [`stepMismatch`][stepMismatch] | The value does not conform to the interval defined by the `step` attribute. |
+| `data-msg-bad-input` | [`badInput`][badInput] | The browser could not convert the entered value into a valid value for that control type. |
 
 When a control is invalid, the component checks for a matching `data-msg-*` attribute and uses its value as the error message.
 
