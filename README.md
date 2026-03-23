@@ -147,21 +147,31 @@ This preserves native validation behavior while allowing message customization.
 
 The following attributes can be added to form controls:
 
-| Validation Rule | Attribute |
-| --------------- | --------- |
-| `valueMissing` | `data-msg-required` |
-| `typeMismatch` | `data-msg-type` |
-| `patternMismatch` | `data-msg-pattern` |
-| `tooShort` | `data-msg-too-short` |
-| `tooLong` | `data-msg-too-long` |
-| `rangeUnderflow` | `data-msg-min` |
-| `rangeOverflow` | `data-msg-max` |
-| `stepMismatch` | `data-msg-step` |
-| `badInput` | `data-msg-bad-input` |
+[valueMissing]: https://developer.mozilla.org/docs/Web/API/ValidityState/valueMissing
+[typeMismatch]: https://developer.mozilla.org/docs/Web/API/ValidityState/typeMismatch
+[patternMismatch]: https://developer.mozilla.org/docs/Web/API/ValidityState/patternMismatch
+[tooShort]: https://developer.mozilla.org/docs/Web/API/ValidityState/tooShort
+[tooLong]: https://developer.mozilla.org/docs/Web/API/ValidityState/tooLong
+[rangeUnderflow]: https://developer.mozilla.org/docs/Web/API/ValidityState/rangeUnderflow
+[rangeOverflow]: https://developer.mozilla.org/docs/Web/API/ValidityState/rangeOverflow
+[stepMismatch]: https://developer.mozilla.org/docs/Web/API/ValidityState/stepMismatch
+[badInput]: https://developer.mozilla.org/docs/Web/API/ValidityState/badInput
 
-If a rule fails and the corresponding attribute exists, its value will be used as the error message.
+| Validation Rule | Attribute | Description |
+| --------------- | --------- | ----------- |
+| [`valueMissing`][valueMissing] | `data-msg-required` | The control is required, but no value has been provided. |
+| [`typeMismatch`][typeMismatch] | `data-msg-type` | The value does not match the expected input type, such as `email` or `url`. |
+| [`patternMismatch`][patternMismatch] | `data-msg-pattern` | The value does not match the pattern defined by the `pattern` attribute. |
+| [`tooShort`][tooShort] | `data-msg-too-short` | The value is shorter than the length required by the `minlength` attribute. |
+| [`tooLong`][tooLong] | `data-msg-too-long` | The value is longer than the length allowed by the `maxlength` attribute. |
+| [`rangeUnderflow`][rangeUnderflow] | `data-msg-min` | The value is less than the minimum allowed by the `min` attribute. |
+| [`rangeOverflow`][rangeOverflow] | `data-msg-max` | The value is greater than the maximum allowed by the `max` attribute. |
+| [`stepMismatch`][stepMismatch] | `data-msg-step` | The value does not conform to the interval defined by the `step` attribute. |
+| [`badInput`][badInput] | `data-msg-bad-input` | The browser could not convert the entered value into a valid value for that control type. |
 
-If the attribute is not present, the browser's default localized message is used.
+When a control is invalid, the component checks for a matching `data-msg-*` attribute and uses its value as the error message.
+
+If no matching attribute is present, the browser's default localized message is used.
 
 > [!NOTE]
 > For radio groups with a shared error element, apply `data-msg-*` attributes consistently across the group. With `report="all"`, the message is resolved per radio and the last processed radio determines the final text in the shared error container.

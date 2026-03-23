@@ -19,8 +19,6 @@
  * }} FormControl
  */
 
-const COMPONENT_NAME = 'validated-form';
-
 /**
  * @summary A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors.
  * @documentation https://github.com/georapbox/validated-form
@@ -491,7 +489,7 @@ class ValidatedForm extends HTMLElement {
    *
    * @param {string} [elementName='validated-form'] - The name of the custom element.
    */
-  static define(elementName = COMPONENT_NAME) {
+  static define(elementName = 'validated-form') {
     if (typeof window !== 'undefined' && !window.customElements.get(elementName)) {
       window.customElements.define(elementName, ValidatedForm);
     }

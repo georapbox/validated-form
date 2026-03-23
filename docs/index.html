@@ -69,14 +69,16 @@
           <!-- Number -->
           <div class="form-group">
             <label for="number-input">Number input <span class="required-hint" aria-hidden="true">*</span></label>
-            <p class="help-text" id="number-input-hint">Enter a number between 5 and 10.</p>
+            <p class="help-text" id="number-input-hint">Enter an even number between 2 and 10.</p>
             <input
               class="form-control"
               type="number"
               id="number-input"
               name="number-input"
-              required min="5"
+              required
+              min="2"
               max="10"
+              step="2"
               aria-describedby="number-input-hint"
             >
             <div data-error-for="number-input" hidden></div>
@@ -305,14 +307,15 @@
     &lt;!-- Number --&gt;
     &lt;div&gt;
       &lt;label for="number-input"&gt;Number input &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
-      &lt;p id="number-input-hint"&gt;Enter a number between 5 and 10.&lt;/p&gt;
+      &lt;p id="number-input-hint"&gt;Enter an even number between 2 and 10.&lt;/p&gt;
       &lt;input
         type="number"
         id="number-input"
         name="number-input"
         required
-        min="5"
+        min="2"
         max="10"
+        step="2"
         aria-describedby="number-input-hint"
       &gt;
       &lt;div data-error-for="number-input" hidden&gt;&lt;/div&gt;
