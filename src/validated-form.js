@@ -1,12 +1,6 @@
 // @ts-check
 
 /**
- * Represents a value that may be of type T, or null.
- * @template T
- * @typedef {T | null} Nullable
- */
-
-/**
  * Elements that support the Constraint Validation API inside a form.
  * Includes native controls and form-associated custom elements.
  * @typedef {HTMLElement & {
@@ -16,6 +10,7 @@
  *   validationMessage: string;
  *   checkValidity: () => boolean;
  *   reportValidity: () => boolean;
+ *   form: HTMLFormElement | null;
  * }} FormControl
  */
 
@@ -57,7 +52,7 @@ class ValidatedForm extends HTMLElement {
   /** @type {boolean} */
   #submittedOnce = false;
 
-  /** @type {Nullable<HTMLFormElement>} */
+  /** @type {HTMLFormElement | null} */
   #form = null;
 
   constructor() {
@@ -110,32 +105,24 @@ class ValidatedForm extends HTMLElement {
 
     this.#form = this.querySelector('form');
 
-    if (!this.#form) {
-      return;
-    }
-
-    if (!this.#form.noValidate) {
+    if (this.#form && !this.#form.noValidate) {
       this.#form.noValidate = true;
     }
 
-    this.#form.addEventListener('submit', this.#handleSubmit);
-    this.#form.addEventListener('invalid', this.#handleInvalidCapture, true);
-    this.#form.addEventListener('input', this.#handleInputOrChange);
-    this.#form.addEventListener('change', this.#handleInputOrChange);
+    this.#form?.addEventListener('submit', this.#handleSubmit);
+    this.addEventListener('invalid', this.#handleInvalidCapture, { capture: true });
+    this.addEventListener('input', this.#handleInputOrChange);
+    this.addEventListener('change', this.#handleInputOrChange);
   }
 
   /**
    * Lifecycle method that is called when the element is removed from the DOM.
    */
   disconnectedCallback() {
-    if (!this.#form) {
-      return;
-    }
-
-    this.#form.removeEventListener('submit', this.#handleSubmit);
-    this.#form.removeEventListener('invalid', this.#handleInvalidCapture, true);
-    this.#form.removeEventListener('input', this.#handleInputOrChange);
-    this.#form.removeEventListener('change', this.#handleInputOrChange);
+    this.#form?.removeEventListener('submit', this.#handleSubmit);
+    this.removeEventListener('invalid', this.#handleInvalidCapture, { capture: true });
+    this.removeEventListener('input', this.#handleInputOrChange);
+    this.removeEventListener('change', this.#handleInputOrChange);
   }
 
   /**
@@ -310,14 +297,14 @@ class ValidatedForm extends HTMLElement {
    *
    * @param {FormControl} control - The form control element for which to retrieve the error element.
    * @param {{ create?: boolean }} [options={}] - Options for retrieving the error element.
-   * @returns {Nullable<HTMLElement>} The error element associated with the form control element, or null if not found.
+   * @returns {HTMLElement | null} The error element associated with the form control element, or null if not found.
    */
   #getErrorElement(control, { create = false } = {}) {
     if (!this.#form || !this.#hasUsableName(control)) {
       return null;
     }
 
-    /** @type {Nullable<HTMLElement>} */
+    /** @type {HTMLElement | null} */
     const existingErrorElement = this.querySelector(`[data-error-for="${CSS.escape(control.name)}"]`);
 
     if (!existingErrorElement) {
@@ -431,8 +418,8 @@ class ValidatedForm extends HTMLElement {
    * @param {Event} evt - The invalid event object.
    */
   #handleInvalidCapture = evt => {
-    const control = evt.target;
-    if (!this.#isFormControl(control) || !control.willValidate) {
+    const control = this.#getFormControlFromEventTarget(evt.target);
+    if (!control) {
       return;
     }
 
@@ -452,14 +439,39 @@ class ValidatedForm extends HTMLElement {
       return;
     }
 
-    const control = evt.target;
-    if (!this.#isFormControl(control) || !control.willValidate) {
+    const control = this.#getFormControlFromEventTarget(evt.target);
+    if (!control) {
       return;
     }
 
     const ok = control.validity.valid;
     this.#setError(control, ok ? '' : this.#getMessage(control));
   };
+
+  /**
+   * Returns a validatable form control from an event target when it belongs
+   * to this component's form. This is used to ensure that events from
+   * controls that are not part of the form or not validatable are
+   * ignored by the event handlers.
+   *
+   * @param {EventTarget | null} target - The event target to evaluate.
+   * @returns {FormControl | null} The form control element if meets the criteria, null otherwise.
+   */
+  #getFormControlFromEventTarget(target) {
+    if (!this.#form) {
+      return null;
+    }
+    if (!this.#isFormControl(target)) {
+      return null;
+    }
+    if (!target.willValidate) {
+      return null;
+    }
+    if (target.form !== this.#form) {
+      return null;
+    }
+    return target;
+  }
 
   /**
    * This is to safe guard against cases where, for instance, a framework may

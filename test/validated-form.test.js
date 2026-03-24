@@ -102,7 +102,7 @@ describe('validated-form', () => {
       `);
 
       const form = el.querySelector('form');
-      expect(form).to.exist;
+      expect(form !== null).to.be.true;
       expect(form.noValidate).to.be.true;
     });
 
@@ -131,7 +131,7 @@ describe('validated-form', () => {
       expect(ok).to.be.false;
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
 
@@ -158,7 +158,7 @@ describe('validated-form', () => {
       expect(prevented1).to.be.true;
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
       expect(input.hasAttribute('data-invalid')).to.be.true;
@@ -195,11 +195,11 @@ describe('validated-form', () => {
       const errA = errorEl(el, 'a');
       const errB = errorEl(el, 'b');
 
-      expect(errA).to.exist;
+      expect(errA !== null).to.be.true;
       expect(errA.textContent).to.equal('A is invalid');
 
       // Should not create/show B's error in "first" mode
-      expect(errB).to.not.exist;
+      expect(errB === null).to.be.true;
       expect(b.hasAttribute('data-invalid')).to.be.false;
     });
 
@@ -224,11 +224,11 @@ describe('validated-form', () => {
       const errA = errorEl(el, 'a');
       const errB = errorEl(el, 'b');
 
-      expect(errA).to.exist;
+      expect(errA !== null).to.be.true;
       expect(errA.textContent).to.equal('A is invalid');
       expect(a.hasAttribute('data-invalid')).to.be.true;
 
-      expect(errB).to.exist;
+      expect(errB !== null).to.be.true;
       expect(errB.textContent).to.equal('B is invalid');
       expect(b.hasAttribute('data-invalid')).to.be.true;
     });
@@ -315,7 +315,7 @@ describe('validated-form', () => {
       expect(ok).to.be.false;
 
       // Only the enabled input should get an error
-      expect(errorEl(el, 'a')).to.not.exist;
+      expect(errorEl(el, 'a') === null).to.be.true;
       expect(errorEl(el, 'b')?.textContent).to.equal('B is invalid');
     });
 
@@ -338,33 +338,8 @@ describe('validated-form', () => {
       expect(ok).to.be.false;
 
       // Only the non-hidden input should get an error
-      expect(errorEl(el, 'a')).to.not.exist;
+      expect(errorEl(el, 'a') === null).to.be.true;
       expect(errorEl(el, 'b')?.textContent).to.equal('B is invalid');
-    });
-
-    it('validates a control outside the form when associated via the form attribute', async () => {
-      const el = await fixture(html`
-        <validated-form no-focus>
-          <form id="f">
-            <button type="submit">Submit</button>
-          </form>
-
-          <!-- Outside the form, but associated via form="f" -->
-          <input name="a" form="f" />
-        </validated-form>
-      `);
-
-      const input = el.querySelector('input[name="a"]');
-
-      setInvalid(input, 'A is invalid');
-      el.validate();
-
-      const err = errorEl(el, 'a');
-      expect(err).to.exist;
-      expect(err.textContent).to.equal('A is invalid');
-      expect(err.hasAttribute('hidden')).to.be.false;
-
-      expect(input.hasAttribute('data-invalid')).to.be.true;
     });
   });
 
@@ -388,7 +363,7 @@ describe('validated-form', () => {
       expect(evt.defaultPrevented).to.be.true;
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
 
@@ -410,7 +385,7 @@ describe('validated-form', () => {
       triggerInvalid(input);
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.textContent).to.equal('A is invalid');
     });
   });
@@ -452,7 +427,7 @@ describe('validated-form', () => {
       el.validate();
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.hasAttribute('hidden')).to.be.false;
 
       setValid(input);
@@ -481,7 +456,7 @@ describe('validated-form', () => {
       el.validate();
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.id).to.be.a('string');
       expect(err.id).to.not.equal('');
 
@@ -505,7 +480,7 @@ describe('validated-form', () => {
       el.validate();
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.id).to.be.a('string');
       expect(err.id).to.not.equal('');
 
@@ -530,7 +505,7 @@ describe('validated-form', () => {
       el.validate();
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.getAttribute('role')).to.equal('status');
       expect(err.getAttribute('aria-live')).to.equal('polite');
     });
@@ -551,7 +526,7 @@ describe('validated-form', () => {
       el.validate();
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
 
       // role exists, so ensureLiveRegionDefaults should not set aria-live
       expect(err.getAttribute('role')).to.equal('alert');
@@ -603,7 +578,7 @@ describe('validated-form', () => {
       el.validate();
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.hasAttribute('hidden')).to.be.false;
 
       el.resetValidation();
@@ -655,7 +630,7 @@ describe('validated-form', () => {
       el.validate();
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.textContent).to.equal('Field A is required');
     });
 
@@ -671,7 +646,7 @@ describe('validated-form', () => {
       el.validate();
 
       const err = errorEl(el, 'email');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.textContent).to.equal('Invalid email address');
     });
 
@@ -694,8 +669,90 @@ describe('validated-form', () => {
       el.validate();
 
       const err = errorEl(el, 'a');
-      expect(err).to.exist;
+      expect(err !== null).to.be.true;
       expect(err.textContent).to.equal('Field A is required');
+    });
+  });
+
+  describe('form-associated controls outside the form element', () => {
+    it('shows validation errors for a control associated via the form attribute', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <input name="a" form="f" />
+          <form id="f">
+            <button type="submit">Submit</button>
+          </form>
+        </validated-form>
+      `);
+
+      const input = el.querySelector('input[name="a"]');
+
+      setInvalid(input, 'A is invalid');
+
+      const ok = el.validate();
+      expect(ok).to.be.false;
+
+      const err = errorEl(el, 'a');
+      expect(err !== null).to.be.true;
+      expect(err.textContent).to.equal('A is invalid');
+      expect(err.hasAttribute('hidden')).to.be.false;
+      expect(input.hasAttribute('data-invalid')).to.be.true;
+    });
+
+    it('updates live validation on input after first submit', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <input name="a" form="f" />
+          <form id="f">
+            <button type="submit">Submit</button>
+          </form>
+        </validated-form>
+      `);
+
+      const input = el.querySelector('input[name="a"]');
+
+      setInvalid(input, 'A is invalid');
+      el.validate();
+
+      const err = errorEl(el, 'a');
+      expect(err !== null).to.be.true;
+      expect(err.textContent).to.equal('A is invalid');
+      expect(err.hasAttribute('hidden')).to.be.false;
+
+      setValid(input);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+
+      expect(err.textContent).to.equal('');
+      expect(err.hasAttribute('hidden')).to.be.true;
+      expect(input.hasAttribute('data-invalid')).to.be.false;
+    });
+
+    it('does not react to controls associated with a different form after live validation is enabled', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <input name="inside" form="f" />
+          <input name="outside" form="other-form" />
+          <form id="f">
+            <button type="submit">Submit</button>
+          </form>
+          <form id="other-form"></form>
+        </validated-form>
+      `);
+
+      const inside = el.querySelector('input[name="inside"]');
+      const outside = el.querySelector('input[name="outside"]');
+
+      // Enable live validation for this component
+      setInvalid(inside, 'Inside is invalid');
+      el.validate();
+
+      // Dispatch input from a control owned by another form
+      setInvalid(outside, 'Outside is invalid');
+      outside.dispatchEvent(new Event('input', { bubbles: true }));
+
+      // No error should be created for the unrelated control
+      expect(errorEl(el, 'outside') === null).to.be.true;
+      expect(outside.hasAttribute('data-invalid')).to.be.false;
     });
   });
 });
