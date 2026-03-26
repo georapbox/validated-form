@@ -9,7 +9,9 @@
 
 A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors. It does not implement validation rules or schemas — it reads the validation state through the [Constraint Validation API](https://developer.mozilla.org/docs/Web/API/Constraint_validation) and displays the control's `validationMessage`, optionally allowing per-field message overrides via `data-msg-*` attributes.
 
-This component follows a progressive-enhancement approach: the browser remains responsible for validation, while JavaScript improves how errors are presented and announced. If JavaScript fails to load, the form still works using native browser validation UI.
+The component follows a progressive-enhancement approach: the browser remains responsible for validation, while JavaScript improves how errors are presented and announced. If JavaScript fails to load, the form still works using native browser validation UI.
+
+`<validated-form>` is a good fit when you want to keep native browser validation and add accessible inline error presentation with minimal configuration.
 
 [API documentation](#api) &bull; [Demo][demo]
 
@@ -20,7 +22,6 @@ Modern browsers already provide native form validation using attributes like `re
 In many cases, that is enough.
 
 However, native validation UI has practical limitations:
-
 - Error messages appear in browser popups that cannot be styled
 - Messages are not reliably associated with fields for assistive technologies
 - Error bubbles may disappear before users can read them
@@ -29,7 +30,6 @@ However, native validation UI has practical limitations:
 This component builds on native validation rather than replacing it.
 
 Using the **Constraint Validation API**, it:
-
 - Reads the browser's validation state
 - Reuses localized validation messages
 - Renders persistent inline errors
@@ -37,13 +37,13 @@ Using the **Constraint Validation API**, it:
 
 This progressive-enhancement approach was informed by writing from [Adrian Roselli](https://adrianroselli.com/2019/02/avoid-default-field-validation.html) and [HTMHell](https://www.htmhell.dev/adventcalendar/2025/28/) on the accessibility limitations of default browser validation UI and the benefits of layering accessible feedback on top of native validation.
 
-## Install
+## Usage
+
+### Installation
 
 ```sh
 npm install --save @georapbox/validated-form
 ```
-
-## Usage
 
 ### Importing the component
 
@@ -91,7 +91,7 @@ The component identifies fields using their `name` attribute (the same identifie
 <input type="email" name="email" required>
 ```
 
-Controls without a `name` cannot be associated with an error message.
+Controls without a `name` still participate in validation, but they cannot be associated with an error element, so no inline error message will be shown for them.
 
 #### 3. Each control needs an associated error element
 
@@ -108,7 +108,7 @@ The component manages the visibility of the error element by toggling the `hidde
 
 Radio buttons with the same name represent a single logical field and must share one error container. Provide a single element with `data-error-for="<name>"` that matches the group's `name` attribute.
 
-The component treats the group as a single logical field and uses one shared error container. When validation fails, the error message is associated with the radio that triggered validation. During form submission, the first invalid radio in the group becomes the focus target.
+The component treats the group as a single logical field and uses one shared error container. If the group is invalid, the error message is associated with the radio that triggered validation. On form submission, focus moves to the first invalid radio in the group.
 
 By default (`report="all"`), the error element is linked to all radios in the group. When using `report="first"`, only the first invalid radio is linked and focused.
 
@@ -135,7 +135,7 @@ The component supports custom validation messages per input without using `setCu
 
 Custom messages affect only what `<validated-form>` displays. They do not change the browser's validation rules, the control's validity state, or native validation UI.
 
-You can provide custom messages using `data-*` attributes on individual form controls. When a control fails validation, the component:
+You can provide custom messages using `data-*` attributes on individual form controls. For each invalid control, the component:
 
 1. Detects which validation rule failed (via the Constraint Validation API)
 2. Looks for a matching custom message attribute
@@ -176,7 +176,7 @@ If no matching attribute is present, the browser's default localized message is 
 > [!NOTE]
 > For radio groups with a shared error element, apply `data-msg-*` attributes consistently across the group. With `report="all"`, the message is resolved per radio and the last processed radio determines the final text in the shared error container.
 
-### Example
+### Example markup with custom messages:
 
 ```html
 <validated-form>
@@ -244,17 +244,17 @@ Per-rule `data-msg-*` attributes still take precedence for the specific rule the
 ### Properties
 | Name | Reflects | Type | Required | Default | Description |
 | ---- | -------- | ---- | -------- | ------- | ----------- |
-| `noFocus`<br>*`no-focus`* | ✓ | `boolean` | - | `false` | Indicates whether the component should avoid focusing the first invalid control when validation fails. When `false` (default), the component will focus the first invalid control to guide users directly to the issue, otherwise it will only show error messages without changing focus. |
-| `report` | ✓ | `'all' \| 'first'` | - | `'all'` | Determines which validation messages to show when the form is validated. The value can be 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message. |
+| `noFocus`<br>*`no-focus`* | ✓ | `boolean` | - | `false` | Determines whether the component focuses the first invalid control when validation fails. When `false` (default), focus moves to the first invalid control. When `true`, errors are shown without changing focus. |
+| `report` | ✓ | `'all' \| 'first'` | - | `'all'` | Determines how validation messages are reported when the form is validated. Use 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message. After validation has started, live updates still reflect the field being edited. |
 
 ### Methods
 
 | Name | Type | Description | Arguments |
 | ---- | ---- | ----------- | --------- |
-| `define` | Static | Defines/registers the custom element with the name provided. If no name is provided, the default name is used. The method checks if the element is already defined, hence will skip trying to redefine it. | elementName='validated-form' |
-| `validate` | Instance | Validates and returns the validity of the form, showing error messages for any invalid controls. | - |
-| `resetValidation` | Instance | Resets the validation state of the form, clearing all error messages and validation states. This does not reset the form fields themselves, but only the validation feedback. | - |
-| `isValid` | Instance | Returns a boolean indicating whether the form is currently valid according to the browser's validation rules. It reflects the validity state of the form, allowing you to check if all fields are valid without triggering validation messages. | - |
+| `define` | Static | Defines the custom element using the provided name. If no name is given, the default tag name is used. If the element is already registered, the method does nothing. | elementName='validated-form' |
+| `validate` | Instance | Validates the form, updates the displayed validation feedback, and returns whether the form is valid. | - |
+| `resetValidation` | Instance | Resets the component's validation UI by clearing displayed error messages and validation feedback. It does not reset form field values or change the browser's underlying validity state. | - |
+| `isValid` | Instance | Returns whether the form is currently valid according to the browser's native validation rules, without showing validation messages. | - |
 
 <sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use `whenDefined` method of the `CustomElementRegistry` interface, eg `customElements.whenDefined('validated-form').then(() => { /* call methods here */ });`
 

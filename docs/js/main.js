@@ -10,6 +10,7 @@ ValidatedForm.define();
 const validatedForm = document.querySelector('validated-form');
 const demoForm = document.getElementById('demo-form');
 const successDialog = document.getElementById('success-dialog');
+const out = successDialog.querySelector('code');
 
 demoForm.addEventListener('submit', evt => {
   evt.preventDefault();
@@ -19,9 +20,19 @@ demoForm.addEventListener('submit', evt => {
   }
 
   const formData = new FormData(demoForm);
-  const data = Object.fromEntries(formData.entries());
-  console.log('Form data:', data);
+  const entries = Array.from(formData.entries()).map(([key, value]) => {
+    if (value instanceof File && value.name) {
+      const { name, size, type } = value;
+      return [key, { name, size, type }];
+    }
+    return [key, value];
+  });
+  const data = Object.fromEntries(entries);
+
+  out.textContent = JSON.stringify(data, null, 2);
+  window.hljs.highlightElement(out);
   successDialog.showModal();
+  console.log('Form data:', data);
 });
 
 const optionsform = document.getElementById('options-form');

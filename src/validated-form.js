@@ -21,16 +21,16 @@
  * @tagname validated-form - This is the default tag name, unless overridden by the `define` method.
  * @extends HTMLElement
  *
- * @property {boolean} noFocus - Indicates whether the component should focus the first invalid control when validation fails.
- * @property {string} report - Determines which validation messages to show when the form is validated. The value can be 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message.
+ * @property {boolean} noFocus - Determines whether the component focuses the first invalid control when validation fails. When `false` (default), focus moves to the first invalid control. When `true`, errors are shown without changing focus.
+ * @property {string} report - Determines how validation messages are reported when the form is validated. Use 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message. After validation has started, live updates still reflect the field being edited.
  *
- * @attribute {boolean} no-focus - Indicates whether the component should focus the first invalid control when validation fails.
- * @attribute {string} report - Determines which validation messages to show when the form is validated. The value can be 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message.
+ * @attribute {boolean} no-focus - Determines whether the component focuses the first invalid control when validation fails. When `false` (default), focus moves to the first invalid control. When `true`, errors are shown without changing focus.
+ * @attribute {string} report - Determines how validation messages are reported when the form is validated. Use 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message. After validation has started, live updates still reflect the field being edited.
  *
- * @method define - Static method. Defines the custom element with the given name.
- * @method validate - Instance method. Validates the form and shows error messages for any invalid controls.
- * @method resetValidation - Instance method. Resets the validation state of the form, clearing all error messages and validation states.
- * @method isValid - Instance method. Checks whether all form controls are currently valid according to the Constraint Validation API.
+ * @method define - Static method. Defines the custom element using the provided name. If no name is given, the default tag name is used. If the element is already registered, the method does nothing.
+ * @method validate - Instance method. Validates the form, updates the displayed validation feedback, and returns whether the form is valid.
+ * @method resetValidation - Instance method. Resets the component's validation UI by clearing displayed error messages and validation feedback. It does not reset form field values or change the browser's underlying validity state.
+ * @method isValid - Instance method. Returns whether the form is currently valid according to the browser's native validation rules, without showing validation messages.
  */
 class ValidatedForm extends HTMLElement {
   /** @type {ReadonlyArray<readonly [keyof ValidityState, string]>} */
@@ -60,8 +60,9 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Indicates whether the component should focus the first
-   * invalid control when validation fails.
+   * Determines whether the component focuses the first invalid control when
+   * validation fails. When `false` (default), focus moves to the first
+   * invalid control. When `true`, errors are shown without changing focus.
    *
    * @type {boolean}
    * @attribute no-focus
@@ -76,9 +77,10 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Determines which validation messages to show when the form is validated.
-   * The value can be 'all' to show messages for all invalid controls,
-   * or 'first' to show only the first invalid control's message.
+   * Determines how validation messages are reported when the form is validated.
+   * Use 'all' to show messages for all invalid controls, or 'first' to show
+   * only the first invalid control's message. After validation has started,
+   * live updates still reflect the field being edited.
    *
    * @type {'all' | 'first'}
    * @attribute report
@@ -126,8 +128,8 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Validates the form and shows error messages for any invalid controls.
-   *
+   * Validates the form, updates the displayed validation feedback,
+   * and returns whether the form is valid.
    *
    * @returns {boolean} True if the form is valid, false otherwise.
    */
@@ -137,9 +139,9 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Resets the validation state of the form, clearing all error
-   * messages and validation states. This does not reset the form
-   * fields themselves, but only the validation feedback.
+   * Resets the component's validation UI by clearing displayed error messages
+   * and validation feedback. It does not reset form field values or change
+   * the browser's underlying validity state.
    */
   resetValidation() {
     this.#submittedOnce = false;
@@ -147,10 +149,8 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Checks whether all form controls are currently valid according to the
-   * Constraint Validation API. It reflects the validity state of the form,
-   * allowing you to check if all fields are valid without triggering
-   * validation messages.
+   * Returns whether the form is currently valid according to the browser's
+   * native validation rules, without showing validation messages.
    *
    * @returns {boolean} True if all controls are valid, false otherwise.
    */
@@ -264,9 +264,9 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Wires up an error element to a form control element by ensuring it has the appropriate
-   * ARIA attributes to be associated with the control and function as a live region
-   * for error messages.
+   * Wires up an error element to a form control element by ensuring it has the
+   * appropriate ARIA attributes to be associated with the control and function
+   * as a live region for error messages.
    *
    * @param {FormControl} control - The form control element to associate with the error element.
    * @param {HTMLElement} errorElement - The error element to wire up.
@@ -496,8 +496,9 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Defines a custom element with the given name.
-   * The name must contain a dash (-).
+   * Defines the custom element using the provided name. If no name is given,
+   * the default tag name is used. If the element is already registered,
+   * the method does nothing.
    *
    * @param {string} [elementName='validated-form'] - The name of the custom element.
    */

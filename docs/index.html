@@ -90,9 +90,9 @@
             <p class="help-text" id="select-single-hint">Choose one value.</p>
             <select class="form-control" id="select-single" name="select-single" required aria-describedby="select-single-hint">
               <option value="">Select an option</option>
-              <option value="a">Option A</option>
-              <option value="b">Option B</option>
-              <option value="c">Option C</option>
+              <option value="option-a">Option A</option>
+              <option value="option-b">Option B</option>
+              <option value="option-c">Option C</option>
             </select>
             <div data-error-for="select-single" hidden></div>
           </div>
@@ -102,10 +102,10 @@
             <label for="select-multiple">Multiple select <span class="required-hint" aria-hidden="true">*</span></label>
             <p class="help-text" id="select-multiple-hint">Select at least one value.</p>
             <select class="form-control" id="select-multiple" name="select-multiple" multiple required aria-describedby="select-multiple-hint">
-              <option value="a">Option A</option>
-              <option value="b">Option B</option>
-              <option value="c">Option C</option>
-              <option value="d">Option D</option>
+              <option value="option-a">Option A</option>
+              <option value="option-b">Option B</option>
+              <option value="option-c">Option C</option>
+              <option value="option-d">Option D</option>
             </select>
             <div data-error-for="select-multiple" hidden></div>
           </div>
@@ -115,13 +115,29 @@
             <legend>Single choice group (radio buttons) <span class="required-hint" aria-hidden="true">*</span></legend>
             <p class="help-text" id="radio-hint">Exactly one option must be selected.</p>
             <label class="inline-option">
-              <input type="radio" name="radio-group" value="option-a" required> Option A
+              <input
+                type="radio"
+                name="radio-group"
+                value="option-a"
+                required
+              >
+              Option A
             </label>
             <label class="inline-option">
-              <input type="radio" name="radio-group" value="option-b"> Option B
+              <input
+                type="radio"
+                name="radio-group"
+                value="option-b"
+              >
+              Option B
             </label>
             <label class="inline-option">
-              <input type="radio" name="radio-group" value="option-c"> Option C
+              <input
+                type="radio"
+                name="radio-group"
+                value="option-c"
+              >
+              Option C
             </label>
             <div data-error-for="radio-group" hidden></div>
           </fieldset>
@@ -131,13 +147,23 @@
             <legend>Checkbox group</legend>
             <p class="help-text" id="checkbox-hint">Option A is required to proceed</p>
             <label class="inline-option">
-              <input type="checkbox" name="checkbox-input-required" required aria-describedby="checkbox-hint">
+              <input
+                type="checkbox"
+                name="checkbox-input-required"
+                value="option-a"
+                required
+                aria-describedby="checkbox-hint"
+              >
               Option A
               <span class="required-hint" aria-hidden="true">*</span>
             </label>
             <div data-error-for="checkbox-input-required" hidden></div>
             <label class="inline-option">
-              <input type="checkbox" name="checkbox-input-optional">
+              <input
+                type="checkbox"
+                name="checkbox-input-optional"
+                value="option-b"
+              >
               Option B
             </label>
           </fieldset>
@@ -332,9 +358,9 @@
         aria-describedby="select-single-hint"
       &gt;
         &lt;option value=""&gt;Select an option&lt;/option&gt;
-        &lt;option value="a"&gt;Option A&lt;/option&gt;
-        &lt;option value="b"&gt;Option B&lt;/option&gt;
-        &lt;option value="c"&gt;Option C&lt;/option&gt;
+        &lt;option value="option-a"&gt;Option A&lt;/option&gt;
+        &lt;option value="option-b"&gt;Option B&lt;/option&gt;
+        &lt;option value="option-c"&gt;Option C&lt;/option&gt;
       &lt;/select&gt;
       &lt;div data-error-for="select-single" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
@@ -350,10 +376,10 @@
         required
         aria-describedby="select-multiple-hint"
       &gt;
-        &lt;option value="a"&gt;Option A&lt;/option&gt;
-        &lt;option value="b"&gt;Option B&lt;/option&gt;
-        &lt;option value="c"&gt;Option C&lt;/option&gt;
-        &lt;option value="d"&gt;Option D&lt;/option&gt;
+        &lt;option value="option-a"&gt;Option A&lt;/option&gt;
+        &lt;option value="option-b"&gt;Option B&lt;/option&gt;
+        &lt;option value="option-c"&gt;Option C&lt;/option&gt;
+        &lt;option value="option-d"&gt;Option D&lt;/option&gt;
       &lt;/select&gt;
       &lt;div data-error-for="select-multiple" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
@@ -363,13 +389,29 @@
       &lt;legend&gt;Single choice group (radio buttons) &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/legend&gt;
       &lt;p id="radio-hint"&gt;Exactly one option must be selected.&lt;/p&gt;
       &lt;label class="inline-option"&gt;
-        &lt;input type="radio" name="radio-group" value="option-a" required&gt; Option A
+        &lt;input
+          type="radio"
+          name="radio-group"
+          value="option-a"
+          required
+        &gt;
+        Option A
       &lt;/label&gt;
       &lt;label class="inline-option"&gt;
-        &lt;input type="radio" name="radio-group" value="option-b"&gt; Option B
+        &lt;input
+          type="radio"
+          name="radio-group"
+          value="option-b"
+        &gt;
+        Option B
       &lt;/label&gt;
       &lt;label class="inline-option"&gt;
-        &lt;input type="radio" name="radio-group" value="option-c"&gt; Option C
+        &lt;input
+          type="radio"
+          name="radio-group"
+          value="option-c"
+        &gt;
+        Option C
       &lt;/label&gt;
       &lt;div data-error-for="radio-group" hidden&gt;&lt;/div&gt;
     &lt;/fieldset&gt;
@@ -379,13 +421,23 @@
       &lt;legend&gt;Checkbox group&lt;/legend&gt;
       &lt;p id=&quot;checkbox-hint&quot;&gt;Option A is required to proceed&lt;/p&gt;
       &lt;label&gt;
-        &lt;input type=&quot;checkbox&quot; name=&quot;checkbox-input-required&quot; required aria-describedby=&quot;checkbox-hint&quot;&gt;
+        &lt;input
+          type=&quot;checkbox&quot;
+          name=&quot;checkbox-input-required&quot;
+          value="option-a"
+          required
+          aria-describedby=&quot;checkbox-hint&quot;
+        &gt;
         Option A
         &lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;
       &lt;/label&gt;
       &lt;div data-error-for=&quot;checkbox-input-required&quot; hidden&gt;&lt;/div&gt;
       &lt;label&gt;
-        &lt;input type=&quot;checkbox&quot; name=&quot;checkbox-input-optional&quot;&gt;
+        &lt;input
+          type=&quot;checkbox&quot;
+          name=&quot;checkbox-input-optional&quot;
+          value="option-b"
+        &gt;
         Option B
       &lt;/label&gt;
     &lt;/fieldset&gt;
@@ -516,7 +568,7 @@ form.addEventListener('submit', evt => {
     <dialog id="success-dialog" closedby="any">
       <h3>Form submitted successfully!</h3>
       <p>The form has passed validation and was submitted without errors.</p>
-      <p class="help-text">Open browser's console to see the submitted form data.</p>
+      <pre><code class="hljs language-json"></code></pre>
       <form method="dialog">
         <button type="submit">Close</button>
       </form>
