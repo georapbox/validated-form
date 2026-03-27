@@ -3,6 +3,7 @@
 /**
  * Elements that support the Constraint Validation API inside a form.
  * Includes native controls and form-associated custom elements.
+ *
  * @typedef {HTMLElement & {
  *   name?: string;
  *   willValidate: boolean;
@@ -181,8 +182,8 @@ class ValidatedForm extends HTMLElement {
 
     for (const [flag, attr] of ValidatedForm.#MESSAGE_ATTRS) {
       if (validity[flag]) {
-        const custom = control.getAttribute(attr);
-        return custom || control.validationMessage;
+        const customMessage = control.getAttribute(attr);
+        return customMessage || control.validationMessage;
       }
     }
 
@@ -474,19 +475,20 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * This is to safe guard against cases where, for instance, a framework may
-   * have added the element to the page and set a value on one of its properties,
-   * but lazy loaded its definition. Without this guard, the upgraded element
-   * would miss that property and the instance property would prevent the class
-   * property setter from ever being called.
+   * Re-applies a property value that may have been set on the element
+   * instance before the custom element was defined.
    *
-   * https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
+   * This handles cases where a framework sets a property on the element
+   * before its definition is loaded. Without this step, the own property
+   * on the instance would shadow the class setter and prevent it from
+   * running after upgrade.
+   *
+   * @see https://web.dev/articles/custom-elements-best-practices#make_properties_lazy
    *
    * @param {'noFocus' | 'report'} prop - The property name to upgrade.
    */
   #upgradeProperty(prop) {
-    /** @type {any} */
-    const instance = this;
+    const instance = /** @type {HTMLElement & Record<string, unknown>} */ (this);
 
     if (Object.prototype.hasOwnProperty.call(instance, prop)) {
       const value = instance[prop];
