@@ -84,6 +84,28 @@
             <div data-error-for="number-input" hidden></div>
           </div>
 
+          <!-- Datetime-local -->
+          <div class="form-group">
+            <label for="datetime-input">Datetime input <span class="required-hint" aria-hidden="true">*</span></label>
+            <p class="help-text" id="datetime-input-hint">
+              Select a date and time between
+              <time datetime="2026-03-28T09:00">28 March 2026, 09:00</time>
+              and
+              <time datetime="2026-03-28T18:00">28 March 2026, 18:00</time>.
+            </p>
+            <input
+              class="form-control"
+              type="datetime-local"
+              id="datetime-input"
+              name="datetime-input"
+              required
+              min="2026-03-28T09:00"
+              max="2026-03-28T18:00"
+              aria-describedby="datetime-input-hint"
+            >
+            <div data-error-for="datetime-input" hidden></div>
+          </div>
+
           <!-- Select -->
           <div class="form-group">
             <label for="select-single">Single select <span class="required-hint" aria-hidden="true">*</span></label>
@@ -255,6 +277,7 @@
           <input type="hidden" name="hidden-input" value="hidden-value">
 
           <button type="submit">Submit</button>
+          <button type="reset">Reset</button>
         </form>
       </validated-form>
     </browser-window>
@@ -345,6 +368,28 @@
         aria-describedby="number-input-hint"
       &gt;
       &lt;div data-error-for="number-input" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Datetime-local --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="datetime-input"&gt;Datetime input &lt;span class="required-hint" aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+      &lt;p class="help-text" id="datetime-input-hint"&gt;
+        Select a date and time between
+        &lt;time datetime="2026-03-28T09:00"&gt;28 March 2026, 09:00&lt;/time&gt;
+        and
+        &lt;time datetime="2026-03-28T18:00"&gt;28 March 2026, 18:00&lt;/time&gt;.
+      &lt;/p&gt;
+      &lt;input
+        class="form-control"
+        type="datetime-local"
+        id="datetime-input"
+        name="datetime-input"
+        required
+        min="2026-03-28T09:00"
+        max="2026-03-28T18:00"
+        aria-describedby="datetime-input-hint"
+      &gt;
+      &lt;div data-error-for="datetime-input" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;!-- Select --&gt;
@@ -524,6 +569,7 @@
     &lt;input type="hidden" name="hidden-input" value="hidden-value"&gt;
 
     &lt;button type="submit"&gt;Submit&lt;/button&gt;
+    &lt;button type="reset"&gt;Reset&lt;/button&gt;
   &lt;/form&gt;
 &lt;/validated-form&gt;</code></pre>
 
@@ -552,16 +598,20 @@
 <pre><code>const validatedForm = document.querySelector('validated-form');
 const form = document.querySelector('form');
 
-form.addEventListener('submit', evt => {
+form.addEventListener('submit', evt =&gt; {
   evt.preventDefault();
 
-  if (!validatedForm.isValid()) {
+  if (!validatedForm.isValid?.()) {
     return;
   }
 
   const formData = new FormData(form);
   const data = Object.fromEntries(formData.entries());
   console.log('Form data:', data);
+});
+
+form.addEventListener('reset', evt =&gt; {
+  validatedForm.resetValidation?.();
 });</code></pre>
     </details>
 

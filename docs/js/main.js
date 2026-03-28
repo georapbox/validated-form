@@ -15,7 +15,7 @@ const out = successDialog.querySelector('code');
 demoForm.addEventListener('submit', evt => {
   evt.preventDefault();
 
-  if (!validatedForm.isValid()) {
+  if (!validatedForm.isValid?.()) {
     return;
   }
 
@@ -33,6 +33,10 @@ demoForm.addEventListener('submit', evt => {
   window.hljs.highlightElement(out);
   successDialog.showModal();
   console.log('Form data:', data);
+});
+
+demoForm.addEventListener('reset', () => {
+  validatedForm.resetValidation?.();
 });
 
 const optionsform = document.getElementById('options-form');

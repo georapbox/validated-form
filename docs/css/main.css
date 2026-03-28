@@ -52,31 +52,6 @@ browser-window::part(title) {
   border-radius: var(--border-radius);
 }
 
-#demo-form {
-  margin: 0 auto;
-  padding: 1rem;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border);
-  background: var(--background-card);
-}
-
-#demo-form h3 {
-  margin-block: 0;
-}
-
-#demo-form fieldset {
-  border-color: var(--border);
-  background-color: var(--background-input);
-}
-
-#demo-form textarea {
-  resize: none;
-}
-
-#demo-form button[type="submit"] {
-  margin: 0;
-}
-
 .form-group {
   display: flex;
   flex-direction: column;
@@ -110,10 +85,29 @@ browser-window::part(title) {
   color: var(--color-danger);
 }
 
-[data-error-for] {
-  font-size: 0.875rem;
-  color: var(--color-danger);
-  word-wrap: break-word;
+#demo-form {
+  margin: 0 auto;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border);
+  background: var(--background-card);
+}
+
+#demo-form h3 {
+  margin-block: 0;
+}
+
+#demo-form fieldset {
+  border-color: var(--border);
+  background-color: var(--background-input);
+}
+
+#demo-form textarea {
+  resize: none;
+}
+
+#demo-form :is(button[type="submit"], button[type="reset"]) {
+  margin: 0;
 }
 
 #success-dialog {
@@ -133,4 +127,10 @@ browser-window::part(title) {
 
 #success-dialog form[method="dialog"] button {
   margin: 0;
+}
+
+[data-error-for] {
+  font-size: 0.875rem;
+  color: var(--color-danger);
+  word-wrap: break-word;
 }
