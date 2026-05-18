@@ -338,7 +338,7 @@ class ValidatedForm extends HTMLElement {
       errorElement.toggleAttribute('hidden', !hasError);
     }
 
-    control.toggleAttribute('data-invalid', hasError);
+    this.#setInvalidState(control, hasError);
   }
 
   /**
@@ -392,6 +392,20 @@ class ValidatedForm extends HTMLElement {
     }
 
     return valid;
+  }
+
+  /**
+   * Sets the invalid state for a form control element by updating its ARIA attributes.
+   *
+   * @param {FormControl} control - The form control element for which to set the invalid state.
+   * @param {boolean} hasError - Whether the control is in an error state. If true, sets aria-invalid to "true". If false, removes the aria-invalid attribute.
+   */
+  #setInvalidState(control, hasError) {
+    if (hasError) {
+      control.setAttribute('aria-invalid', 'true');
+    } else {
+      control.removeAttribute('aria-invalid');
+    }
   }
 
   /**
