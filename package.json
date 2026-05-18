@@ -1,6 +1,6 @@
 {
   "name": "@georapbox/validated-form",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors.",
   "type": "module",
   "main": "dist/validated-form.js",

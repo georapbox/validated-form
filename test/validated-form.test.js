@@ -134,8 +134,7 @@ describe('validated-form', () => {
       expect(err !== null).to.be.true;
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
-
-      expect(input.hasAttribute('data-invalid')).to.be.true;
+      expect(input.getAttribute('aria-invalid')).to.equal('true');
     });
 
     it('on successful submit it clears all errors', async () => {
@@ -161,7 +160,7 @@ describe('validated-form', () => {
       expect(err !== null).to.be.true;
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
-      expect(input.hasAttribute('data-invalid')).to.be.true;
+      expect(input.getAttribute('aria-invalid')).to.equal('true');
 
       // Second submit: valid -> component should NOT prevent, but errors should clear
       setValid(input);
@@ -171,7 +170,7 @@ describe('validated-form', () => {
 
       expect(err.textContent).to.equal('');
       expect(err.hasAttribute('hidden')).to.be.true;
-      expect(input.hasAttribute('data-invalid')).to.be.false;
+      expect(input.hasAttribute('aria-invalid')).to.be.false;
     });
 
     it('report="first" only shows the first invalid control', async () => {
@@ -200,7 +199,7 @@ describe('validated-form', () => {
 
       // Should not create/show B's error in "first" mode
       expect(errB === null).to.be.true;
-      expect(b.hasAttribute('data-invalid')).to.be.false;
+      expect(b.hasAttribute('aria-invalid')).to.be.false;
     });
 
     it('report="all" shows errors for all invalid controls', async () => {
@@ -226,11 +225,11 @@ describe('validated-form', () => {
 
       expect(errA !== null).to.be.true;
       expect(errA.textContent).to.equal('A is invalid');
-      expect(a.hasAttribute('data-invalid')).to.be.true;
+      expect(a.getAttribute('aria-invalid')).to.equal('true');
 
       expect(errB !== null).to.be.true;
       expect(errB.textContent).to.equal('B is invalid');
-      expect(b.hasAttribute('data-invalid')).to.be.true;
+      expect(b.getAttribute('aria-invalid')).to.equal('true');
     });
 
     it('focuses first invalid control by default', async () => {
@@ -366,8 +365,7 @@ describe('validated-form', () => {
       expect(err !== null).to.be.true;
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
-
-      expect(input.hasAttribute('data-invalid')).to.be.true;
+      expect(input.getAttribute('aria-invalid')).to.equal('true');
     });
 
     it('can also be triggered via checkValidity (explicit)', async () => {
@@ -436,7 +434,7 @@ describe('validated-form', () => {
       expect(err.textContent).to.equal('');
       expect(err.hasAttribute('hidden')).to.be.true;
 
-      expect(input.hasAttribute('data-invalid')).to.be.false;
+      expect(input.hasAttribute('aria-invalid')).to.be.false;
     });
   });
 
@@ -532,6 +530,29 @@ describe('validated-form', () => {
       expect(err.getAttribute('role')).to.equal('alert');
       expect(err.hasAttribute('aria-live')).to.be.false;
     });
+
+    it('sets aria-invalid="true" on invalid controls and removes it when valid', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <form>
+            <input name="a" />
+            <div data-error-for="a"></div>
+          </form>
+        </validated-form>
+      `);
+
+      const input = el.querySelector('input');
+
+      setInvalid(input, 'A is invalid');
+      el.validate();
+
+      expect(input.getAttribute('aria-invalid')).to.equal('true');
+
+      setValid(input);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+
+      expect(input.hasAttribute('aria-invalid')).to.be.false;
+    });
   });
 
   describe('error association requirements', () => {
@@ -558,7 +579,7 @@ describe('validated-form', () => {
       expect(input.hasAttribute('aria-describedby')).to.be.false;
 
       // But it still participates in validation
-      expect(input.hasAttribute('data-invalid')).to.be.true;
+      expect(input.getAttribute('aria-invalid')).to.equal('true');
     });
   });
 
@@ -696,7 +717,7 @@ describe('validated-form', () => {
       expect(err !== null).to.be.true;
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
-      expect(input.hasAttribute('data-invalid')).to.be.true;
+      expect(input.getAttribute('aria-invalid')).to.equal('true');
     });
 
     it('updates live validation on input after first submit', async () => {
@@ -724,7 +745,7 @@ describe('validated-form', () => {
 
       expect(err.textContent).to.equal('');
       expect(err.hasAttribute('hidden')).to.be.true;
-      expect(input.hasAttribute('data-invalid')).to.be.false;
+      expect(input.hasAttribute('aria-invalid')).to.be.false;
     });
 
     it('does not react to controls associated with a different form after live validation is enabled', async () => {
@@ -752,7 +773,7 @@ describe('validated-form', () => {
 
       // No error should be created for the unrelated control
       expect(errorEl(el, 'outside') === null).to.be.true;
-      expect(outside.hasAttribute('data-invalid')).to.be.false;
+      expect(outside.hasAttribute('aria-invalid')).to.be.false;
     });
   });
 });
