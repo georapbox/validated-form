@@ -47,9 +47,6 @@ class ValidatedForm extends HTMLElement {
     ['badInput', 'data-msg-bad-input']
   ];
 
-  /** @type {string} */
-  #instanceId = Math.random().toString(36).slice(2, 8);
-
   /** @type {boolean} */
   #submittedOnce = false;
 
@@ -160,17 +157,6 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Returns true if an element has a usable name property
-   * that can be used for associating error messages.
-   *
-   * @param {HTMLElement & { name?: unknown }} el - The element to check.
-   * @returns {el is HTMLElement & { name: string }} True if the element has a usable name property, false otherwise.
-   */
-  #hasUsableName(el) {
-    return 'name' in el && typeof el.name === 'string' && el.name.trim() !== '';
-  }
-
-  /**
    * Returns the validation message for a control.
    * Prefers custom per-rule messages and falls back to the browser message.
    *
@@ -259,7 +245,6 @@ class ValidatedForm extends HTMLElement {
     const hasLive = el.hasAttribute('aria-live');
 
     if (!hasRole && !hasLive) {
-      el.setAttribute('role', 'status');
       el.setAttribute('aria-live', 'polite');
     }
   }
@@ -274,15 +259,10 @@ class ValidatedForm extends HTMLElement {
    * @returns {HTMLElement} The wired-up error element.
    */
   #wireErrorElement(control, errorElement) {
-    if (!this.#hasUsableName(control)) {
+    const errorId = errorElement.id;
+
+    if (!errorId) {
       return errorElement;
-    }
-
-    const safeName = control.name.replace(/[^a-zA-Z0-9\-_:.]/g, '-');
-    const errorId = errorElement.id || `vf-error-${safeName}-${this.#instanceId}`;
-
-    if (!errorElement.id) {
-      errorElement.id = errorId;
     }
 
     this.#addDescribedBy(control, errorId);
@@ -297,29 +277,28 @@ class ValidatedForm extends HTMLElement {
    * it after the control.
    *
    * @param {FormControl} control - The form control element for which to retrieve the error element.
-   * @param {{ create?: boolean }} [options={}] - Options for retrieving the error element.
    * @returns {HTMLElement | null} The error element associated with the form control element, or null if not found.
    */
-  #getErrorElement(control, { create = false } = {}) {
-    if (!this.#form || !this.#hasUsableName(control)) {
+  #getErrorElement(control) {
+    if (!this.#form) {
       return null;
     }
 
-    /** @type {HTMLElement | null} */
-    const existingErrorElement = this.querySelector(`[data-error-for="${CSS.escape(control.name)}"]`);
-
-    if (!existingErrorElement) {
-      if (!create) {
-        return null;
-      }
-
-      const errorElement = this.ownerDocument.createElement('div');
-      errorElement.setAttribute('data-error-for', control.name);
-      control.insertAdjacentElement('afterend', errorElement);
-      return this.#wireErrorElement(control, errorElement);
+    const ariaErrorMessage = control.getAttribute('aria-errormessage');
+    if (!ariaErrorMessage) {
+      return null;
     }
 
-    return this.#wireErrorElement(control, existingErrorElement);
+    // Defensively handle multiple IDs in aria-errormessage,
+    // but only use the first one for the error element lookup.
+    const firstId = ariaErrorMessage.trim().split(/\s+/)[0];
+    if (!firstId) {
+      return null;
+    }
+
+    const errorElement = this.querySelector(`#${CSS.escape(firstId)}`);
+
+    return errorElement instanceof HTMLElement ? this.#wireErrorElement(control, errorElement) : null;
   }
 
   /**
@@ -331,9 +310,9 @@ class ValidatedForm extends HTMLElement {
    */
   #setError(control, message) {
     const hasError = message !== '';
-    const errorElement = this.#getErrorElement(control, { create: hasError });
+    const errorElement = this.#getErrorElement(control);
 
-    if (errorElement) {
+    if (errorElement !== null) {
       errorElement.textContent = message || '';
       errorElement.toggleAttribute('hidden', !hasError);
     }
@@ -401,11 +380,7 @@ class ValidatedForm extends HTMLElement {
    * @param {boolean} hasError - Whether the control is in an error state. If true, sets aria-invalid to "true". If false, removes the aria-invalid attribute.
    */
   #setInvalidState(control, hasError) {
-    if (hasError) {
-      control.setAttribute('aria-invalid', 'true');
-    } else {
-      control.removeAttribute('aria-invalid');
-    }
+    hasError ? control.setAttribute('aria-invalid', 'true') : control.removeAttribute('aria-invalid');
   }
 
   /**

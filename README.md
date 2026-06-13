@@ -11,7 +11,7 @@ A Web Component that wraps native HTML form validation and surfaces the browser'
 
 The component follows a progressive-enhancement approach: the browser remains responsible for validation, while JavaScript improves how errors are presented and announced. If JavaScript fails to load, the form still works using native browser validation UI.
 
-`<validated-form>` is a good fit when you want to keep native browser validation and add accessible inline error presentation with minimal configuration.
+`<validated-form>` is a good fit when you want to keep native browser validation and add accessible inline error presentation using explicit, declarative markup.
 
 [API documentation](#api) &bull; [Demo][demo]
 
@@ -33,7 +33,7 @@ Using the **Constraint Validation API**, it:
 - Reads the browser's validation state
 - Reuses localized validation messages
 - Renders persistent inline errors
-- Associates errors with fields using proper ARIA attributes
+- Uses the authored `aria-errormessage` relationship and supplements it with `aria-describedby` for broader announcement support
 
 This progressive-enhancement approach was informed by writing from [Adrian Roselli](https://adrianroselli.com/2019/02/avoid-default-field-validation.html) and [HTMHell](https://www.htmhell.dev/adventcalendar/2025/28/) on the accessibility limitations of default browser validation UI and the benefits of layering accessible feedback on top of native validation.
 
@@ -83,51 +83,75 @@ For the component to function correctly, the markup must follow a few convention
 </validated-form>
 ```
 
-#### 2. Each validated control must have a `name` attribute
+#### 2. Each control that should display an inline error needs an associated error element
 
-The component identifies fields using their `name` attribute (the same identifier used during form submission).
-
-```html
-<input type="email" name="email" required>
-```
-
-Controls without a `name` still participate in validation, but they cannot be associated with an error element, so no inline error message will be shown for them.
-
-#### 3. Each control needs an associated error element
-
-Every field you want to validate must have an element with a `data-error-for` attribute whose value matches the control's `name` attribute. If an error element is not provided, the component will create one automatically after the control that triggered validation. For certain controls, such as checkboxes or radio groups, this may place the message between options, so providing the error element in the markup is recommended.
-
-The component manages the visibility of the error element by toggling the `hidden` attribute based on the validation state.
+Each control for which you want to display an inline validation message must use `aria-errormessage` to reference an error element by its `id`.
+The component writes the validation message into the referenced element and manages its visibility by toggling the `hidden` attribute.
 
 ```html
-<input type="email" name="email" required>
-<div data-error-for="email" hidden></div>
+<input 
+  type="email" 
+  name="email" 
+  required 
+  aria-errormessage="email-error"
+>
+
+<div id="email-error" hidden></div>
 ```
 
-#### 4. Radio groups should share one error element
+The referenced error element's id must be unique within the document. The error element can be placed wherever it best fits the field's layout, provided that it is inside `<validated-form>`.
 
-Radio buttons with the same name represent a single logical field and must share one error container. Provide a single element with `data-error-for="<name>"` that matches the group's `name` attribute.
+A `name` attribute is not required by the component for validation or error-message association. However, controls generally still need a name if their value should be included when the form is submitted.
 
-The component treats the group as a single logical field and uses one shared error container. If the group is invalid, the error message is associated with the radio that triggered validation. On form submission, focus moves to the first invalid radio in the group.
+If the required association is missing or invalid, the component fails gracefully: the control is still validated and receives `aria-invalid`, but no inline error is displayed.
 
-By default (`report="all"`), the error element is linked to all radios in the group. When using `report="first"`, only the first invalid radio is linked and focused.
+#### 3. Radio groups should share one error element
 
-For consistent layout and semantics, place the error element after the last radio button in the group.
+Radio buttons with the same `name` attribute represent a single native radio group. Each radio in the group should reference the same error element using `aria-errormessage`.
+
+The shared name is still required for the browser to treat the radio buttons as one group.
+
+Place the error element after the last radio button for consistent layout.
 
 ```html
-<label><input type="radio" name="gender" value="m" required> Male</label>
-<label><input type="radio" name="gender" value="f"> Female</label>
-<div data-error-for="gender" hidden></div>
+<label>
+  <input
+    type="radio"
+    name="gender"
+    value="m"
+    required
+    aria-errormessage="gender-error"
+  >
+  Male
+</label>
+
+<label>
+  <input
+    type="radio"
+    name="gender"
+    value="f"
+    aria-errormessage="gender-error"
+  >
+  Female
+</label>
+
+<div id="gender-error" hidden></div>
 ```
 
-If an error element is not provided, the component will create one automatically after the radio that triggered validation. For grouped controls this may place the message between options, so providing the element in the markup is recommended.
+When the group is invalid, the radios share the same validation message. On form submission, focus moves to the first invalid radio unless `no-focus` is enabled.
 
 #### Notes
 
-- The error element can be any element (`div`, `span`, `p`, etc.)
-- The component will automatically set the necessary ARIA attributes
-- If JavaScript is unavailable, native browser validation still works
-- The component does not apply any styles — you can style the error elements as needed
+- The error element can be any HTML element, such as `div`, `span`, or `p`.
+- `aria-describedby` can be used for persistent hints or supporting text. When an error element is resolved, the component preserves any existing `aria-describedby` references and appends the error element's ID.
+- The error element remains referenced by `aria-describedby` when the control becomes valid. In that state, the error element is empty and hidden.
+- When an error element has neither `role` nor `aria-live`, the component adds `aria-live="polite"`. Existing values are preserved.
+- The component adds or removes `aria-invalid` based on the control's validation state.
+- The component toggles `hidden` on the referenced error element.
+- Controls do not need a `name` for validation, but they normally need one for form submission.
+- Radio buttons still need a shared `name` to form a native radio group.
+- If JavaScript is unavailable, native browser validation still works.
+- The component does not apply any styles, so error elements can be styled as needed.
 
 ## Custom Validation Messages
 
@@ -190,8 +214,9 @@ If no matching attribute is present, the browser's default localized message is 
         required
         data-msg-required="Email is required."
         data-msg-type="Please enter a valid email address."
+        aria-errormessage="email-error"
       >
-      <div data-error-for="email" hidden></div>
+      <div id="email-error" hidden></div>
     </div>
 
     <div>
@@ -204,8 +229,9 @@ If no matching attribute is present, the browser's default localized message is 
         minlength="8"
         data-msg-required="Password is required."
         data-msg-too-short="Password must be at least 8 characters."
+        aria-errormessage="password-error"
       >
-      <div data-error-for="password" hidden></div>
+      <div id="password-error" hidden></div>
     </div>
 
     <button type="submit">Submit</button>
@@ -217,8 +243,8 @@ If no matching attribute is present, the browser's default localized message is 
 
 When a control is invalid:
 - The component checks validation flags in priority order.
-- If a matching data-msg-* attribute exists, that message is displayed.
-- Otherwise, it falls back to control.validationMessage.
+- If a matching `data-msg-*` attribute exists, that message is displayed.
+- Otherwise, it falls back to `control.validationMessage`.
 
 This ensures:
 - Native validation semantics remain intact.
@@ -256,7 +282,7 @@ Per-rule `data-msg-*` attributes still take precedence for the specific rule the
 | `resetValidation` | Instance | Resets the component's validation UI by clearing displayed error messages and validation feedback. It does not reset form field values or change the browser's underlying validity state. | - |
 | `isValid` | Instance | Returns whether the form is currently valid according to the browser's native validation rules, without showing validation messages. | - |
 
-<sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use `whenDefined` method of the `CustomElementRegistry` interface, eg `customElements.whenDefined('validated-form').then(() => { /* call methods here */ });`
+<sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use the `whenDefined()` method of the `CustomElementRegistry` interface, for example: `customElements.whenDefined('validated-form').then(() => { /* call methods here */ });`
 
 ## Changelog
 
@@ -266,7 +292,7 @@ For API updates and breaking changes, check the [CHANGELOG][changelog].
 
 ### Prerequisites
 
-The project requires `Node.js` and `npm` to be installed on your environment. Preferrably, use [nvm](https://github.com/nvm-sh/nvm) Node Version Manager and use the version of Node.js specified in the `.nvmrc` file by running `nvm use`.
+The project requires `Node.js` and `npm` to be installed on your environment. Preferably, use [nvm](https://github.com/nvm-sh/nvm) Node Version Manager and use the version of Node.js specified in the `.nvmrc` file by running `nvm use`.
 
 ### Install dependencies
 
