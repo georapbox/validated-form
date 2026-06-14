@@ -133,7 +133,7 @@ class ValidatedForm extends HTMLElement {
    */
   validate() {
     this.#submittedOnce = true;
-    return this.#validateAndShowErrors();
+    return this.#executeFormValidation();
   }
 
   /**
@@ -153,7 +153,7 @@ class ValidatedForm extends HTMLElement {
    * @returns {boolean} True if all controls are valid, false otherwise.
    */
   isValid() {
-    return this.#validatableControls().every(el => el.validity.valid);
+    return this.#getValidatableControls().every(el => el.validity.valid);
   }
 
   /**
@@ -208,7 +208,7 @@ class ValidatedForm extends HTMLElement {
    *
    * @returns {FormControl[]} An array of form control elements that are subject to validation.
    */
-  #validatableControls() {
+  #getValidatableControls() {
     if (!this.#form) {
       return [];
     }
@@ -219,54 +219,33 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Adds an ID to the element's aria-describedby attribute without duplicating it.
+   * Establishes an accessibility relationship between a form control and its
+   * corresponding error element using ARIA attributes.
    *
-   * @param {HTMLElement} el - The element to update.
-   * @param {string} id - The ID to add.
+   * @param {FormControl} control - The form control element.
+   * @param {HTMLElement} errorElement - The error element to link.
+   * @returns {HTMLElement} The configured error element.
    */
-  #addDescribedBy(el, id) {
-    const currentDescribedBy = el.getAttribute('aria-describedby') || '';
-    const ids = new Set(currentDescribedBy.split(/\s+/).filter(Boolean));
-
-    if (!ids.has(id)) {
-      ids.add(id);
-      el.setAttribute('aria-describedby', Array.from(ids).join(' '));
-    }
-  }
-
-  /**
-   * Ensures that a given element has appropriate ARIA attributes to function
-   * as a live region for error messages.
-   *
-   * @param {HTMLElement} el - The element to ensure has live region defaults.
-   */
-  #ensureLiveRegionDefaults(el) {
-    const hasRole = el.hasAttribute('role');
-    const hasLive = el.hasAttribute('aria-live');
-
-    if (!hasRole && !hasLive) {
-      el.setAttribute('aria-live', 'polite');
-    }
-  }
-
-  /**
-   * Wires up an error element to a form control element by ensuring it has the
-   * appropriate ARIA attributes to be associated with the control and function
-   * as a live region for error messages.
-   *
-   * @param {FormControl} control - The form control element to associate with the error element.
-   * @param {HTMLElement} errorElement - The error element to wire up.
-   * @returns {HTMLElement} The wired-up error element.
-   */
-  #wireErrorElement(control, errorElement) {
+  #linkControlToError(control, errorElement) {
     const errorId = errorElement.id;
 
     if (!errorId) {
       return errorElement;
     }
 
-    this.#addDescribedBy(control, errorId);
-    this.#ensureLiveRegionDefaults(errorElement);
+    // 1. Link control to error via aria-describedby
+    const currentDescribedBy = control.getAttribute('aria-describedby') || '';
+    const ids = new Set(currentDescribedBy.split(/\s+/).filter(Boolean));
+
+    if (!ids.has(errorId)) {
+      ids.add(errorId);
+      control.setAttribute('aria-describedby', Array.from(ids).join(' '));
+    }
+
+    // 2. Configure error element as an accessible live region
+    if (!errorElement.hasAttribute('role') && !errorElement.hasAttribute('aria-live')) {
+      errorElement.setAttribute('aria-live', 'polite');
+    }
 
     return errorElement;
   }
@@ -297,8 +276,11 @@ class ValidatedForm extends HTMLElement {
     }
 
     const errorElement = this.querySelector(`#${CSS.escape(firstId)}`);
+    if (errorElement instanceof HTMLElement) {
+      return this.#linkControlToError(control, errorElement);
+    }
 
-    return errorElement instanceof HTMLElement ? this.#wireErrorElement(control, errorElement) : null;
+    return null;
   }
 
   /**
@@ -317,27 +299,35 @@ class ValidatedForm extends HTMLElement {
       errorElement.toggleAttribute('hidden', !hasError);
     }
 
-    this.#setInvalidState(control, hasError);
+    if (hasError) {
+      control.setAttribute('aria-invalid', 'true');
+    } else {
+      control.removeAttribute('aria-invalid');
+    }
   }
 
   /**
    * Clears all error messages and validation states for the form controls.
    */
   #clearAllErrors() {
-    for (const control of this.#validatableControls()) {
+    for (const control of this.#getValidatableControls()) {
       this.#setError(control, '');
     }
   }
 
   /**
-   * Validates all form controls and updates their error messages
-   * and validation states accordingly. If any control is invalid,
-   * it focuses the first invalid control.
+   * Validates all participating form controls, updates their visual error states,
+   * and handles focus management for invalid fields.
    *
-   * @returns {boolean} True if all controls are valid, false otherwise.
+   * Depending on the component's `report` strategy, this will either surface error
+   * messages for all invalid fields simultaneously or isolate and display only the
+   * first encountered error. If validation fails and `noFocus` is false, it
+   * automatically shifts user focus to the first invalid control.
+   *
+   * @returns {boolean} True if all evaluated controls are valid, false otherwise.
    */
-  #validateAndShowErrors() {
-    const controls = this.#validatableControls();
+  #executeFormValidation() {
+    const controls = this.#getValidatableControls();
     const reportFirst = this.report === 'first';
 
     if (reportFirst) {
@@ -347,40 +337,28 @@ class ValidatedForm extends HTMLElement {
     /** @type {FormControl | null} */
     let firstInvalid = null;
 
-    for (const el of controls) {
-      const ok = el.validity.valid;
+    for (const control of controls) {
+      const isControlValid = control.validity.valid;
 
-      if (!ok && !firstInvalid) {
-        firstInvalid = el;
-        this.#setError(el, this.#getMessage(el));
-
-        if (reportFirst) {
-          break;
-        }
+      if (!isControlValid && firstInvalid === null) {
+        firstInvalid = control;
       }
 
-      if (!reportFirst) {
-        this.#setError(el, ok ? '' : this.#getMessage(el));
+      if (reportFirst) {
+        if (!isControlValid) {
+          this.#setError(control, this.#getMessage(control));
+          break;
+        }
+      } else {
+        this.#setError(control, isControlValid ? '' : this.#getMessage(control));
       }
     }
 
-    const valid = !firstInvalid;
-
-    if (!valid && firstInvalid && !this.noFocus && typeof firstInvalid.focus === 'function') {
+    if (firstInvalid && !this.noFocus) {
       firstInvalid.focus();
     }
 
-    return valid;
-  }
-
-  /**
-   * Sets the invalid state for a form control element by updating its ARIA attributes.
-   *
-   * @param {FormControl} control - The form control element for which to set the invalid state.
-   * @param {boolean} hasError - Whether the control is in an error state. If true, sets aria-invalid to "true". If false, removes the aria-invalid attribute.
-   */
-  #setInvalidState(control, hasError) {
-    hasError ? control.setAttribute('aria-invalid', 'true') : control.removeAttribute('aria-invalid');
+    return firstInvalid === null;
   }
 
   /**
@@ -391,11 +369,10 @@ class ValidatedForm extends HTMLElement {
   #handleSubmit = evt => {
     this.#submittedOnce = true;
 
-    const ok = this.#validateAndShowErrors();
-    if (!ok) {
+    const isFormValid = this.#executeFormValidation();
+
+    if (!isFormValid) {
       evt.preventDefault();
-    } else {
-      this.#clearAllErrors();
     }
   };
 
@@ -408,7 +385,8 @@ class ValidatedForm extends HTMLElement {
    * @param {Event} evt - The invalid event object.
    */
   #handleInvalidCapture = evt => {
-    const control = this.#getFormControlFromEventTarget(evt.target);
+    const target = /** @type {HTMLElement | null} */ (evt.target);
+    const control = this.#findValidatableControl(target);
     if (!control) {
       return;
     }
@@ -429,38 +407,40 @@ class ValidatedForm extends HTMLElement {
       return;
     }
 
-    const control = this.#getFormControlFromEventTarget(evt.target);
+    const target = /** @type {HTMLElement | null} */ (evt.target);
+    const control = this.#findValidatableControl(target);
     if (!control) {
       return;
     }
 
-    const ok = control.validity.valid;
-    this.#setError(control, ok ? '' : this.#getMessage(control));
+    const isControlValid = control.validity.valid;
+    this.#setError(control, isControlValid ? '' : this.#getMessage(control));
   };
 
   /**
-   * Returns a validatable form control from an event target when it belongs
-   * to this component's form. This is used to ensure that events from
-   * controls that are not part of the form or not validatable are
-   * ignored by the event handlers.
+   * Evaluates a DOM element to determine if it is a validatable form control
+   * belonging to this component's internal form.
    *
-   * @param {EventTarget | null} target - The event target to evaluate.
-   * @returns {FormControl | null} The form control element if meets the criteria, null otherwise.
+   * This serves as a filter to ignore input, change, or invalid events originating
+   * from elements that do not actively participate in this form's validation lifecycle.
+   *
+   * @param {HTMLElement | null} el - The DOM element candidate to evaluate.
+   * @returns {FormControl | null} The verified form control element, or null if it fails any criteria.
    */
-  #getFormControlFromEventTarget(target) {
+  #findValidatableControl(el) {
     if (!this.#form) {
       return null;
     }
-    if (!this.#isFormControl(target)) {
+    if (!this.#isFormControl(el)) {
       return null;
     }
-    if (!target.willValidate) {
+    if (!el.willValidate) {
       return null;
     }
-    if (target.form !== this.#form) {
+    if (el.form !== this.#form) {
       return null;
     }
-    return target;
+    return el;
   }
 
   /**
