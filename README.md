@@ -89,12 +89,7 @@ Each control for which you want to display an inline validation message must use
 The component writes the validation message into the referenced element and manages its visibility by toggling the `hidden` attribute.
 
 ```html
-<input 
-  type="email" 
-  name="email" 
-  required 
-  aria-errormessage="email-error"
->
+<input type="email" required  aria-errormessage="email-error">
 
 <div id="email-error" hidden></div>
 ```
@@ -205,34 +200,30 @@ If no matching attribute is present, the browser's default localized message is 
 ```html
 <validated-form>
   <form>
-    <div>
-      <label for="email">Email</label>
-      <input
-        id="email"
-        name="email"
-        type="email"
-        required
-        data-msg-required="Email is required."
-        data-msg-type="Please enter a valid email address."
-        aria-errormessage="email-error"
-      >
-      <div id="email-error" hidden></div>
-    </div>
-
-    <div>
-      <label for="password">Password</label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        required
-        minlength="8"
-        data-msg-required="Password is required."
-        data-msg-too-short="Password must be at least 8 characters."
-        aria-errormessage="password-error"
-      >
-      <div id="password-error" hidden></div>
-    </div>
+    <label for="email">Email</label>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      required
+      data-msg-required="Email is required."
+      data-msg-type="Please enter a valid email address."
+      aria-errormessage="email-error"
+    >
+    <div id="email-error" hidden></div>
+    
+    <label for="password">Password</label>
+    <input
+      id="password"
+      name="password"
+      type="password"
+      required
+      minlength="8"
+      data-msg-required="Password is required."
+      data-msg-too-short="Password must be at least 8 characters."
+      aria-errormessage="password-error"
+    >
+    <div id="password-error" hidden></div>
 
     <button type="submit">Submit</button>
   </form>
@@ -270,19 +261,20 @@ Per-rule `data-msg-*` attributes still take precedence for the specific rule the
 ### Properties
 | Name | Reflects | Type | Required | Default | Description |
 | ---- | -------- | ---- | -------- | ------- | ----------- |
-| `noFocus`<br>*`no-focus`* | ✓ | `boolean` | - | `false` | Determines whether the component focuses the first invalid control when validation fails. When `false` (default), focus moves to the first invalid control. When `true`, errors are shown without changing focus. |
-| `report` | ✓ | `'all' \| 'first'` | - | `'all'` | Determines how validation messages are reported when the form is validated. Use 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message. After validation has started, live updates still reflect the field being edited. |
+| `noFocus`<br>*`no-focus`* | ✓ | `boolean` | - | `false` | Controls whether focus moves to the first invalid control when validation fails. When `false` (default), the first invalid control receives focus. When `true`, validation errors are displayed without moving focus. |
+| `report` | ✓ | `'all' \| 'first'` | - | `'all'` | Controls which validation messages are displayed. Use `'all'` to display messages for every invalid control, or `'first'` to display only the message for the first invalid control. Once validation has started, messages continue to update for the field currently being edited. |
 
 ### Methods
 
 | Name | Type | Description | Arguments |
 | ---- | ---- | ----------- | --------- |
-| `define` | Static | Defines the custom element using the provided name. If no name is given, the default tag name is used. If the element is already registered, the method does nothing. | elementName='validated-form' |
+| `define` | Static | Registers the custom element with the browser's CustomElementRegistry unless it has already been defined. | `tagName='validated-form'` |
 | `validate` | Instance | Validates the form, updates the displayed validation feedback, and returns whether the form is valid. | - |
 | `resetValidation` | Instance | Resets the component's validation UI by clearing displayed error messages and validation feedback. It does not reset form field values or change the browser's underlying validity state. | - |
-| `isValid` | Instance | Returns whether the form is currently valid according to the browser's native validation rules, without showing validation messages. | - |
+| `isValid` | Instance | Checks whether all validatable controls satisfy the browser's native validation rules without displaying validation messages. | - |
 
-<sup>1</sup> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use the `whenDefined()` method of the `CustomElementRegistry` interface, for example: `customElements.whenDefined('validated-form').then(() => { /* call methods here */ });`
+> [!NOTE]
+> Instance methods are only available after the component has been defined. To ensure the component is defined, you can use the `whenDefined()` method of the `CustomElementRegistry` interface, for example: `customElements.whenDefined('validated-form').then(() => { /* call methods here */ });`
 
 ## Changelog
 

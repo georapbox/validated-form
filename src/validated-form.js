@@ -22,16 +22,16 @@
  * @tagname validated-form - This is the default tag name, unless overridden by the `define` method.
  * @extends HTMLElement
  *
- * @property {boolean} noFocus - Determines whether the component focuses the first invalid control when validation fails. When `false` (default), focus moves to the first invalid control. When `true`, errors are shown without changing focus.
- * @property {string} report - Determines how validation messages are reported when the form is validated. Use 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message. After validation has started, live updates still reflect the field being edited.
+ * @property {boolean} noFocus - Controls whether focus moves to the first invalid control when validation fails. When false (default), the first invalid control receives focus. When true, validation errors are displayed without moving focus.
+ * @property {string} report - Controls which validation messages are displayed. Use 'all' to display messages for every invalid control, or 'first' to display only the message for the first invalid control. Once validation has started, messages continue to update for the field currently being edited.
  *
- * @attribute {boolean} no-focus - Determines whether the component focuses the first invalid control when validation fails. When `false` (default), focus moves to the first invalid control. When `true`, errors are shown without changing focus.
- * @attribute {string} report - Determines how validation messages are reported when the form is validated. Use 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message. After validation has started, live updates still reflect the field being edited.
+ * @attribute {boolean} no-focus - Controls whether focus moves to the first invalid control when validation fails. When false (default), the first invalid control receives focus. When true, validation errors are displayed without moving focus.
+ * @attribute {string} report - Controls which validation messages are displayed. Use 'all' to display messages for every invalid control, or 'first' to display only the message for the first invalid control. Once validation has started, messages continue to update for the field currently being edited.
  *
- * @method define - Static method. Defines the custom element using the provided name. If no name is given, the default tag name is used. If the element is already registered, the method does nothing.
+ * @method define - Static method. Registers the custom element with the browser's CustomElementRegistry unless it has already been defined.
  * @method validate - Instance method. Validates the form, updates the displayed validation feedback, and returns whether the form is valid.
  * @method resetValidation - Instance method. Resets the component's validation UI by clearing displayed error messages and validation feedback. It does not reset form field values or change the browser's underlying validity state.
- * @method isValid - Instance method. Returns whether the form is currently valid according to the browser's native validation rules, without showing validation messages.
+ * @method isValid - Instance method. Checks whether all validatable controls satisfy the browser's native validation rules without displaying validation messages.
  */
 class ValidatedForm extends HTMLElement {
   /** @type {ReadonlyArray<readonly [keyof ValidityState, string]>} */
@@ -58,9 +58,9 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Determines whether the component focuses the first invalid control when
-   * validation fails. When `false` (default), focus moves to the first
-   * invalid control. When `true`, errors are shown without changing focus.
+   * Controls whether focus moves to the first invalid control when validation fails.
+   * When false (default), the first invalid control receives focus. When true,
+   * validation errors are displayed without moving focus.
    *
    * @type {boolean}
    * @attribute no-focus
@@ -75,10 +75,10 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Determines how validation messages are reported when the form is validated.
-   * Use 'all' to show messages for all invalid controls, or 'first' to show
-   * only the first invalid control's message. After validation has started,
-   * live updates still reflect the field being edited.
+   * Controls which validation messages are displayed. Use 'all' to display messages
+   * for every invalid control, or 'first' to display only the message for the first
+   * invalid control. Once validation has started, messages continue to update for
+   * the field currently being edited.
    *
    * @type {'all' | 'first'}
    * @attribute report
@@ -129,7 +129,7 @@ class ValidatedForm extends HTMLElement {
    * Validates the form, updates the displayed validation feedback,
    * and returns whether the form is valid.
    *
-   * @returns {boolean} True if the form is valid, false otherwise.
+   * @returns {boolean} `true` if the form is valid; otherwise `false`.
    */
   validate() {
     this.#submittedOnce = true;
@@ -147,10 +147,10 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Returns whether the form is currently valid according to the browser's
-   * native validation rules, without showing validation messages.
+   * Checks whether all validatable controls satisfy the browser's native
+   * validation rules without displaying validation messages.
    *
-   * @returns {boolean} True if all controls are valid, false otherwise.
+   * @returns {boolean} `true` if all controls are valid; otherwise `false`.
    */
   isValid() {
     return this.#getValidatableControls().every(el => el.validity.valid);
@@ -467,16 +467,16 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Defines the custom element using the provided name. If no name is given,
-   * the default tag name is used. If the element is already registered,
-   * the method does nothing.
+   * Registers the custom element with the browser's CustomElementRegistry unless
+   * it has already been defined.
    *
-   * @param {string} [elementName='validated-form'] - The name of the custom element.
+   * @param {string} [tagName='validated-form'] - The tag name to use for the custom element.
    */
-  static define(elementName = 'validated-form') {
-    if (typeof window !== 'undefined' && !window.customElements.get(elementName)) {
-      window.customElements.define(elementName, ValidatedForm);
+  static define(tagName = 'validated-form') {
+    if (typeof window === 'undefined' || window.customElements.get(tagName)) {
+      return;
     }
+    window.customElements.define(tagName, ValidatedForm);
   }
 }
 
