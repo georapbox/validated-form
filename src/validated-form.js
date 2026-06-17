@@ -22,16 +22,16 @@
  * @tagname validated-form - This is the default tag name, unless overridden by the `define` method.
  * @extends HTMLElement
  *
- * @property {boolean} noFocus - Determines whether the component focuses the first invalid control when validation fails. When `false` (default), focus moves to the first invalid control. When `true`, errors are shown without changing focus.
- * @property {string} report - Determines how validation messages are reported when the form is validated. Use 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message. After validation has started, live updates still reflect the field being edited.
+ * @property {boolean} noFocus - Controls whether focus moves to the first invalid control when validation fails. When false (default), the first invalid control receives focus. When true, validation errors are displayed without moving focus.
+ * @property {string} report - Controls which validation messages are displayed. Use 'all' to display messages for every invalid control, or 'first' to display only the message for the first invalid control. Once validation has started, messages continue to update for the field currently being edited.
  *
- * @attribute {boolean} no-focus - Determines whether the component focuses the first invalid control when validation fails. When `false` (default), focus moves to the first invalid control. When `true`, errors are shown without changing focus.
- * @attribute {string} report - Determines how validation messages are reported when the form is validated. Use 'all' to show messages for all invalid controls, or 'first' to show only the first invalid control's message. After validation has started, live updates still reflect the field being edited.
+ * @attribute {boolean} no-focus - Controls whether focus moves to the first invalid control when validation fails. When false (default), the first invalid control receives focus. When true, validation errors are displayed without moving focus.
+ * @attribute {string} report - Controls which validation messages are displayed. Use 'all' to display messages for every invalid control, or 'first' to display only the message for the first invalid control. Once validation has started, messages continue to update for the field currently being edited.
  *
- * @method define - Static method. Defines the custom element using the provided name. If no name is given, the default tag name is used. If the element is already registered, the method does nothing.
+ * @method define - Static method. Registers the custom element with the browser's CustomElementRegistry unless it has already been defined.
  * @method validate - Instance method. Validates the form, updates the displayed validation feedback, and returns whether the form is valid.
  * @method resetValidation - Instance method. Resets the component's validation UI by clearing displayed error messages and validation feedback. It does not reset form field values or change the browser's underlying validity state.
- * @method isValid - Instance method. Returns whether the form is currently valid according to the browser's native validation rules, without showing validation messages.
+ * @method isValid - Instance method. Checks whether all validatable controls satisfy the browser's native validation rules without displaying validation messages.
  */
 class ValidatedForm extends HTMLElement {
   /** @type {ReadonlyArray<readonly [keyof ValidityState, string]>} */
@@ -47,9 +47,6 @@ class ValidatedForm extends HTMLElement {
     ['badInput', 'data-msg-bad-input']
   ];
 
-  /** @type {string} */
-  #instanceId = Math.random().toString(36).slice(2, 8);
-
   /** @type {boolean} */
   #submittedOnce = false;
 
@@ -61,9 +58,9 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Determines whether the component focuses the first invalid control when
-   * validation fails. When `false` (default), focus moves to the first
-   * invalid control. When `true`, errors are shown without changing focus.
+   * Controls whether focus moves to the first invalid control when validation fails.
+   * When false (default), the first invalid control receives focus. When true,
+   * validation errors are displayed without moving focus.
    *
    * @type {boolean}
    * @attribute no-focus
@@ -78,10 +75,10 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Determines how validation messages are reported when the form is validated.
-   * Use 'all' to show messages for all invalid controls, or 'first' to show
-   * only the first invalid control's message. After validation has started,
-   * live updates still reflect the field being edited.
+   * Controls which validation messages are displayed. Use 'all' to display messages
+   * for every invalid control, or 'first' to display only the message for the first
+   * invalid control. Once validation has started, messages continue to update for
+   * the field currently being edited.
    *
    * @type {'all' | 'first'}
    * @attribute report
@@ -132,11 +129,11 @@ class ValidatedForm extends HTMLElement {
    * Validates the form, updates the displayed validation feedback,
    * and returns whether the form is valid.
    *
-   * @returns {boolean} True if the form is valid, false otherwise.
+   * @returns {boolean} `true` if the form is valid; otherwise `false`.
    */
   validate() {
     this.#submittedOnce = true;
-    return this.#validateAndShowErrors();
+    return this.#executeFormValidation();
   }
 
   /**
@@ -150,24 +147,13 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Returns whether the form is currently valid according to the browser's
-   * native validation rules, without showing validation messages.
+   * Checks whether all validatable controls satisfy the browser's native
+   * validation rules without displaying validation messages.
    *
-   * @returns {boolean} True if all controls are valid, false otherwise.
+   * @returns {boolean} `true` if all controls are valid; otherwise `false`.
    */
   isValid() {
-    return this.#validatableControls().every(el => el.validity.valid);
-  }
-
-  /**
-   * Returns true if an element has a usable name property
-   * that can be used for associating error messages.
-   *
-   * @param {HTMLElement & { name?: unknown }} el - The element to check.
-   * @returns {el is HTMLElement & { name: string }} True if the element has a usable name property, false otherwise.
-   */
-  #hasUsableName(el) {
-    return 'name' in el && typeof el.name === 'string' && el.name.trim() !== '';
+    return this.#getValidatableControls().every(el => el.validity.valid);
   }
 
   /**
@@ -222,7 +208,7 @@ class ValidatedForm extends HTMLElement {
    *
    * @returns {FormControl[]} An array of form control elements that are subject to validation.
    */
-  #validatableControls() {
+  #getValidatableControls() {
     if (!this.#form) {
       return [];
     }
@@ -233,60 +219,33 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Adds an ID to the element's aria-describedby attribute without duplicating it.
+   * Establishes an accessibility relationship between a form control and its
+   * corresponding error element using ARIA attributes.
    *
-   * @param {HTMLElement} el - The element to update.
-   * @param {string} id - The ID to add.
+   * @param {FormControl} control - The form control element.
+   * @param {HTMLElement} errorElement - The error element to link.
+   * @returns {HTMLElement} The configured error element.
    */
-  #addDescribedBy(el, id) {
-    const currentDescribedBy = el.getAttribute('aria-describedby') || '';
-    const ids = new Set(currentDescribedBy.split(/\s+/).filter(Boolean));
+  #linkControlToError(control, errorElement) {
+    const errorId = errorElement.id;
 
-    if (!ids.has(id)) {
-      ids.add(id);
-      el.setAttribute('aria-describedby', Array.from(ids).join(' '));
-    }
-  }
-
-  /**
-   * Ensures that a given element has appropriate ARIA attributes to function
-   * as a live region for error messages.
-   *
-   * @param {HTMLElement} el - The element to ensure has live region defaults.
-   */
-  #ensureLiveRegionDefaults(el) {
-    const hasRole = el.hasAttribute('role');
-    const hasLive = el.hasAttribute('aria-live');
-
-    if (!hasRole && !hasLive) {
-      el.setAttribute('role', 'status');
-      el.setAttribute('aria-live', 'polite');
-    }
-  }
-
-  /**
-   * Wires up an error element to a form control element by ensuring it has the
-   * appropriate ARIA attributes to be associated with the control and function
-   * as a live region for error messages.
-   *
-   * @param {FormControl} control - The form control element to associate with the error element.
-   * @param {HTMLElement} errorElement - The error element to wire up.
-   * @returns {HTMLElement} The wired-up error element.
-   */
-  #wireErrorElement(control, errorElement) {
-    if (!this.#hasUsableName(control)) {
+    if (!errorId) {
       return errorElement;
     }
 
-    const safeName = control.name.replace(/[^a-zA-Z0-9\-_:.]/g, '-');
-    const errorId = errorElement.id || `vf-error-${safeName}-${this.#instanceId}`;
+    // 1. Link control to error via aria-describedby
+    const currentDescribedBy = control.getAttribute('aria-describedby') || '';
+    const ids = new Set(currentDescribedBy.split(/\s+/).filter(Boolean));
 
-    if (!errorElement.id) {
-      errorElement.id = errorId;
+    if (!ids.has(errorId)) {
+      ids.add(errorId);
+      control.setAttribute('aria-describedby', Array.from(ids).join(' '));
     }
 
-    this.#addDescribedBy(control, errorId);
-    this.#ensureLiveRegionDefaults(errorElement);
+    // 2. Configure error element as an accessible live region
+    if (!errorElement.hasAttribute('role') && !errorElement.hasAttribute('aria-live')) {
+      errorElement.setAttribute('aria-live', 'polite');
+    }
 
     return errorElement;
   }
@@ -297,29 +256,31 @@ class ValidatedForm extends HTMLElement {
    * it after the control.
    *
    * @param {FormControl} control - The form control element for which to retrieve the error element.
-   * @param {{ create?: boolean }} [options={}] - Options for retrieving the error element.
    * @returns {HTMLElement | null} The error element associated with the form control element, or null if not found.
    */
-  #getErrorElement(control, { create = false } = {}) {
-    if (!this.#form || !this.#hasUsableName(control)) {
+  #getErrorElement(control) {
+    if (!this.#form) {
       return null;
     }
 
-    /** @type {HTMLElement | null} */
-    const existingErrorElement = this.querySelector(`[data-error-for="${CSS.escape(control.name)}"]`);
-
-    if (!existingErrorElement) {
-      if (!create) {
-        return null;
-      }
-
-      const errorElement = this.ownerDocument.createElement('div');
-      errorElement.setAttribute('data-error-for', control.name);
-      control.insertAdjacentElement('afterend', errorElement);
-      return this.#wireErrorElement(control, errorElement);
+    const ariaErrorMessage = control.getAttribute('aria-errormessage');
+    if (!ariaErrorMessage) {
+      return null;
     }
 
-    return this.#wireErrorElement(control, existingErrorElement);
+    // Defensively handle multiple IDs in aria-errormessage,
+    // but only use the first one for the error element lookup.
+    const firstId = ariaErrorMessage.trim().split(/\s+/)[0];
+    if (!firstId) {
+      return null;
+    }
+
+    const errorElement = this.querySelector(`#${CSS.escape(firstId)}`);
+    if (errorElement instanceof HTMLElement) {
+      return this.#linkControlToError(control, errorElement);
+    }
+
+    return null;
   }
 
   /**
@@ -331,34 +292,42 @@ class ValidatedForm extends HTMLElement {
    */
   #setError(control, message) {
     const hasError = message !== '';
-    const errorElement = this.#getErrorElement(control, { create: hasError });
+    const errorElement = this.#getErrorElement(control);
 
-    if (errorElement) {
+    if (errorElement !== null) {
       errorElement.textContent = message || '';
       errorElement.toggleAttribute('hidden', !hasError);
     }
 
-    this.#setInvalidState(control, hasError);
+    if (hasError) {
+      control.setAttribute('aria-invalid', 'true');
+    } else {
+      control.removeAttribute('aria-invalid');
+    }
   }
 
   /**
    * Clears all error messages and validation states for the form controls.
    */
   #clearAllErrors() {
-    for (const control of this.#validatableControls()) {
+    for (const control of this.#getValidatableControls()) {
       this.#setError(control, '');
     }
   }
 
   /**
-   * Validates all form controls and updates their error messages
-   * and validation states accordingly. If any control is invalid,
-   * it focuses the first invalid control.
+   * Validates all participating form controls, updates their visual error states,
+   * and handles focus management for invalid fields.
    *
-   * @returns {boolean} True if all controls are valid, false otherwise.
+   * Depending on the component's `report` strategy, this will either surface error
+   * messages for all invalid fields simultaneously or isolate and display only the
+   * first encountered error. If validation fails and `noFocus` is false, it
+   * automatically shifts user focus to the first invalid control.
+   *
+   * @returns {boolean} True if all evaluated controls are valid, false otherwise.
    */
-  #validateAndShowErrors() {
-    const controls = this.#validatableControls();
+  #executeFormValidation() {
+    const controls = this.#getValidatableControls();
     const reportFirst = this.report === 'first';
 
     if (reportFirst) {
@@ -368,44 +337,28 @@ class ValidatedForm extends HTMLElement {
     /** @type {FormControl | null} */
     let firstInvalid = null;
 
-    for (const el of controls) {
-      const ok = el.validity.valid;
+    for (const control of controls) {
+      const isControlValid = control.validity.valid;
 
-      if (!ok && !firstInvalid) {
-        firstInvalid = el;
-        this.#setError(el, this.#getMessage(el));
-
-        if (reportFirst) {
-          break;
-        }
+      if (!isControlValid && firstInvalid === null) {
+        firstInvalid = control;
       }
 
-      if (!reportFirst) {
-        this.#setError(el, ok ? '' : this.#getMessage(el));
+      if (reportFirst) {
+        if (!isControlValid) {
+          this.#setError(control, this.#getMessage(control));
+          break;
+        }
+      } else {
+        this.#setError(control, isControlValid ? '' : this.#getMessage(control));
       }
     }
 
-    const valid = !firstInvalid;
-
-    if (!valid && firstInvalid && !this.noFocus && typeof firstInvalid.focus === 'function') {
+    if (firstInvalid && !this.noFocus) {
       firstInvalid.focus();
     }
 
-    return valid;
-  }
-
-  /**
-   * Sets the invalid state for a form control element by updating its ARIA attributes.
-   *
-   * @param {FormControl} control - The form control element for which to set the invalid state.
-   * @param {boolean} hasError - Whether the control is in an error state. If true, sets aria-invalid to "true". If false, removes the aria-invalid attribute.
-   */
-  #setInvalidState(control, hasError) {
-    if (hasError) {
-      control.setAttribute('aria-invalid', 'true');
-    } else {
-      control.removeAttribute('aria-invalid');
-    }
+    return firstInvalid === null;
   }
 
   /**
@@ -416,11 +369,10 @@ class ValidatedForm extends HTMLElement {
   #handleSubmit = evt => {
     this.#submittedOnce = true;
 
-    const ok = this.#validateAndShowErrors();
-    if (!ok) {
+    const isFormValid = this.#executeFormValidation();
+
+    if (!isFormValid) {
       evt.preventDefault();
-    } else {
-      this.#clearAllErrors();
     }
   };
 
@@ -433,7 +385,8 @@ class ValidatedForm extends HTMLElement {
    * @param {Event} evt - The invalid event object.
    */
   #handleInvalidCapture = evt => {
-    const control = this.#getFormControlFromEventTarget(evt.target);
+    const target = /** @type {HTMLElement | null} */ (evt.target);
+    const control = this.#findValidatableControl(target);
     if (!control) {
       return;
     }
@@ -454,38 +407,40 @@ class ValidatedForm extends HTMLElement {
       return;
     }
 
-    const control = this.#getFormControlFromEventTarget(evt.target);
+    const target = /** @type {HTMLElement | null} */ (evt.target);
+    const control = this.#findValidatableControl(target);
     if (!control) {
       return;
     }
 
-    const ok = control.validity.valid;
-    this.#setError(control, ok ? '' : this.#getMessage(control));
+    const isControlValid = control.validity.valid;
+    this.#setError(control, isControlValid ? '' : this.#getMessage(control));
   };
 
   /**
-   * Returns a validatable form control from an event target when it belongs
-   * to this component's form. This is used to ensure that events from
-   * controls that are not part of the form or not validatable are
-   * ignored by the event handlers.
+   * Evaluates a DOM element to determine if it is a validatable form control
+   * belonging to this component's internal form.
    *
-   * @param {EventTarget | null} target - The event target to evaluate.
-   * @returns {FormControl | null} The form control element if meets the criteria, null otherwise.
+   * This serves as a filter to ignore input, change, or invalid events originating
+   * from elements that do not actively participate in this form's validation lifecycle.
+   *
+   * @param {HTMLElement | null} el - The DOM element candidate to evaluate.
+   * @returns {FormControl | null} The verified form control element, or null if it fails any criteria.
    */
-  #getFormControlFromEventTarget(target) {
+  #findValidatableControl(el) {
     if (!this.#form) {
       return null;
     }
-    if (!this.#isFormControl(target)) {
+    if (!this.#isFormControl(el)) {
       return null;
     }
-    if (!target.willValidate) {
+    if (!el.willValidate) {
       return null;
     }
-    if (target.form !== this.#form) {
+    if (el.form !== this.#form) {
       return null;
     }
-    return target;
+    return el;
   }
 
   /**
@@ -512,16 +467,16 @@ class ValidatedForm extends HTMLElement {
   }
 
   /**
-   * Defines the custom element using the provided name. If no name is given,
-   * the default tag name is used. If the element is already registered,
-   * the method does nothing.
+   * Registers the custom element with the browser's CustomElementRegistry unless
+   * it has already been defined.
    *
-   * @param {string} [elementName='validated-form'] - The name of the custom element.
+   * @param {string} [tagName='validated-form'] - The tag name to use for the custom element.
    */
-  static define(elementName = 'validated-form') {
-    if (typeof window !== 'undefined' && !window.customElements.get(elementName)) {
-      window.customElements.define(elementName, ValidatedForm);
+  static define(tagName = 'validated-form') {
+    if (typeof window === 'undefined' || window.customElements.get(tagName)) {
+      return;
     }
+    window.customElements.define(tagName, ValidatedForm);
   }
 }
 

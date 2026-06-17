@@ -2,7 +2,8 @@
  * NOTE ABOUT VALIDATION IN TESTS
  *
  * We intentionally do NOT use native constraints like `required`, `type="email"`,
- * or `pattern` to make controls invalid.
+ * or `pattern` to make controls invalid, except in tests that specifically verify
+ * custom messages for native validity flags.
  *
  * Native browser validation differs across engines and environments
  * (headless vs real browser, localization of messages, timing of invalid events).
@@ -33,16 +34,12 @@ function triggerInvalid(control) {
   control.checkValidity?.();
 }
 
-function errorEl(root, name) {
-  return root.querySelector(`[data-error-for="${CSS.escape(name)}"]`);
-}
-
 function dispatchSubmitWithoutNavigation(form) {
   let preventedByComponent = false;
 
-  const stopper = e => {
-    preventedByComponent = e.defaultPrevented;
-    e.preventDefault(); // always stop actual navigation
+  const stopper = evt => {
+    preventedByComponent = evt.defaultPrevented;
+    evt.preventDefault(); // Always stop actual navigation.
   };
 
   form.addEventListener('submit', stopper);
@@ -61,7 +58,7 @@ describe('validated-form', () => {
     sinon.restore();
   });
 
-  describe('properties - attribures', () => {
+  describe('properties - attributes', () => {
     // noFocus
     it('reflects property "noFocus" to attribute "no-focus"', async () => {
       const el = await fixture(html`<validated-form></validated-form>`);
@@ -115,11 +112,12 @@ describe('validated-form', () => {
   });
 
   describe('validate() / submit flow', () => {
-    it('validate() returns false and creates an error element for an invalid control', async () => {
+    it('validate() returns false and displays the referenced error element for an invalid control', async () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -130,8 +128,7 @@ describe('validated-form', () => {
       const ok = el.validate();
       expect(ok).to.be.false;
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
       expect(input.getAttribute('aria-invalid')).to.equal('true');
@@ -141,7 +138,8 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
             <button type="submit">Submit</button>
           </form>
         </validated-form>
@@ -150,24 +148,21 @@ describe('validated-form', () => {
       const form = el.querySelector('form');
       const input = el.querySelector('input');
 
-      // First submit: invalid -> component prevents + shows error
       setInvalid(input, 'A is invalid');
       const prevented1 = dispatchSubmitWithoutNavigation(form);
 
       expect(prevented1).to.be.true;
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
+
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
       expect(input.getAttribute('aria-invalid')).to.equal('true');
 
-      // Second submit: valid -> component should NOT prevent, but errors should clear
       setValid(input);
       const prevented2 = dispatchSubmitWithoutNavigation(form);
 
       expect(prevented2).to.be.false;
-
       expect(err.textContent).to.equal('');
       expect(err.hasAttribute('hidden')).to.be.true;
       expect(input.hasAttribute('aria-invalid')).to.be.false;
@@ -177,8 +172,11 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form report="first" no-focus>
           <form>
-            <input name="a" />
-            <input name="b" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
+
+            <input name="b" aria-errormessage="b-error" />
+            <div id="b-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -191,14 +189,16 @@ describe('validated-form', () => {
       const ok = el.validate();
       expect(ok).to.be.false;
 
-      const errA = errorEl(el, 'a');
-      const errB = errorEl(el, 'b');
+      const errA = el.querySelector('#a-error');
+      const errB = el.querySelector('#b-error');
 
       expect(errA !== null).to.be.true;
       expect(errA.textContent).to.equal('A is invalid');
+      expect(errA.hasAttribute('hidden')).to.be.false;
 
-      // Should not create/show B's error in "first" mode
-      expect(errB === null).to.be.true;
+      expect(errB !== null).to.be.true;
+      expect(errB.textContent).to.equal('');
+      expect(errB.hasAttribute('hidden')).to.be.true;
       expect(b.hasAttribute('aria-invalid')).to.be.false;
     });
 
@@ -206,8 +206,11 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form report="all" no-focus>
           <form>
-            <input name="a" />
-            <input name="b" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
+
+            <input name="b" aria-errormessage="b-error" />
+            <div id="b-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -220,8 +223,8 @@ describe('validated-form', () => {
       const ok = el.validate();
       expect(ok).to.be.false;
 
-      const errA = errorEl(el, 'a');
-      const errB = errorEl(el, 'b');
+      const errA = el.querySelector('#a-error');
+      const errB = el.querySelector('#b-error');
 
       expect(errA !== null).to.be.true;
       expect(errA.textContent).to.equal('A is invalid');
@@ -236,8 +239,11 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form>
           <form>
-            <input name="a" />
-            <input name="b" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
+
+            <input name="b" aria-errormessage="b-error" />
+            <div id="b-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -257,7 +263,8 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -279,33 +286,42 @@ describe('validated-form', () => {
         <validated-form no-focus>
           <form>
             <button type="button">Click</button>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
 
+      const button = el.querySelector('button');
       const input = el.querySelector('input');
+
       setInvalid(input, 'A is invalid');
 
       const ok = el.validate();
       expect(ok).to.be.false;
 
-      // Only the input gets an error element
-      expect(errorEl(el, 'a')?.textContent).to.equal('A is invalid');
-      expect(el.querySelectorAll('[data-error-for]').length).to.equal(1);
+      const err = el.querySelector('#a-error');
+
+      expect(err.textContent).to.equal('A is invalid');
+      expect(button.hasAttribute('aria-invalid')).to.be.false;
     });
 
     it('ignores disabled controls', async () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" disabled />
-            <input name="b" />
+            <input name="a" disabled aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
+
+            <input name="b" aria-errormessage="b-error" />
+            <div id="b-error" hidden></div>
           </form>
         </validated-form>
       `);
 
       const [a, b] = el.querySelectorAll('input');
+      const errA = el.querySelector('#a-error');
+      const errB = el.querySelector('#b-error');
 
       setInvalid(a, 'A is invalid');
       setInvalid(b, 'B is invalid');
@@ -313,22 +329,31 @@ describe('validated-form', () => {
       const ok = el.validate();
       expect(ok).to.be.false;
 
-      // Only the enabled input should get an error
-      expect(errorEl(el, 'a') === null).to.be.true;
-      expect(errorEl(el, 'b')?.textContent).to.equal('B is invalid');
+      expect(errA.textContent).to.equal('');
+      expect(errA.hasAttribute('hidden')).to.be.true;
+      expect(a.hasAttribute('aria-invalid')).to.be.false;
+
+      expect(errB.textContent).to.equal('B is invalid');
+      expect(errB.hasAttribute('hidden')).to.be.false;
+      expect(b.getAttribute('aria-invalid')).to.equal('true');
     });
 
     it('ignores hidden controls', async () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" type="hidden" />
-            <input name="b" />
+            <input name="a" type="hidden" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
+
+            <input name="b" aria-errormessage="b-error" />
+            <div id="b-error" hidden></div>
           </form>
         </validated-form>
       `);
 
       const [a, b] = el.querySelectorAll('input');
+      const errA = el.querySelector('#a-error');
+      const errB = el.querySelector('#b-error');
 
       setInvalid(a, 'A is invalid');
       setInvalid(b, 'B is invalid');
@@ -336,9 +361,13 @@ describe('validated-form', () => {
       const ok = el.validate();
       expect(ok).to.be.false;
 
-      // Only the non-hidden input should get an error
-      expect(errorEl(el, 'a') === null).to.be.true;
-      expect(errorEl(el, 'b')?.textContent).to.equal('B is invalid');
+      expect(errA.textContent).to.equal('');
+      expect(errA.hasAttribute('hidden')).to.be.true;
+      expect(a.hasAttribute('aria-invalid')).to.be.false;
+
+      expect(errB.textContent).to.equal('B is invalid');
+      expect(errB.hasAttribute('hidden')).to.be.false;
+      expect(b.getAttribute('aria-invalid')).to.equal('true');
     });
   });
 
@@ -347,7 +376,8 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -361,8 +391,8 @@ describe('validated-form', () => {
 
       expect(evt.defaultPrevented).to.be.true;
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
+
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
       expect(input.getAttribute('aria-invalid')).to.equal('true');
@@ -372,7 +402,8 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -382,8 +413,8 @@ describe('validated-form', () => {
       setInvalid(input, 'A is invalid');
       triggerInvalid(input);
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
+
       expect(err.textContent).to.equal('A is invalid');
     });
   });
@@ -393,28 +424,35 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
 
       const input = el.querySelector('input');
+      const err = el.querySelector('#a-error');
 
       setInvalid(input, 'A is invalid');
 
       input.dispatchEvent(new Event('input', { bubbles: true }));
-      expect(errorEl(el, 'a')).to.not.exist;
 
-      // After validate(), it should start showing live errors
+      expect(err.textContent).to.equal('');
+      expect(err.hasAttribute('hidden')).to.be.true;
+      expect(input.hasAttribute('aria-invalid')).to.be.false;
+
       el.validate();
-      expect(errorEl(el, 'a')?.textContent).to.equal('A is invalid');
+
+      expect(err.textContent).to.equal('A is invalid');
+      expect(err.hasAttribute('hidden')).to.be.false;
     });
 
     it('clears an error when the control becomes valid after submit', async () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -424,8 +462,8 @@ describe('validated-form', () => {
       setInvalid(input, 'A is invalid');
       el.validate();
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
+
       expect(err.hasAttribute('hidden')).to.be.false;
 
       setValid(input);
@@ -433,7 +471,6 @@ describe('validated-form', () => {
 
       expect(err.textContent).to.equal('');
       expect(err.hasAttribute('hidden')).to.be.true;
-
       expect(input.hasAttribute('aria-invalid')).to.be.false;
     });
   });
@@ -443,7 +480,8 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -453,10 +491,9 @@ describe('validated-form', () => {
       setInvalid(input, 'Email is required');
       el.validate();
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
-      expect(err.id).to.be.a('string');
-      expect(err.id).to.not.equal('');
+      const err = el.querySelector('#a-error');
+
+      expect(err.id).to.equal('a-error');
 
       const describedBy = input.getAttribute('aria-describedby') || '';
       expect(describedBy.split(/\s+/)).to.include(err.id);
@@ -467,7 +504,8 @@ describe('validated-form', () => {
         <validated-form no-focus>
           <form>
             <p id="a-hint">Hint text</p>
-            <input name="a" aria-describedby="a-hint" />
+            <input name="a" aria-describedby="a-hint" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -477,22 +515,23 @@ describe('validated-form', () => {
       setInvalid(input, 'A is invalid');
       el.validate();
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
-      expect(err.id).to.be.a('string');
-      expect(err.id).to.not.equal('');
+      const err = el.querySelector('#a-error');
+
+      expect(err.id).to.equal('a-error');
 
       const describedBy = input.getAttribute('aria-describedby') || '';
       const describedByIds = describedBy.split(/\s+/);
+
       expect(describedByIds).to.include(err.id);
       expect(describedByIds).to.include('a-hint');
     });
 
-    it('sets role=status and aria-live=polite when neither is provided', async () => {
+    it('sets aria-live=polite when neither role nor aria-live is provided', async () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -502,18 +541,18 @@ describe('validated-form', () => {
       setInvalid(input, 'A is invalid');
       el.validate();
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
-      expect(err.getAttribute('role')).to.equal('status');
+      const err = el.querySelector('#a-error');
+
       expect(err.getAttribute('aria-live')).to.equal('polite');
+      expect(err.hasAttribute('role')).to.be.false;
     });
 
     it('does not override role/aria-live if one is already set', async () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
-            <div data-error-for="a" role="alert"></div>
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" role="alert" hidden></div>
           </form>
         </validated-form>
       `);
@@ -523,20 +562,38 @@ describe('validated-form', () => {
       setInvalid(input, 'A is invalid');
       el.validate();
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
 
-      // role exists, so ensureLiveRegionDefaults should not set aria-live
       expect(err.getAttribute('role')).to.equal('alert');
       expect(err.hasAttribute('aria-live')).to.be.false;
+    });
+
+    it('does not override an existing aria-live value', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <form>
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" aria-live="assertive" hidden></div>
+          </form>
+        </validated-form>
+      `);
+
+      const input = el.querySelector('input');
+
+      setInvalid(input, 'A is invalid');
+      el.validate();
+
+      const err = el.querySelector('#a-error');
+
+      expect(err.getAttribute('aria-live')).to.equal('assertive');
     });
 
     it('sets aria-invalid="true" on invalid controls and removes it when valid', async () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
-            <div data-error-for="a"></div>
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -556,11 +613,38 @@ describe('validated-form', () => {
   });
 
   describe('error association requirements', () => {
-    it('validates an unnamed control but does not create an error element', async () => {
+    it('displays an error for an unnamed control with aria-errormessage', async () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input />
+            <input aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
+          </form>
+        </validated-form>
+      `);
+
+      const input = el.querySelector('input');
+      const err = el.querySelector('#a-error');
+
+      setInvalid(input, 'Required');
+
+      const ok = el.validate();
+      expect(ok).to.be.false;
+
+      expect(err.textContent).to.equal('Required');
+      expect(err.hasAttribute('hidden')).to.be.false;
+      expect(input.getAttribute('aria-invalid')).to.equal('true');
+
+      const describedBy = input.getAttribute('aria-describedby') || '';
+      expect(describedBy.split(/\s+/)).to.include('a-error');
+    });
+
+    it('validates a control without aria-errormessage but shows no inline error', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <form>
+            <input aria-errormessage="   " />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -572,14 +656,80 @@ describe('validated-form', () => {
       const ok = el.validate();
       expect(ok).to.be.false;
 
-      // No error UI should be created because the control has no name
-      expect(el.querySelector('[data-error-for]')).to.not.exist;
+      const err = el.querySelector('#a-error');
 
-      // No accessibility wiring either
-      expect(input.hasAttribute('aria-describedby')).to.be.false;
-
-      // But it still participates in validation
       expect(input.getAttribute('aria-invalid')).to.equal('true');
+      expect(err.hasAttribute('hidden')).to.be.true;
+    });
+
+    it('validates a control whose aria-errormessage target does not exist', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <form>
+            <input aria-errormessage="missing-error" />
+          </form>
+        </validated-form>
+      `);
+
+      const input = el.querySelector('input');
+
+      setInvalid(input, 'Required');
+
+      const ok = el.validate();
+      expect(ok).to.be.false;
+
+      expect(input.getAttribute('aria-invalid')).to.equal('true');
+      expect(input.hasAttribute('aria-describedby')).to.be.false;
+    });
+
+    it('uses the first ID from aria-errormessage', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <form>
+            <input aria-errormessage="first-error second-error" />
+            <div id="first-error" hidden></div>
+            <div id="second-error" hidden></div>
+          </form>
+        </validated-form>
+      `);
+
+      const input = el.querySelector('input');
+      const first = el.querySelector('#first-error');
+      const second = el.querySelector('#second-error');
+
+      setInvalid(input, 'Invalid');
+      el.validate();
+
+      expect(first.textContent).to.equal('Invalid');
+      expect(first.hasAttribute('hidden')).to.be.false;
+      expect(second.textContent).to.equal('');
+      expect(second.hasAttribute('hidden')).to.be.true;
+    });
+
+    it('does not use an aria-errormessage target outside the component', async () => {
+      const wrapper = await fixture(html`
+        <div>
+          <validated-form no-focus>
+            <form>
+              <input aria-errormessage="external-error" />
+            </form>
+          </validated-form>
+
+          <div id="external-error" hidden></div>
+        </div>
+      `);
+
+      const el = wrapper.querySelector('validated-form');
+      const input = el.querySelector('input');
+      const err = wrapper.querySelector('#external-error');
+
+      setInvalid(input, 'Invalid');
+      el.validate();
+
+      expect(err.textContent).to.equal('');
+      expect(err.hasAttribute('hidden')).to.be.true;
+      expect(input.getAttribute('aria-invalid')).to.equal('true');
+      expect(input.hasAttribute('aria-describedby')).to.be.false;
     });
   });
 
@@ -588,7 +738,8 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
@@ -598,14 +749,13 @@ describe('validated-form', () => {
       setInvalid(input, 'A is invalid');
       el.validate();
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
+
       expect(err.hasAttribute('hidden')).to.be.false;
 
       el.resetValidation();
       expect(err.hasAttribute('hidden')).to.be.true;
 
-      // Still invalid, but input event should not re-show until submitted once again
       input.dispatchEvent(new Event('input', { bubbles: true }));
       expect(err.hasAttribute('hidden')).to.be.true;
     });
@@ -614,22 +764,28 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form>
           <form>
-            <input name="a" />
+            <input name="a" aria-errormessage="a-error" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
 
       const input = el.querySelector('input');
+      const err = el.querySelector('#a-error');
 
       setInvalid(input, 'A is invalid');
 
       expect(el.isValid()).to.be.false;
-      expect(errorEl(el, 'a')).to.not.exist;
+      expect(err.textContent).to.equal('');
+      expect(err.hasAttribute('hidden')).to.be.true;
+      expect(input.hasAttribute('aria-invalid')).to.be.false;
 
       setValid(input);
 
       expect(el.isValid()).to.be.true;
-      expect(errorEl(el, 'a')).to.not.exist;
+      expect(err.textContent).to.equal('');
+      expect(err.hasAttribute('hidden')).to.be.true;
+      expect(input.hasAttribute('aria-invalid')).to.be.false;
     });
   });
 
@@ -638,20 +794,19 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="a" data-msg-required="Field A is required" />
+            <input name="a" aria-errormessage="a-error" data-msg-required="Field A is required" />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
 
       const input = el.querySelector('input');
 
-      // Trigger valueMissing using native constraint
       input.required = true;
-
       el.validate();
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
+
       expect(err.textContent).to.equal('Field A is required');
     });
 
@@ -659,15 +814,22 @@ describe('validated-form', () => {
       const el = await fixture(html`
         <validated-form no-focus>
           <form>
-            <input name="email" type="email" value="not-an-email" data-msg-type="Invalid email address" />
+            <input
+              name="a"
+              type="email"
+              value="not-an-email"
+              aria-errormessage="a-error"
+              data-msg-type="Invalid email address"
+            />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
 
       el.validate();
 
-      const err = errorEl(el, 'email');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
+
       expect(err.textContent).to.equal('Invalid email address');
     });
 
@@ -679,19 +841,51 @@ describe('validated-form', () => {
               name="a"
               required
               minlength="5"
+              aria-errormessage="a-error"
               data-msg-required="Field A is required"
               data-msg-too-short="Field A is too short"
             />
+            <div id="a-error" hidden></div>
           </form>
         </validated-form>
       `);
 
-      // Empty value triggers valueMissing first
       el.validate();
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
+
       expect(err.textContent).to.equal('Field A is required');
+    });
+  });
+
+  describe('radio groups', () => {
+    it('supports multiple radio controls referencing one error element', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <form>
+            <input type="radio" name="choice" value="a" required aria-errormessage="choice-error" />
+            <input type="radio" name="choice" value="b" aria-errormessage="choice-error" />
+            <div id="choice-error" hidden></div>
+          </form>
+        </validated-form>
+      `);
+
+      const [a, b] = el.querySelectorAll('input');
+      const err = el.querySelector('#choice-error');
+
+      const ok = el.validate();
+
+      expect(ok).to.be.false;
+      expect(err.textContent).to.not.equal('');
+      expect(err.hasAttribute('hidden')).to.be.false;
+      expect(a.getAttribute('aria-invalid')).to.equal('true');
+      expect(b.getAttribute('aria-invalid')).to.equal('true');
+
+      const aDescribedBy = a.getAttribute('aria-describedby') || '';
+      const bDescribedBy = b.getAttribute('aria-describedby') || '';
+
+      expect(aDescribedBy.split(/\s+/)).to.include('choice-error');
+      expect(bDescribedBy.split(/\s+/)).to.include('choice-error');
     });
   });
 
@@ -699,10 +893,11 @@ describe('validated-form', () => {
     it('shows validation errors for a control associated via the form attribute', async () => {
       const el = await fixture(html`
         <validated-form no-focus>
-          <input name="a" form="f" />
+          <input name="a" form="f" aria-errormessage="a-error" />
           <form id="f">
             <button type="submit">Submit</button>
           </form>
+          <div id="a-error" hidden></div>
         </validated-form>
       `);
 
@@ -713,8 +908,8 @@ describe('validated-form', () => {
       const ok = el.validate();
       expect(ok).to.be.false;
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
+
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
       expect(input.getAttribute('aria-invalid')).to.equal('true');
@@ -723,10 +918,11 @@ describe('validated-form', () => {
     it('updates live validation on input after first submit', async () => {
       const el = await fixture(html`
         <validated-form no-focus>
-          <input name="a" form="f" />
+          <input name="a" form="f" aria-errormessage="a-error" />
           <form id="f">
             <button type="submit">Submit</button>
           </form>
+          <div id="a-error" hidden></div>
         </validated-form>
       `);
 
@@ -735,8 +931,8 @@ describe('validated-form', () => {
       setInvalid(input, 'A is invalid');
       el.validate();
 
-      const err = errorEl(el, 'a');
-      expect(err !== null).to.be.true;
+      const err = el.querySelector('#a-error');
+
       expect(err.textContent).to.equal('A is invalid');
       expect(err.hasAttribute('hidden')).to.be.false;
 
@@ -751,8 +947,12 @@ describe('validated-form', () => {
     it('does not react to controls associated with a different form after live validation is enabled', async () => {
       const el = await fixture(html`
         <validated-form no-focus>
-          <input name="inside" form="f" />
-          <input name="outside" form="other-form" />
+          <input name="inside" form="f" aria-errormessage="inside-error" />
+          <div id="inside-error" hidden></div>
+
+          <input name="outside" form="other-form" aria-errormessage="outside-error" />
+          <div id="outside-error" hidden></div>
+
           <form id="f">
             <button type="submit">Submit</button>
           </form>
@@ -762,18 +962,18 @@ describe('validated-form', () => {
 
       const inside = el.querySelector('input[name="inside"]');
       const outside = el.querySelector('input[name="outside"]');
+      const outsideError = el.querySelector('#outside-error');
 
-      // Enable live validation for this component
       setInvalid(inside, 'Inside is invalid');
       el.validate();
 
-      // Dispatch input from a control owned by another form
       setInvalid(outside, 'Outside is invalid');
       outside.dispatchEvent(new Event('input', { bubbles: true }));
 
-      // No error should be created for the unrelated control
-      expect(errorEl(el, 'outside') === null).to.be.true;
+      expect(outsideError.textContent).to.equal('');
+      expect(outsideError.hasAttribute('hidden')).to.be.true;
       expect(outside.hasAttribute('aria-invalid')).to.be.false;
+      expect(outside.hasAttribute('aria-describedby')).to.be.false;
     });
   });
 });

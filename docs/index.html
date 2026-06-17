@@ -33,11 +33,9 @@
     <browser-window url="https://github.com/georapbox/validated-form" icon>
       <validated-form>
         <form id="demo-form" autocomplete="off">
-          <p class="help-text" style="margin-block-end: 1.5rem;">Fields marked with <span class="required-hint">*</span> are required.</p>
-
           <!-- Text / Email -->
           <div class="form-group">
-            <label for="text-input">Text input (email type) <span class="required-hint" aria-hidden="true">*</span></label>
+            <label for="text-input">Text input (email type)</label>
             <p class="help-text" id="text-input-hint">Requires a valid email format.</p>
             <input
               class="form-control"
@@ -46,13 +44,14 @@
               name="text-input"
               required
               aria-describedby="text-input-hint"
+              aria-errormessage="text-input-error"
             >
-            <div data-error-for="text-input" hidden></div>
+            <div id="text-input-error" class="error" hidden></div>
           </div>
 
           <!-- Pattern -->
           <div class="form-group">
-            <label for="pattern-input">Pattern-validated input <span class="required-hint" aria-hidden="true">*</span></label>
+            <label for="pattern-input">Pattern-validated input</label>
             <p class="help-text" id="pattern-input-hint">Minimum 8 characters including letter, number, and symbol.</p>
             <input
               class="form-control"
@@ -62,13 +61,14 @@
               pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$"
               required
               aria-describedby="pattern-input-hint"
+              aria-errormessage="pattern-input-error"
             >
-            <div data-error-for="pattern-input" hidden></div>
+            <div id="pattern-input-error" class="error" hidden></div>
           </div>
 
           <!-- Number -->
           <div class="form-group">
-            <label for="number-input">Number input <span class="required-hint" aria-hidden="true">*</span></label>
+            <label for="number-input">Number input</label>
             <p class="help-text" id="number-input-hint">Enter an even number between 2 and 10.</p>
             <input
               class="form-control"
@@ -80,61 +80,55 @@
               max="10"
               step="2"
               aria-describedby="number-input-hint"
+              aria-errormessage="number-input-error"
             >
-            <div data-error-for="number-input" hidden></div>
-          </div>
-
-          <!-- Datetime-local -->
-          <div class="form-group">
-            <label for="datetime-input">Datetime input <span class="required-hint" aria-hidden="true">*</span></label>
-            <p class="help-text" id="datetime-input-hint">
-              Select a date and time between
-              <time datetime="2026-03-28T09:00">28 March 2026, 09:00</time>
-              and
-              <time datetime="2026-03-28T18:00">28 March 2026, 18:00</time>.
-            </p>
-            <input
-              class="form-control"
-              type="datetime-local"
-              id="datetime-input"
-              name="datetime-input"
-              required
-              min="2026-03-28T09:00"
-              max="2026-03-28T18:00"
-              aria-describedby="datetime-input-hint"
-            >
-            <div data-error-for="datetime-input" hidden></div>
+            <div id="number-input-error" class="error" hidden></div>
           </div>
 
           <!-- Select -->
           <div class="form-group">
-            <label for="select-single">Single select <span class="required-hint" aria-hidden="true">*</span></label>
+            <label for="select-single">Single select</label>
             <p class="help-text" id="select-single-hint">Choose one value.</p>
-            <select class="form-control" id="select-single" name="select-single" required aria-describedby="select-single-hint">
+            <select
+              class="form-control"
+              id="select-single"
+              name="select-single"
+              required
+              aria-describedby="select-single-hint"
+              aria-errormessage="select-single-error"
+            >
               <option value="">Select an option</option>
               <option value="option-a">Option A</option>
               <option value="option-b">Option B</option>
               <option value="option-c">Option C</option>
             </select>
-            <div data-error-for="select-single" hidden></div>
+            <div id="select-single-error" class="error" hidden></div>
           </div>
 
           <!-- Multi Select -->
           <div class="form-group">
-            <label for="select-multiple">Multiple select <span class="required-hint" aria-hidden="true">*</span></label>
+            <label for="select-multiple">Multiple select</label>
             <p class="help-text" id="select-multiple-hint">Select at least one value.</p>
-            <select class="form-control" id="select-multiple" name="select-multiple" multiple required aria-describedby="select-multiple-hint">
+            <select
+              class="form-control"
+              id="select-multiple"
+              name="select-multiple"
+              multiple
+              required
+              aria-describedby="select-multiple-hint"
+              aria-errormessage="select-multiple-error"
+            >
               <option value="option-a">Option A</option>
               <option value="option-b">Option B</option>
               <option value="option-c">Option C</option>
               <option value="option-d">Option D</option>
             </select>
-            <div data-error-for="select-multiple" hidden></div>
+            <div id="select-multiple-error" class="error" hidden></div>
           </div>
 
           <!-- Radio -->
           <fieldset class="form-group" aria-describedby="radio-hint">
-            <legend>Single choice group (radio buttons) <span class="required-hint" aria-hidden="true">*</span></legend>
+            <legend>Single choice group (radio buttons)</legend>
             <p class="help-text" id="radio-hint">Exactly one option must be selected.</p>
             <label class="inline-option">
               <input
@@ -142,6 +136,7 @@
                 name="radio-group"
                 value="option-a"
                 required
+                aria-errormessage="radio-group-error"
               >
               Option A
             </label>
@@ -150,6 +145,7 @@
                 type="radio"
                 name="radio-group"
                 value="option-b"
+                aria-errormessage="radio-group-error"
               >
               Option B
             </label>
@@ -158,10 +154,11 @@
                 type="radio"
                 name="radio-group"
                 value="option-c"
+                aria-errormessage="radio-group-error"
               >
               Option C
             </label>
-            <div data-error-for="radio-group" hidden></div>
+            <div id="radio-group-error" class="error" hidden></div>
           </fieldset>
 
           <!-- Checkbox -->
@@ -175,24 +172,24 @@
                 value="option-a"
                 required
                 aria-describedby="checkbox-hint"
+                aria-errormessage="checkbox-input-required-error"
               >
               Option A
-              <span class="required-hint" aria-hidden="true">*</span>
             </label>
-            <div data-error-for="checkbox-input-required" hidden></div>
+            <div id="checkbox-input-required-error" class="error" hidden></div>
             <label class="inline-option">
               <input
                 type="checkbox"
                 name="checkbox-input-optional"
                 value="option-b"
               >
-              Option B
+              Option B (Optional)
             </label>
           </fieldset>
 
           <!-- File -->
           <div class="form-group">
-            <label for="file-input">File upload <span class="required-hint" aria-hidden="true">*</span></label>
+            <label for="file-input">File upload</label>
             <p class="help-text" id="file-input-hint">Accepted formats: PDF, JPG, PNG.</p>
             <input
               class="form-control"
@@ -202,8 +199,9 @@
               required
               accept=".pdf,.jpg,.jpeg,.png"
               aria-describedby="file-input-hint"
+              aria-errormessage="file-input-error"
             >
-            <div data-error-for="file-input" hidden></div>
+            <div id="file-input-error" class="error" hidden></div>
           </div>
 
           <!-- Textarea -->
@@ -218,13 +216,14 @@
               minlength="20"
               maxlength="300"
               aria-describedby="textarea-hint"
+              aria-errormessage="textarea-input-error"
             ></textarea>
-            <div data-error-for="textarea-input" hidden></div>
+            <div id="textarea-input-error" class="error" hidden></div>
           </div>
 
           <!-- Custom validation errors -->
           <div class="form-group">
-            <label for="custom-errors-input">Input with custom error messages <span class="required-hint" aria-hidden="true">*</span></label>
+            <label for="custom-errors-input">Input with custom error messages </label>
             <p class="help-text" id="custom-errors-input-hint">Password field with custom validation messages for required and too-short errors.</p>
             <input
               class="form-control"
@@ -235,10 +234,11 @@
               minlength="8"
               autocomplete="off"
               aria-describedby="custom-errors-input-hint"
+              aria-errormessage="custom-errors-input-error"
               data-msg-required="Password is required."
               data-msg-too-short="Password must be at least 8 characters."
             >
-            <div data-error-for="custom-errors-input" hidden></div>
+            <div id="custom-errors-input-error" class="error" hidden></div>
           </div>
 
           <!-- Disabled -->
@@ -253,28 +253,10 @@
               disabled
               required
               aria-describedby="disabled-input-hint"
+              aria-errormessage="disabled-input-error"
             >
-            <div data-error-for="disabled-input" hidden></div>
+            <div id="disabled-input-error" class="error" hidden></div>
           </div>
-
-          <!-- Readonly -->
-          <div class="form-group">
-            <label for="readonly-input">Readonly control</label>
-            <p class="help-text" id="readonly-input-hint">This field is readonly. Although it is required, it will not trigger validation errors since it's not editable.</p>
-            <input
-              class="form-control"
-              type="text"
-              id="readonly-input"
-              name="readonly-input"
-              readonly
-              required
-              aria-describedby="readonly-input-hint"
-            >
-            <div data-error-for="readonly-input" hidden></div>
-          </div>
-
-          <!-- Hidden -->
-          <input type="hidden" name="hidden-input" value="hidden-value">
 
           <button type="submit">Submit</button>
           <button type="reset">Reset</button>
@@ -315,9 +297,9 @@
       <p>
         The HTML markup for the demo form includes a variety of form controls, each with different validation requirements.
         The form is wrapped in the <code>&lt;validated-form&gt;</code> component, which handles the validation logic and
-        error message display. Each form control has an associated error container defined by the <code>data-error-for</code>
-        attribute, where validation messages will be displayed when errors occur. Additionally, descriptive text is provided
-        for each field to guide users on the expected input and validation rules.
+        error message display. Each form control uses <code>aria-errormessage</code> to reference an error element by its
+        <code>id</code>, where the validation message is displayed when the control is invalid. Descriptive text is associated
+        separately using <code>aria-describedby</code> to guide users on the expected input and validation rules.
       </p>
 
 <pre><code>&lt;validated-form&gt;
@@ -326,7 +308,7 @@
 
     &lt;!-- Text / Email --&gt;
     &lt;div&gt;
-      &lt;label for="text-input"&gt;Text input (email type) &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+      &lt;label for="text-input"&gt;Text input (email type)&lt;/label&gt;
       &lt;p id="text-input-hint"&gt;Requires a valid email format.&lt;/p&gt;
       &lt;input
         type="email"
@@ -334,13 +316,14 @@
         name="text-input"
         required
         aria-describedby="text-input-hint"
+        aria-errormessage="text-input-error"
       &gt;
-      &lt;div data-error-for="text-input" hidden&gt;&lt;/div&gt;
+      &lt;div id="text-input-error" class="error" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;!-- Pattern --&gt;
     &lt;div&gt;
-      &lt;label for="pattern-input"&gt;Pattern-validated input &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+      &lt;label for="pattern-input"&gt;Pattern-validated input&lt;/label&gt;
       &lt;p id="pattern-input-hint"&gt;Minimum 8 characters including letter, number, and symbol.&lt;/p&gt;
       &lt;input
         type="text"
@@ -349,13 +332,14 @@
         pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$"
         required
         aria-describedby="pattern-input-hint"
+        aria-errormessage="pattern-input-error"
       &gt;
-      &lt;div data-error-for="pattern-input" hidden&gt;&lt;/div&gt;
+      &lt;div id="pattern-input-error" class="error" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;!-- Number --&gt;
     &lt;div&gt;
-      &lt;label for="number-input"&gt;Number input &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+      &lt;label for="number-input"&gt;Number input&lt;/label&gt;
       &lt;p id="number-input-hint"&gt;Enter an even number between 2 and 10.&lt;/p&gt;
       &lt;input
         type="number"
@@ -366,53 +350,33 @@
         max="10"
         step="2"
         aria-describedby="number-input-hint"
+        aria-errormessage="number-input-error"
       &gt;
-      &lt;div data-error-for="number-input" hidden&gt;&lt;/div&gt;
-    &lt;/div&gt;
-
-    &lt;!-- Datetime-local --&gt;
-    &lt;div class="form-group"&gt;
-      &lt;label for="datetime-input"&gt;Datetime input &lt;span class="required-hint" aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
-      &lt;p class="help-text" id="datetime-input-hint"&gt;
-        Select a date and time between
-        &lt;time datetime="2026-03-28T09:00"&gt;28 March 2026, 09:00&lt;/time&gt;
-        and
-        &lt;time datetime="2026-03-28T18:00"&gt;28 March 2026, 18:00&lt;/time&gt;.
-      &lt;/p&gt;
-      &lt;input
-        class="form-control"
-        type="datetime-local"
-        id="datetime-input"
-        name="datetime-input"
-        required
-        min="2026-03-28T09:00"
-        max="2026-03-28T18:00"
-        aria-describedby="datetime-input-hint"
-      &gt;
-      &lt;div data-error-for="datetime-input" hidden&gt;&lt;/div&gt;
+      &lt;div id="number-input-error" class="error" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;!-- Select --&gt;
     &lt;div&gt;
-      &lt;label for="select-single"&gt;Single select &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+      &lt;label for="select-single"&gt;Single select&lt;/label&gt;
       &lt;p id="select-single-hint"&gt;Choose one value.&lt;/p&gt;
       &lt;select
         id="select-single"
         name="select-single"
         required
         aria-describedby="select-single-hint"
+        aria-errormessage="select-single-error"
       &gt;
         &lt;option value=""&gt;Select an option&lt;/option&gt;
         &lt;option value="option-a"&gt;Option A&lt;/option&gt;
         &lt;option value="option-b"&gt;Option B&lt;/option&gt;
         &lt;option value="option-c"&gt;Option C&lt;/option&gt;
       &lt;/select&gt;
-      &lt;div data-error-for="select-single" hidden&gt;&lt;/div&gt;
+      &lt;div id="select-single-error" class="error" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;!-- Multi Select --&gt;
     &lt;div&gt;
-      &lt;label for="select-multiple"&gt;Multiple select &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+      &lt;label for="select-multiple"&gt;Multiple select&lt;/label&gt;
       &lt;p id="select-multiple-hint"&gt;Select at least one value.&lt;/p&gt;
       &lt;select
         id="select-multiple"
@@ -420,18 +384,19 @@
         multiple
         required
         aria-describedby="select-multiple-hint"
+        aria-errormessage="select-multiple-error"
       &gt;
         &lt;option value="option-a"&gt;Option A&lt;/option&gt;
         &lt;option value="option-b"&gt;Option B&lt;/option&gt;
         &lt;option value="option-c"&gt;Option C&lt;/option&gt;
         &lt;option value="option-d"&gt;Option D&lt;/option&gt;
       &lt;/select&gt;
-      &lt;div data-error-for="select-multiple" hidden&gt;&lt;/div&gt;
+      &lt;div id="select-multiple-error" class="error" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;!-- Radio --&gt;
     &lt;fieldset aria-describedby="radio-hint"&gt;
-      &lt;legend&gt;Single choice group (radio buttons) &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/legend&gt;
+      &lt;legend&gt;Single choice group (radio buttons)&lt;/legend&gt;
       &lt;p id="radio-hint"&gt;Exactly one option must be selected.&lt;/p&gt;
       &lt;label class="inline-option"&gt;
         &lt;input
@@ -439,6 +404,7 @@
           name="radio-group"
           value="option-a"
           required
+          aria-errormessage="radio-group-error"
         &gt;
         Option A
       &lt;/label&gt;
@@ -447,6 +413,7 @@
           type="radio"
           name="radio-group"
           value="option-b"
+          aria-errormessage="radio-group-error"
         &gt;
         Option B
       &lt;/label&gt;
@@ -455,41 +422,42 @@
           type="radio"
           name="radio-group"
           value="option-c"
+          aria-errormessage="radio-group-error"
         &gt;
         Option C
       &lt;/label&gt;
-      &lt;div data-error-for="radio-group" hidden&gt;&lt;/div&gt;
+      &lt;div id="radio-group-error" class="error" hidden&gt;&lt;/div&gt;
     &lt;/fieldset&gt;
 
     &lt;!-- Checkbox --&gt;
     &lt;fieldset&gt;
       &lt;legend&gt;Checkbox group&lt;/legend&gt;
-      &lt;p id=&quot;checkbox-hint&quot;&gt;Option A is required to proceed&lt;/p&gt;
+      &lt;p id="checkbox-hint"&gt;Option A is required to proceed&lt;/p&gt;
       &lt;label&gt;
         &lt;input
-          type=&quot;checkbox&quot;
-          name=&quot;checkbox-input-required&quot;
+          type="checkbox"
+          name="checkbox-input-required"
           value="option-a"
           required
-          aria-describedby=&quot;checkbox-hint&quot;
+          aria-describedby="checkbox-hint"
+          aria-errormessage="checkbox-input-required-error"
         &gt;
         Option A
-        &lt;span aria-hidden=&quot;true&quot;&gt;*&lt;/span&gt;
       &lt;/label&gt;
-      &lt;div data-error-for=&quot;checkbox-input-required&quot; hidden&gt;&lt;/div&gt;
+      &lt;div id="checkbox-input-required-error" class="error" hidden&gt;&lt;/div&gt;
       &lt;label&gt;
         &lt;input
-          type=&quot;checkbox&quot;
-          name=&quot;checkbox-input-optional&quot;
+          type="checkbox"
+          name="checkbox-input-optional"
           value="option-b"
         &gt;
-        Option B
+        Option B (Optional)
       &lt;/label&gt;
     &lt;/fieldset&gt;
 
     &lt;!-- File --&gt;
     &lt;div&gt;
-      &lt;label for="file-input"&gt;File upload &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+      &lt;label for="file-input"&gt;File upload&lt;/label&gt;
       &lt;p id="file-input-hint"&gt;Accepted formats: PDF, JPG, PNG.&lt;/p&gt;
       &lt;input
         type="file"
@@ -498,8 +466,9 @@
         required
         accept=".pdf,.jpg,.jpeg,.png"
         aria-describedby="file-input-hint"
+        aria-errormessage="file-input-error"
       &gt;
-      &lt;div data-error-for="file-input" hidden&gt;&lt;/div&gt;
+      &lt;div id="file-input-error" class="error" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;!-- Textarea --&gt;
@@ -513,13 +482,14 @@
         minlength="20"
         maxlength="300"
         aria-describedby="textarea-hint"
+        aria-errormessage="textarea-input-error"
       &gt;&lt;/textarea&gt;
-      &lt;div data-error-for="textarea-input" hidden&gt;&lt;/div&gt;
+      &lt;div id="textarea-input-error" class="error" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;!-- Custom validation errors --&gt;
     &lt;div&gt;
-      &lt;label for="custom-errors-input"&gt;Input with custom error messages &lt;span aria-hidden="true"&gt;*&lt;/span&gt;&lt;/label&gt;
+      &lt;label for="custom-errors-input"&gt;Input with custom error messages&lt;/label&gt;
       &lt;p id="custom-errors-input-hint"&gt;Password field with custom validation messages for required and too-short errors.&lt;/p&gt;
       &lt;input
         type="password"
@@ -529,10 +499,11 @@
         minlength="8"
         autocomplete="off"
         aria-describedby="custom-errors-input-hint"
+        aria-errormessage="custom-errors-input-error"
         data-msg-required="Password is required."
         data-msg-too-short="Password must be at least 8 characters."
       &gt;
-      &lt;div data-error-for="custom-errors-input" hidden&gt;&lt;/div&gt;
+      &lt;div id="custom-errors-input-error" class="error" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;!-- Disabled --&gt;
@@ -546,27 +517,10 @@
         disabled
         required
         aria-describedby="disabled-input-hint"
+        aria-errormessage="disabled-input-error"
       &gt;
-      &lt;div data-error-for="disabled-input" hidden&gt;&lt;/div&gt;
+      &lt;div id="disabled-input-error" class="error" hidden&gt;&lt;/div&gt;
     &lt;/div&gt;
-
-    &lt;!-- Readonly --&gt;
-    &lt;div&gt;
-      &lt;label for="readonly-input"&gt;Readonly control&lt;/label&gt;
-      &lt;p id="readonly-input-hint"&gt;This field is readonly. Although it is required, it will not trigger validation errors since it's not editable.&lt;/p&gt;
-      &lt;input
-        type="text"
-        id="readonly-input"
-        name="readonly-input"
-        readonly
-        required
-        aria-describedby="readonly-input-hint"
-      &gt;
-      &lt;div data-error-for="readonly-input" hidden&gt;&lt;/div&gt;
-    &lt;/div&gt;
-
-    &lt;!-- Hidden --&gt;
-    &lt;input type="hidden" name="hidden-input" value="hidden-value"&gt;
 
     &lt;button type="submit"&gt;Submit&lt;/button&gt;
     &lt;button type="reset"&gt;Reset&lt;/button&gt;
@@ -576,12 +530,11 @@
       <h3>CSS</h3>
       <p>
         The component does not include any default styles for error messages, allowing you to style them as needed.
-        The following CSS snippet provides a basic example of how to style the error messages that are displayed in
-        the elements with the <code>data-error-for</code> attribute. The styling of the form is omitted for brevity,
-        but you can apply your own styles to the form controls and layout as desired.
+        The following CSS snippet provides a basic example using the <code>error</code> class applied to the error elements.
+        The styling of the form is omitted for brevity, but you can apply your own styles to the form controls and layout as desired.
       </p>
 
-<pre><code>[data-error-for] {
+<pre><code>.error {
   color: light-dark(#ae1a28, #ff7d89);
   font-size: 0.875rem;
   word-wrap: break-word;

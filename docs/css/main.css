@@ -81,10 +81,6 @@ browser-window::part(title) {
   margin-bottom: 0.4rem;
 }
 
-.required-hint {
-  color: var(--color-danger);
-}
-
 #demo-form {
   margin: 0 auto;
   padding: 1rem;
@@ -110,6 +106,12 @@ browser-window::part(title) {
   margin: 0;
 }
 
+#demo-form .error {
+  font-size: 0.875rem;
+  color: var(--color-danger);
+  word-wrap: break-word;
+}
+
 #success-dialog {
   width: 36rem;
   padding: 1rem;
@@ -127,10 +129,4 @@ browser-window::part(title) {
 
 #success-dialog form[method="dialog"] button {
   margin: 0;
-}
-
-[data-error-for] {
-  font-size: 0.875rem;
-  color: var(--color-danger);
-  word-wrap: break-word;
 }
