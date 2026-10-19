@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [2.0.0] - 2026-06-17
 
 ### Changed
@@ -12,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed how form controls are associated with inline error elements.
   - Controls must now use `aria-errormessage` to reference an error element by its `id`.
   - Error elements are no longer identified through `data-error-for`.
-  - A control's `name` atribute is no longer used to locate or associate its error element.
+  - A control's `name` attribute is no longer used to locate or associate its error element.
 - Error elements must now be provided explicitly in the markup.
   - The component no longer creates missing error elements automatically.
   - The component no longer generates IDs for error elements.
@@ -104,6 +106,7 @@ Existing authored role and aria-live values continue to be preserved.
 ## [1.0.0] - 2026-03-28
 
 ### Added
+
 - Initial release of `<validated-form>`.
 - Support for enhancing a native `<form>` with accessible inline validation errors based on the Constraint Validation API.
 - Automatic display of native browser validation messages, with support for per-rule message overrides via `data-msg-*` attributes:
@@ -131,3 +134,8 @@ Existing authored role and aria-live values continue to be preserved.
 - Live validation updates on `input` and `change` after validation has started.
 - Support for controls associated with the wrapped form via the `form` attribute when they are inside the `<validated-form>` subtree.
 - Automatic disabling of native browser validation UI on the wrapped form by setting `form.noValidate = true`.
+
+[unreleased]: https://github.com/georapbox/validated-form/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/georapbox/validated-form/compare/v1.0.1...v2.0.0
+[1.0.1]: https://github.com/georapbox/validated-form/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/georapbox/validated-form/releases/tag/v1.0.0
