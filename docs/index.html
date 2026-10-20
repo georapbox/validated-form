@@ -529,15 +529,22 @@
 
       <h3>CSS</h3>
       <p>
-        The component does not include any default styles for error messages, allowing you to style them as needed.
-        The following CSS snippet provides a basic example using the <code>error</code> class applied to the error elements.
-        The styling of the form is omitted for brevity, but you can apply your own styles to the form controls and layout as desired.
+        The component does not include any default styles for invalid form controls or validation messages.
+        You can use the <code>aria-invalid</code> attribute to highlight controls with reported validation
+        errors and style the error messages separately. Alternatively, you can conditionally apply styles
+        based on the visibility of the associated error elements. The following example demonstrates a
+        minimal approach, which you can adapt to your application's design.
       </p>
 
-<pre><code>.error {
-  color: light-dark(#ae1a28, #ff7d89);
+<pre><code>/* Highlight controls with validation errors */
+[aria-invalid="true"] {
+  outline: 2px solid #c00;
+}
+
+/* Style validation messages */
+.error {
+  color: #c00;
   font-size: 0.875rem;
-  word-wrap: break-word;
 }</code></pre>
 
       <h3>JavaScript</h3>

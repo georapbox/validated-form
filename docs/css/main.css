@@ -112,6 +112,10 @@ browser-window::part(title) {
   word-wrap: break-word;
 }
 
+#demo-form .form-group:has(.error:not([hidden])) [aria-invalid="true"]:not(:focus-visible) {
+  outline: 2px solid var(--color-danger);
+}
+
 #success-dialog {
   width: 36rem;
   padding: 1rem;
