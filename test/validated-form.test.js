@@ -89,6 +89,37 @@ describe('validated-form', () => {
   });
 
   describe('wiring / setup', () => {
+    it('initializes a form added after the component is connected', async () => {
+      const el = await fixture(html`
+        <validated-form no-focus>
+          <div id="container"></div>
+        </validated-form>
+      `);
+
+      const container = el.querySelector('#container');
+
+      container.innerHTML = `
+        <form>
+          <input name="a" aria-errormessage="a-error" />
+          <div id="a-error" hidden></div>
+        </form>
+      `;
+
+      // Allow the MutationObserver callback to run.
+      await Promise.resolve();
+
+      const form = el.querySelector('form');
+      const input = el.querySelector('input');
+      const err = el.querySelector('#a-error');
+
+      expect(form.noValidate).to.be.true;
+
+      setInvalid(input, 'A is invalid');
+
+      expect(dispatchSubmitWithoutNavigation(form)).to.be.true;
+      expect(err.textContent).to.equal('A is invalid');
+    });
+
     it('sets form.noValidate = true when a form exists', async () => {
       const el = await fixture(html`
         <validated-form>

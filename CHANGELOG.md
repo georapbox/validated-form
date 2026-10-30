@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-10-30
+
+### Fixed
+
+- Fixed form initialization when the `<form>` element is added after `<validated-form>` connects to the DOM, including when the custom element is upgraded before its children are parsed.
+
 ## [2.0.0] - 2026-06-17
 
 ### Changed
@@ -135,7 +141,8 @@ Existing authored role and aria-live values continue to be preserved.
 - Support for controls associated with the wrapped form via the `form` attribute when they are inside the `<validated-form>` subtree.
 - Automatic disabling of native browser validation UI on the wrapped form by setting `form.noValidate = true`.
 
-[unreleased]: https://github.com/georapbox/validated-form/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/georapbox/validated-form/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/georapbox/validated-form/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/georapbox/validated-form/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/georapbox/validated-form/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/georapbox/validated-form/releases/tag/v1.0.0

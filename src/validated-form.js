@@ -53,6 +53,9 @@ class ValidatedForm extends HTMLElement {
   /** @type {HTMLFormElement | null} */
   #form = null;
 
+  /** @type {MutationObserver} */
+  #formObserver = new MutationObserver(() => this.#initializeForm());
+
   constructor() {
     super();
   }
@@ -103,13 +106,12 @@ class ValidatedForm extends HTMLElement {
     this.#upgradeProperty('noFocus');
     this.#upgradeProperty('report');
 
-    this.#form = this.querySelector('form');
+    this.#initializeForm();
 
-    if (this.#form && !this.#form.noValidate) {
-      this.#form.noValidate = true;
+    if (!this.#form) {
+      this.#formObserver.observe(this, { childList: true, subtree: true });
     }
 
-    this.#form?.addEventListener('submit', this.#handleSubmit);
     this.addEventListener('invalid', this.#handleInvalidCapture, { capture: true });
     this.addEventListener('input', this.#handleInputOrChange);
     this.addEventListener('change', this.#handleInputOrChange);
@@ -119,7 +121,12 @@ class ValidatedForm extends HTMLElement {
    * Lifecycle method that is called when the element is removed from the DOM.
    */
   disconnectedCallback() {
+    this.#formObserver.disconnect();
     this.#form?.removeEventListener('submit', this.#handleSubmit);
+
+    // Allow the form to be reinitialized on reconnection.
+    this.#form = null;
+
     this.removeEventListener('invalid', this.#handleInvalidCapture, { capture: true });
     this.removeEventListener('input', this.#handleInputOrChange);
     this.removeEventListener('change', this.#handleInputOrChange);
@@ -155,6 +162,29 @@ class ValidatedForm extends HTMLElement {
   isValid() {
     return this.#getValidatableControls().every(el => el.validity.valid);
   }
+
+  /**
+   * Initializes the form when it becomes available.
+   * Attaches the submit event listener and stops observing DOM changes.
+   * Does nothing if the form has already been initialized or is not found.
+   */
+  #initializeForm = () => {
+    if (this.#form) {
+      return;
+    }
+
+    const form = this.querySelector('form');
+    if (!(form instanceof HTMLFormElement)) {
+      return;
+    }
+
+    form.noValidate = true;
+    form.addEventListener('submit', this.#handleSubmit);
+    this.#form = form;
+
+    // Stop observing once the form is found.
+    this.#formObserver.disconnect();
+  };
 
   /**
    * Returns the validation message for a control.

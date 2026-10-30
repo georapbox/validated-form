@@ -75,6 +75,8 @@ For the component to function correctly, the markup must follow a few convention
 
 `<validated-form>` enhances an existing form — it does not create one.
 
+The form can be included in the initial markup or added dynamically after `<validated-form>` has been connected to the DOM.
+
 ```html
 <validated-form>
   <form>
