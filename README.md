@@ -37,41 +37,40 @@ Using the **Constraint Validation API**, it:
 
 This progressive-enhancement approach was informed by writing from [Adrian Roselli](https://adrianroselli.com/2019/02/avoid-default-field-validation.html) and [HTMHell](https://www.htmhell.dev/adventcalendar/2025/28/) on the accessibility limitations of default browser validation UI and the benefits of layering accessible feedback on top of native validation.
 
-## Usage
-
-### Installation
+## Installation
 
 ```sh
 npm install --save @georapbox/validated-form
 ```
 
-### Importing the component
+## Registration
 
 By default, the package exports the element class without registering it.
 This lets the application decide when the custom element is defined.
 
-#### Manual definition
+### Manual registration
+
+Import the `ValidatedForm` class and call its static `define()` method:
 
 ```js
 import { ValidatedForm } from '@georapbox/validated-form';
 
-// Define using the default tag name
 ValidatedForm.define();
 ```
 
-#### Auto-defined (convenience)
+### Automatic registration
 
-If you don't need control over registration, you can import the pre-defined build which immediately registers `<validated-form>`.
+If you don't need control over registration, import the convenience entry point:
 
 ```js
 import '@georapbox/validated-form/define';
 ```
 
-### Requirements
+## Requirements
 
 For the component to function correctly, the markup must follow a few conventions.
 
-#### 1. The element must wrap a `<form>`
+### 1. The element must wrap a `<form>`
 
 `<validated-form>` enhances an existing form — it does not create one.
 
@@ -85,7 +84,7 @@ The form can be included in the initial markup or added dynamically after `<vali
 </validated-form>
 ```
 
-#### 2. Each control that should display an inline error needs an associated error element
+### 2. Each control that should display an inline error needs an associated error element
 
 Each control for which you want to display an inline validation message must use `aria-errormessage` to reference an error element by its `id`.
 The component writes the validation message into the referenced element and manages its visibility by toggling the `hidden` attribute.
@@ -102,7 +101,7 @@ A `name` attribute is not required by the component for validation or error-mess
 
 If the required association is missing or invalid, the component fails gracefully: the control is still validated and receives `aria-invalid`, but no inline error is displayed.
 
-#### 3. Radio groups should share one error element
+### 3. Radio groups should share one error element
 
 Radio buttons with the same `name` attribute represent a single native radio group. Each radio in the group should reference the same error element using `aria-errormessage`.
 
@@ -137,7 +136,7 @@ Place the error element after the last radio button for consistent layout.
 
 When the group is invalid, the radios share the same validation message. On form submission, focus moves to the first invalid radio unless `no-focus` is enabled.
 
-#### Notes
+### Notes
 
 - The error element can be any HTML element, such as `div`, `span`, or `p`.
 - `aria-describedby` can be used for persistent hints or supporting text. When an error element is resolved, the component preserves any existing `aria-describedby` references and appends the error element's ID.
@@ -150,7 +149,7 @@ When the group is invalid, the radios share the same validation message. On form
 - If JavaScript is unavailable, native browser validation still works.
 - The component does not apply any styles, so error elements can be styled as needed.
 
-## Custom Validation Messages
+## Custom validation messages
 
 The component supports custom validation messages per input without using `setCustomValidity()` internally.
 
@@ -164,7 +163,7 @@ You can provide custom messages using `data-*` attributes on individual form con
 
 This preserves native validation behavior while allowing message customization.
 
-### Supported Attributes
+### Supported attributes
 
 The following attributes can be added to form controls:
 
@@ -232,7 +231,7 @@ If no matching attribute is present, the browser's default localized message is 
 </validated-form>
 ```
 
-### How Message Resolution Works
+### How message resolution works
 
 When a control is invalid:
 - The component checks validation flags in priority order.
@@ -260,11 +259,14 @@ Per-rule `data-msg-*` attributes still take precedence for the specific rule the
 
 ## API
 
-### Properties
-| Name | Reflects | Type | Required | Default | Description |
-| ---- | -------- | ---- | -------- | ------- | ----------- |
-| `noFocus`<br>*`no-focus`* | ✓ | `boolean` | - | `false` | Controls whether focus moves to the first invalid control when validation fails. When `false` (default), the first invalid control receives focus. When `true`, validation errors are displayed without moving focus. |
-| `report` | ✓ | `'all' \| 'first'` | - | `'all'` | Controls which validation messages are displayed. Use `'all'` to display messages for every invalid control, or `'first'` to display only the message for the first invalid control. Once validation has started, messages continue to update for the field currently being edited. |
+### Properties and attributes
+
+| Property / Attribute | Type | Default | Description |
+| -------------------- | ---- | ------- | ----------- |
+| `noFocus` / `no-focus` | `boolean` | `false` | Controls whether focus moves to the first invalid control when validation fails. When `false` (default), the first invalid control receives focus. When `true`, validation errors are displayed without moving focus. |
+| `report` | `'all' \| 'first'` | `'all'` | Controls which validation messages are displayed. Use `'all'` to display messages for every invalid control, or `'first'` to display only the message for the first invalid control. Once validation has started, messages continue to update for the field currently being edited. |
+
+All properties are reflected through their corresponding HTML attributes. When only one name is listed, the property and attribute share the same name.
 
 ### Methods
 
@@ -327,6 +329,24 @@ Create a production build by running the following command.
 
 ```sh
 npm run build
+```
+
+### Git hooks
+
+This repository includes a pre-commit hook that runs linting and formatting checks before each commit.
+
+To enable the hook, run the following command from the repository root:
+
+```sh
+git config --local core.hooksPath .githooks
+```
+
+This configuration only needs to be applied once per clone and does not affect other repositories.
+
+To disable the hook, run:
+
+```sh
+git config --local --unset core.hooksPath
 ```
 
 ## License
