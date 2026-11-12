@@ -16,22 +16,13 @@
  */
 
 /**
- * @summary A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors.
+ * A Web Component that wraps native HTML form validation and surfaces the browser's
+ * validation messages as accessible inline errors.
+ *
  * @documentation https://github.com/georapbox/validated-form
  *
- * @tagname validated-form - This is the default tag name, unless overridden by the `define` method.
+ * @tagname validated-form
  * @extends HTMLElement
- *
- * @property {boolean} noFocus - Controls whether focus moves to the first invalid control when validation fails. When false (default), the first invalid control receives focus. When true, validation errors are displayed without moving focus.
- * @property {string} report - Controls which validation messages are displayed. Use 'all' to display messages for every invalid control, or 'first' to display only the message for the first invalid control. Once validation has started, messages continue to update for the field currently being edited.
- *
- * @attribute {boolean} no-focus - Controls whether focus moves to the first invalid control when validation fails. When false (default), the first invalid control receives focus. When true, validation errors are displayed without moving focus.
- * @attribute {string} report - Controls which validation messages are displayed. Use 'all' to display messages for every invalid control, or 'first' to display only the message for the first invalid control. Once validation has started, messages continue to update for the field currently being edited.
- *
- * @method define - Static method. Registers the custom element with the browser's CustomElementRegistry unless it has already been defined.
- * @method validate - Instance method. Validates the form, updates the displayed validation feedback, and returns whether the form is valid.
- * @method resetValidation - Instance method. Resets the component's validation UI by clearing displayed error messages and validation feedback. It does not reset form field values or change the browser's underlying validity state.
- * @method isValid - Instance method. Checks whether all validatable controls satisfy the browser's native validation rules without displaying validation messages.
  */
 class ValidatedForm extends HTMLElement {
   /** @type {ReadonlyArray<readonly [keyof ValidityState, string]>} */
@@ -67,6 +58,7 @@ class ValidatedForm extends HTMLElement {
    *
    * @type {boolean}
    * @attribute no-focus
+   * @reflect
    * @default false
    */
   get noFocus() {
@@ -85,6 +77,7 @@ class ValidatedForm extends HTMLElement {
    *
    * @type {'all' | 'first'}
    * @attribute report
+   * @reflect
    * @default 'all'
    */
   get report() {
@@ -489,7 +482,7 @@ class ValidatedForm extends HTMLElement {
   #upgradeProperty(prop) {
     const instance = /** @type {HTMLElement & Record<string, unknown>} */ (this);
 
-    if (Object.prototype.hasOwnProperty.call(instance, prop)) {
+    if (Object.hasOwn(instance, prop)) {
       const value = instance[prop];
       delete instance[prop];
       instance[prop] = value;
@@ -503,10 +496,13 @@ class ValidatedForm extends HTMLElement {
    * @param {string} [tagName='validated-form'] - The tag name to use for the custom element.
    */
   static define(tagName = 'validated-form') {
-    if (typeof window === 'undefined' || window.customElements.get(tagName)) {
+    const registry = globalThis.customElements;
+
+    if (!registry || registry.get(tagName)) {
       return;
     }
-    window.customElements.define(tagName, ValidatedForm);
+
+    registry.define(tagName, ValidatedForm);
   }
 }
 

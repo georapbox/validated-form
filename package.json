@@ -1,6 +1,6 @@
 {
   "name": "@georapbox/validated-form",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors.",
   "type": "module",
   "main": "dist/validated-form.js",
@@ -36,6 +36,7 @@
     "test:coverage": "npm run test -- --coverage",
     "lint": "eslint",
     "format": "prettier --ignore-unknown --write .",
+    "format:check": "prettier --ignore-unknown --check .",
     "types": "tsc --project tsconfig.json",
     "analyze": "custom-elements-manifest analyze",
     "clean": "rimraf dist",
