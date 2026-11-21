@@ -1,8 +1,8 @@
 import '../lib/browser-window.js';
 
-const url = window.location.href;
-const isLocalhost = url.includes('127.0.0.1') || url.includes('localhost');
-const componentUrl = isLocalhost ? '../../dist/validated-form.js' : '../lib/validated-form.js';
+const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
+const basePath = isLocal ? '../..' : '..';
+const componentUrl = `${basePath}/dist/validated-form.js`;
 
 const { ValidatedForm } = await import(componentUrl);
 ValidatedForm.define();
