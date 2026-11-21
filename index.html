@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>&lt;validated-form&gt;</title>
+  <meta name="description" content="A Web Component that wraps native HTML form validation and surfaces the browser's validation messages as accessible inline errors.">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="stylesheet" href="lib/highlight/highlight-github.css">
+  <link rel="stylesheet" href="css/water.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="lib/highlight/highlight.min.js" defer></script>
+  <script src="js/main.js" type="module"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => window.hljs.highlightAll());</script>
+</head>
+<body>
+  <noscript>
+    <div class="noscript-banner">This demo requires JavaScript to work.</div>
+  </noscript>
+
+  <main>
+    <h1>&lt;validated-form&gt;</h1>
+    <div class="component-description">
+      <p>A Web Component that brings automatic browser form validation to your markup, displaying accessible error messages with zero configuration or frameworks.</p>
+      <p><a href="https://github.com/georapbox/validated-form" target="_blank" rel="noreferrer noopener">Source code & documentation</a></p>
+    </div>
+
+    <h2>Demo</h2>
+    <p>This demo showcases the capabilities of the <code>&lt;validated-form&gt;</code> component, demonstrating various form fields and validation scenarios. Try submitting the form with different inputs to see how it handles validation and error messages.</p>
+
+    <browser-window url="https://github.com/georapbox/validated-form" icon>
+      <validated-form>
+        <form id="demo-form" autocomplete="off">
+          <!-- Text / Email -->
+          <div class="form-group">
+            <label for="text-input">Text input (email type)</label>
+            <p class="help-text" id="text-input-hint">Requires a valid email format.</p>
+            <input
+              class="form-control"
+              type="email"
+              id="text-input"
+              name="text-input"
+              required
+              aria-describedby="text-input-hint"
+              aria-errormessage="text-input-error"
+            >
+            <div id="text-input-error" class="error" hidden></div>
+          </div>
+
+          <!-- Pattern -->
+          <div class="form-group">
+            <label for="pattern-input">Pattern-validated input</label>
+            <p class="help-text" id="pattern-input-hint">Minimum 8 characters including letter, number, and symbol.</p>
+            <input
+              class="form-control"
+              type="text"
+              id="pattern-input"
+              name="pattern-input"
+              pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$"
+              required
+              aria-describedby="pattern-input-hint"
+              aria-errormessage="pattern-input-error"
+            >
+            <div id="pattern-input-error" class="error" hidden></div>
+          </div>
+
+          <!-- Number -->
+          <div class="form-group">
+            <label for="number-input">Number input</label>
+            <p class="help-text" id="number-input-hint">Enter an even number between 2 and 10.</p>
+            <input
+              class="form-control"
+              type="number"
+              id="number-input"
+              name="number-input"
+              required
+              min="2"
+              max="10"
+              step="2"
+              aria-describedby="number-input-hint"
+              aria-errormessage="number-input-error"
+            >
+            <div id="number-input-error" class="error" hidden></div>
+          </div>
+
+          <!-- Select -->
+          <div class="form-group">
+            <label for="select-single">Single select</label>
+            <p class="help-text" id="select-single-hint">Choose one value.</p>
+            <select
+              class="form-control"
+              id="select-single"
+              name="select-single"
+              required
+              aria-describedby="select-single-hint"
+              aria-errormessage="select-single-error"
+            >
+              <option value="">Select an option</option>
+              <option value="option-a">Option A</option>
+              <option value="option-b">Option B</option>
+              <option value="option-c">Option C</option>
+            </select>
+            <div id="select-single-error" class="error" hidden></div>
+          </div>
+
+          <!-- Multi Select -->
+          <div class="form-group">
+            <label for="select-multiple">Multiple select</label>
+            <p class="help-text" id="select-multiple-hint">Select at least one value.</p>
+            <select
+              class="form-control"
+              id="select-multiple"
+              name="select-multiple"
+              multiple
+              required
+              aria-describedby="select-multiple-hint"
+              aria-errormessage="select-multiple-error"
+            >
+              <option value="option-a">Option A</option>
+              <option value="option-b">Option B</option>
+              <option value="option-c">Option C</option>
+              <option value="option-d">Option D</option>
+            </select>
+            <div id="select-multiple-error" class="error" hidden></div>
+          </div>
+
+          <!-- Radio -->
+          <fieldset class="form-group" aria-describedby="radio-hint">
+            <legend>Single choice group (radio buttons)</legend>
+            <p class="help-text" id="radio-hint">Exactly one option must be selected.</p>
+            <label class="inline-option">
+              <input
+                type="radio"
+                name="radio-group"
+                value="option-a"
+                required
+                aria-errormessage="radio-group-error"
+              >
+              Option A
+            </label>
+            <label class="inline-option">
+              <input
+                type="radio"
+                name="radio-group"
+                value="option-b"
+                aria-errormessage="radio-group-error"
+              >
+              Option B
+            </label>
+            <label class="inline-option">
+              <input
+                type="radio"
+                name="radio-group"
+                value="option-c"
+                aria-errormessage="radio-group-error"
+              >
+              Option C
+            </label>
+            <div id="radio-group-error" class="error" hidden></div>
+          </fieldset>
+
+          <!-- Checkbox -->
+          <fieldset class="form-group">
+            <legend>Checkbox group</legend>
+            <p class="help-text" id="checkbox-hint">Option A is required to proceed</p>
+            <label class="inline-option">
+              <input
+                type="checkbox"
+                name="checkbox-input-required"
+                value="option-a"
+                required
+                aria-describedby="checkbox-hint"
+                aria-errormessage="checkbox-input-required-error"
+              >
+              Option A
+            </label>
+            <div id="checkbox-input-required-error" class="error" hidden></div>
+            <label class="inline-option">
+              <input
+                type="checkbox"
+                name="checkbox-input-optional"
+                value="option-b"
+              >
+              Option B (Optional)
+            </label>
+          </fieldset>
+
+          <!-- File -->
+          <div class="form-group">
+            <label for="file-input">File upload</label>
+            <p class="help-text" id="file-input-hint">Accepted formats: PDF, JPG, PNG.</p>
+            <input
+              class="form-control"
+              type="file"
+              id="file-input"
+              name="file-input"
+              required
+              accept=".pdf,.jpg,.jpeg,.png"
+              aria-describedby="file-input-hint"
+              aria-errormessage="file-input-error"
+            >
+            <div id="file-input-error" class="error" hidden></div>
+          </div>
+
+          <!-- Textarea -->
+          <div class="form-group">
+            <label for="textarea-input">Textarea</label>
+            <p class="help-text" id="textarea-hint">Not required, but must be between 20 and 300 characters if filled.</p>
+            <textarea
+              class="form-control"
+              id="textarea-input"
+              name="textarea-input"
+              rows="4"
+              minlength="20"
+              maxlength="300"
+              aria-describedby="textarea-hint"
+              aria-errormessage="textarea-input-error"
+            ></textarea>
+            <div id="textarea-input-error" class="error" hidden></div>
+          </div>
+
+          <!-- Custom validation errors -->
+          <div class="form-group">
+            <label for="custom-errors-input">Input with custom error messages </label>
+            <p class="help-text" id="custom-errors-input-hint">Password field with custom validation messages for required and too-short errors.</p>
+            <input
+              class="form-control"
+              type="password"
+              id="custom-errors-input"
+              name="custom-errors-input"
+              required
+              minlength="8"
+              autocomplete="off"
+              aria-describedby="custom-errors-input-hint"
+              aria-errormessage="custom-errors-input-error"
+              data-msg-required="Password is required."
+              data-msg-too-short="Password must be at least 8 characters."
+            >
+            <div id="custom-errors-input-error" class="error" hidden></div>
+          </div>
+
+          <!-- Disabled -->
+          <div class="form-group">
+            <label for="disabled-input">Disabled control</label>
+            <p class="help-text" id="disabled-input-hint">This field is disabled. Although it is required, it will not trigger validation errors since it's not interactive.</p>
+            <input
+              class="form-control"
+              type="text"
+              id="disabled-input"
+              name="disabled-input"
+              disabled
+              required
+              aria-describedby="disabled-input-hint"
+              aria-errormessage="disabled-input-error"
+            >
+            <div id="disabled-input-error" class="error" hidden></div>
+          </div>
+
+          <button type="submit">Submit</button>
+          <button type="reset">Reset</button>
+        </form>
+      </validated-form>
+    </browser-window>
+
+    <h2 id="demo-options-title">Options</h2>
+    <p id="demo-options-hint">Use these controls to change how the <code>&lt;validated-form&gt;</code> demo behaves.</p>
+
+    <form id="options-form" aria-labelledby="demo-options-title" aria-describedby="demo-options-hint" autocomplete="off">
+      <fieldset disabled>
+        <legend>Focus behavior</legend>
+        <label>
+          <input type="checkbox" name="no-focus">
+          Do not move focus to the first invalid field after submit (<code>no-focus</code>)
+        </label>
+      </fieldset>
+
+      <fieldset disabled>
+        <legend>Error reporting</legend>
+        <label>
+          <input type="radio" name="report" value="all" checked>
+          Show error messages for all invalid fields (<code>report="all"</code>)
+        </label>
+        <br>
+        <label>
+          <input type="radio" name="report" value="first">
+          Show error message only for the first invalid field (<code>report="first"</code>)
+        </label>
+      </fieldset>
+    </form>
+
+    <details>
+      <summary>Code sample</summary>
+
+      <h3>HTML</h3>
+      <p>
+        The HTML markup for the demo form includes a variety of form controls, each with different validation requirements.
+        The form is wrapped in the <code>&lt;validated-form&gt;</code> component, which handles the validation logic and
+        error message display. Each form control uses <code>aria-errormessage</code> to reference an error element by its
+        <code>id</code>, where the validation message is displayed when the control is invalid. Descriptive text is associated
+        separately using <code>aria-describedby</code> to guide users on the expected input and validation rules.
+      </p>
+
+<pre><code>&lt;validated-form&gt;
+  &lt;form id="demo-form" autocomplete="off"&gt;
+    &lt;p&gt;Fields marked with * are required.&lt;/p&gt;
+
+    &lt;!-- Text / Email --&gt;
+    &lt;div&gt;
+      &lt;label for="text-input"&gt;Text input (email type)&lt;/label&gt;
+      &lt;p id="text-input-hint"&gt;Requires a valid email format.&lt;/p&gt;
+      &lt;input
+        type="email"
+        id="text-input"
+        name="text-input"
+        required
+        aria-describedby="text-input-hint"
+        aria-errormessage="text-input-error"
+      &gt;
+      &lt;div id="text-input-error" class="error" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Pattern --&gt;
+    &lt;div&gt;
+      &lt;label for="pattern-input"&gt;Pattern-validated input&lt;/label&gt;
+      &lt;p id="pattern-input-hint"&gt;Minimum 8 characters including letter, number, and symbol.&lt;/p&gt;
+      &lt;input
+        type="text"
+        id="pattern-input"
+        name="pattern-input"
+        pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$"
+        required
+        aria-describedby="pattern-input-hint"
+        aria-errormessage="pattern-input-error"
+      &gt;
+      &lt;div id="pattern-input-error" class="error" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Number --&gt;
+    &lt;div&gt;
+      &lt;label for="number-input"&gt;Number input&lt;/label&gt;
+      &lt;p id="number-input-hint"&gt;Enter an even number between 2 and 10.&lt;/p&gt;
+      &lt;input
+        type="number"
+        id="number-input"
+        name="number-input"
+        required
+        min="2"
+        max="10"
+        step="2"
+        aria-describedby="number-input-hint"
+        aria-errormessage="number-input-error"
+      &gt;
+      &lt;div id="number-input-error" class="error" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Select --&gt;
+    &lt;div&gt;
+      &lt;label for="select-single"&gt;Single select&lt;/label&gt;
+      &lt;p id="select-single-hint"&gt;Choose one value.&lt;/p&gt;
+      &lt;select
+        id="select-single"
+        name="select-single"
+        required
+        aria-describedby="select-single-hint"
+        aria-errormessage="select-single-error"
+      &gt;
+        &lt;option value=""&gt;Select an option&lt;/option&gt;
+        &lt;option value="option-a"&gt;Option A&lt;/option&gt;
+        &lt;option value="option-b"&gt;Option B&lt;/option&gt;
+        &lt;option value="option-c"&gt;Option C&lt;/option&gt;
+      &lt;/select&gt;
+      &lt;div id="select-single-error" class="error" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Multi Select --&gt;
+    &lt;div&gt;
+      &lt;label for="select-multiple"&gt;Multiple select&lt;/label&gt;
+      &lt;p id="select-multiple-hint"&gt;Select at least one value.&lt;/p&gt;
+      &lt;select
+        id="select-multiple"
+        name="select-multiple"
+        multiple
+        required
+        aria-describedby="select-multiple-hint"
+        aria-errormessage="select-multiple-error"
+      &gt;
+        &lt;option value="option-a"&gt;Option A&lt;/option&gt;
+        &lt;option value="option-b"&gt;Option B&lt;/option&gt;
+        &lt;option value="option-c"&gt;Option C&lt;/option&gt;
+        &lt;option value="option-d"&gt;Option D&lt;/option&gt;
+      &lt;/select&gt;
+      &lt;div id="select-multiple-error" class="error" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Radio --&gt;
+    &lt;fieldset aria-describedby="radio-hint"&gt;
+      &lt;legend&gt;Single choice group (radio buttons)&lt;/legend&gt;
+      &lt;p id="radio-hint"&gt;Exactly one option must be selected.&lt;/p&gt;
+      &lt;label class="inline-option"&gt;
+        &lt;input
+          type="radio"
+          name="radio-group"
+          value="option-a"
+          required
+          aria-errormessage="radio-group-error"
+        &gt;
+        Option A
+      &lt;/label&gt;
+      &lt;label class="inline-option"&gt;
+        &lt;input
+          type="radio"
+          name="radio-group"
+          value="option-b"
+          aria-errormessage="radio-group-error"
+        &gt;
+        Option B
+      &lt;/label&gt;
+      &lt;label class="inline-option"&gt;
+        &lt;input
+          type="radio"
+          name="radio-group"
+          value="option-c"
+          aria-errormessage="radio-group-error"
+        &gt;
+        Option C
+      &lt;/label&gt;
+      &lt;div id="radio-group-error" class="error" hidden&gt;&lt;/div&gt;
+    &lt;/fieldset&gt;
+
+    &lt;!-- Checkbox --&gt;
+    &lt;fieldset&gt;
+      &lt;legend&gt;Checkbox group&lt;/legend&gt;
+      &lt;p id="checkbox-hint"&gt;Option A is required to proceed&lt;/p&gt;
+      &lt;label&gt;
+        &lt;input
+          type="checkbox"
+          name="checkbox-input-required"
+          value="option-a"
+          required
+          aria-describedby="checkbox-hint"
+          aria-errormessage="checkbox-input-required-error"
+        &gt;
+        Option A
+      &lt;/label&gt;
+      &lt;div id="checkbox-input-required-error" class="error" hidden&gt;&lt;/div&gt;
+      &lt;label&gt;
+        &lt;input
+          type="checkbox"
+          name="checkbox-input-optional"
+          value="option-b"
+        &gt;
+        Option B (Optional)
+      &lt;/label&gt;
+    &lt;/fieldset&gt;
+
+    &lt;!-- File --&gt;
+    &lt;div&gt;
+      &lt;label for="file-input"&gt;File upload&lt;/label&gt;
+      &lt;p id="file-input-hint"&gt;Accepted formats: PDF, JPG, PNG.&lt;/p&gt;
+      &lt;input
+        type="file"
+        id="file-input"
+        name="file-input"
+        required
+        accept=".pdf,.jpg,.jpeg,.png"
+        aria-describedby="file-input-hint"
+        aria-errormessage="file-input-error"
+      &gt;
+      &lt;div id="file-input-error" class="error" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Textarea --&gt;
+    &lt;div&gt;
+      &lt;label for="textarea-input"&gt;Textarea&lt;/label&gt;
+      &lt;p id="textarea-hint"&gt;Not required, but must be between 20 and 300 characters if filled.&lt;/p&gt;
+      &lt;textarea
+        id="textarea-input"
+        name="textarea-input"
+        rows="4"
+        minlength="20"
+        maxlength="300"
+        aria-describedby="textarea-hint"
+        aria-errormessage="textarea-input-error"
+      &gt;&lt;/textarea&gt;
+      &lt;div id="textarea-input-error" class="error" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Custom validation errors --&gt;
+    &lt;div&gt;
+      &lt;label for="custom-errors-input"&gt;Input with custom error messages&lt;/label&gt;
+      &lt;p id="custom-errors-input-hint"&gt;Password field with custom validation messages for required and too-short errors.&lt;/p&gt;
+      &lt;input
+        type="password"
+        id="custom-errors-input"
+        name="custom-errors-input"
+        required
+        minlength="8"
+        autocomplete="off"
+        aria-describedby="custom-errors-input-hint"
+        aria-errormessage="custom-errors-input-error"
+        data-msg-required="Password is required."
+        data-msg-too-short="Password must be at least 8 characters."
+      &gt;
+      &lt;div id="custom-errors-input-error" class="error" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Disabled --&gt;
+    &lt;div&gt;
+      &lt;label for="disabled-input"&gt;Disabled control&lt;/label&gt;
+      &lt;p id="disabled-input-hint"&gt;This field is disabled. Although it is required, it will not trigger validation errors since it's not interactive.&lt;/p&gt;
+      &lt;input
+        type="text"
+        id="disabled-input"
+        name="disabled-input"
+        disabled
+        required
+        aria-describedby="disabled-input-hint"
+        aria-errormessage="disabled-input-error"
+      &gt;
+      &lt;div id="disabled-input-error" class="error" hidden&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+    &lt;button type="reset"&gt;Reset&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/validated-form&gt;</code></pre>
+
+      <h3>CSS</h3>
+      <p>
+        The component does not include any default styles for invalid form controls or validation messages.
+        You can use the <code>aria-invalid</code> attribute to highlight controls with reported validation
+        errors and style the error messages separately. Alternatively, you can conditionally apply styles
+        based on the visibility of the associated error elements. The following example demonstrates a
+        minimal approach, which you can adapt to your application's design.
+      </p>
+
+<pre><code>/* Highlight controls with validation errors */
+[aria-invalid="true"] {
+  outline: 2px solid #c00;
+}
+
+/* Style validation messages */
+.error {
+  color: #c00;
+  font-size: 0.875rem;
+}</code></pre>
+
+      <h3>JavaScript</h3>
+      <p>
+        The JavaScript code listens for the form's submit event, prevents the default submission behavior,
+        and checks if the form is valid using the <code>isValid()</code> method provided by the <code>&lt;validated-form&gt;</code> component.
+        If the form is valid, it collects the form data into a FormData object and logs it to the console.
+        You can replace the console log with any custom submission logic, such as sending the data to a server or displaying a success message.
+      </p>
+
+<pre><code>const validatedForm = document.querySelector('validated-form');
+const form = document.querySelector('form');
+
+form.addEventListener('submit', evt =&gt; {
+  evt.preventDefault();
+
+  if (!validatedForm.isValid?.()) {
+    return;
+  }
+
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+  console.log('Form data:', data);
+});
+
+form.addEventListener('reset', evt =&gt; {
+  validatedForm.resetValidation?.();
+});</code></pre>
+    </details>
+
+    <dialog id="success-dialog" closedby="any">
+      <h3>Form submitted successfully!</h3>
+      <p>The form has passed validation and was submitted without errors.</p>
+      <pre><code class="hljs language-json"></code></pre>
+      <form method="dialog">
+        <button type="submit">Close</button>
+      </form>
+    </dialog>
+
+    <h2>License</h2>
+    <p>Licensed under the <a href="https://github.com/georapbox/validated-form/blob/main/LICENSE" target="_blank" rel="noreferrer noopener">The MIT License (MIT)</a></p>
+  </main>
+</body>
+</html>

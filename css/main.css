@@ -1,0 +1,136 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --body-max-width: 50rem;
+  --color-danger: #ae1a28;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-danger: #ff7d89;
+  }
+}
+
+.noscript-banner {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--border-radius);
+  background-color: #f8d7da;
+  text-align: center;
+  color: #000000;
+}
+
+.component-description p {
+  margin: 0 0 0.5rem 0;
+}
+
+.component-description p:last-child {
+  margin-bottom: 0;
+}
+
+browser-window {
+  --bw-background: var(--background);
+  display: block;
+}
+
+browser-window:not(:defined) {
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  background-color: var(--background);
+}
+
+browser-window::part(base) {
+  border-color: transparent;
+  border-radius: var(--border-radius);
+}
+
+browser-window::part(title) {
+  border-radius: var(--border-radius);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+.form-group > label {
+  align-self: flex-start;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.form-control {
+  margin-inline: 0;
+}
+
+.help-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-block: 0 0.4rem;
+}
+
+.inline-option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+#demo-form {
+  margin: 0 auto;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border);
+  background: var(--background-card);
+}
+
+#demo-form h3 {
+  margin-block: 0;
+}
+
+#demo-form fieldset {
+  border-color: var(--border);
+  background-color: var(--background-input);
+}
+
+#demo-form textarea {
+  resize: none;
+}
+
+#demo-form :is(button[type="submit"], button[type="reset"]) {
+  margin: 0;
+}
+
+#demo-form .error {
+  font-size: 0.875rem;
+  color: var(--color-danger);
+  word-wrap: break-word;
+}
+
+#demo-form .form-group:has(.error:not([hidden])) [aria-invalid="true"]:not(:focus-visible) {
+  outline: 2px solid var(--color-danger);
+}
+
+#success-dialog {
+  width: 36rem;
+  padding: 1rem;
+}
+
+#success-dialog h3 {
+  margin-block: 0;
+}
+
+#success-dialog form[method="dialog"] {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+#success-dialog form[method="dialog"] button {
+  margin: 0;
+}
