@@ -2,8 +2,8 @@
 [![npm license](https://img.shields.io/npm/l/@georapbox/validated-form.svg)](https://www.npmjs.com/package/@georapbox/validated-form)
 
 [demo]: https://georapbox.github.io/validated-form/
-[license]: https://github.com/georapbox/validated-form/blob/main/LICENSE
-[changelog]: https://github.com/georapbox/validated-form/blob/main/CHANGELOG.md
+[license]: ./LICENSE
+[changelog]: ./CHANGELOG.md
 
 # &lt;validated-form&gt;
 
